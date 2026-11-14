@@ -597,6 +597,13 @@
   .taro-cr { display:flex; gap:14px; align-items:flex-start; }
   .taro-cr-body { flex:1; font-size:13.5px; line-height:1.9; color:var(--text); }
   .taro-revnote { color:var(--gold-light); font-size:12.5px; margin-top:6px; }
+  .taro-id { color:var(--gold-light); font-size:12px; margin-top:4px; letter-spacing:1px; }
+  .taro-img { color:var(--text-dim); font-size:12.5px; margin-top:4px; }
+  .taro-qline { color:var(--gold-light); font-size:13px; margin-top:6px; }
+  .taro-note { color:var(--text-dim); font-size:12.5px; margin-top:4px; }
+  .taro-rel p, .taro-dyn p, .taro-story p, .taro-order p { font-size:13.5px; line-height:1.95; color:var(--text); margin:8px 0; }
+  .taro-risk { border-left:3px solid #c8875a; padding-left:12px; }
+  .taro-risk p { font-size:13.5px; line-height:1.95; color:var(--text); margin:8px 0; }
   .taro-side .taro-face .tf-top { display:none; }
   .taro-side .taro-face .tf-mark { font-size:20px; margin:1px 0; }
   .taro-side .taro-face .tf-name { font-size:13px; white-space:nowrap; }
@@ -627,7 +634,7 @@ window.CONFIG = {
   GOLD_LIGHT: '#e3c88d',             // 主题金色（高亮浅色）
   CONTACT: '微信：wxid_4cs9ei0iftpw22',  // 联系方式（留空则不显示；例如 '微信：xxxx'）
   SHOW_FOOTER: true,                 // 是否显示首页底部的版权与免责信息
-  VERSION: 'v1.4.1',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
+  VERSION: 'v1.4.2',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
   UPDATED: '2026-11-14',              // 更新日期
   FEEDBACK_URL: 'https://wj.qq.com/s2/28674644/054w/',  // 反馈表单链接（腾讯问卷，用户 2026-11-13 自己建的免费表单；改成 '' 则恢复显示微信联系方式）
   SITE_URL: 'https://mmw123456.github.io/xuanji-ge/',  // 官网链接（结果卡片分享区二维码与文字用）
@@ -741,7 +748,10 @@ document.addEventListener('touchstart', function(){}, {passive:true});
     <h3 style="text-align:center">更新日志</h3>
     <div class="tip-note" style="text-align:center" id="clVersion"></div>
     <div style="font-size:13px;color:var(--text-dim);line-height:2">
-      <div style="color:var(--gold-light);font-weight:600">v1.4.1 · 2026-11-14</div>
+      <div style="color:var(--gold-light);font-weight:600">v1.4.2 · 2026-11-14</div>
+      <div>· 塔罗解读按审查标准补全：每张牌加身份信息与画面象征，整体合成加牌间关系、三方视角、风险提醒、故事线与行动顺序</div>
+      <div>· 牌间关系分呼应/冲突/转化/因果，只讲有依据的；风险提醒没依据就不显示</div>
+      <div style="color:var(--gold-light);font-weight:600;margin-top:6px">v1.4.1 · 2026-11-14</div>
       <div>· 修了塔罗“接下来的一步”总重复：原来只有 5 句固定话术，大阿卡纳永远同一句；现在 78 张牌每张有自己的专属行动</div>
       <div>· 逐张解读变详细：每张牌按正逆位各加一段专属解读，逆位行动也不再简单取反</div>
       <div style="color:var(--gold-light);font-weight:600;margin-top:6px">v1.4.0 · 2026-11-14</div>
@@ -4871,6 +4881,8 @@ var TAROT_CARDS = [
 {id:'p-queen',arc:'minor',suit:'pentacles',el:'earth',n:0,num:'王后',ct:1,zh:'星币王后',en:'Queen of Pentacles',up:['务实','生活舒适','财务安全'],upEn:['practicality','creature comforts','financial security'],rev:['自我中心','嫉妒','窒息'],revEn:['self-centeredness','jealousy','smothering'],yn:'yes',actUp:"30 天内务实地把生活打理得更舒服一点：整理一次居住环境，或给自己做一顿好饭。",actRev:"对治自我中心：30 天内为身边的人做一件实在的事，分担一次家务，或帮一个具体的忙。",readUp:"务实、生活舒适与财务安全的能量正在场，王后的打法是把日子过扎实。先稳住生活，再谈远方。",readRev:"自我中心与嫉妒正在让舒适变味，窒息感提醒你：别只顾自己。先看看身边的人需要什么。"},
 {id:'p-king',arc:'minor',suit:'pentacles',el:'earth',n:0,num:'国王',ct:1,zh:'星币国王',en:'King of Pentacles',up:['富足','繁荣','安全感'],upEn:['abundance','prosperity','security'],rev:['贪婪','放纵','纵欲'],revEn:['greed','indulgence','overindulgence'],yn:'yes',actUp:"30 天内为安全感做一次长远规划：把手头的资源列出来，定一个一年期的目标。",actRev:"30 天内克制一次最大的放纵冲动，把省下的钱或时间存进一个'未来基金'里。",readUp:"富足、繁荣与安全感的能量正在场，国王的姿态是：家底攒下来了，该把它用在值得的地方。稳住，再图大。",readRev:"贪婪、放纵与纵欲正在提醒你：攒下来的东西正在被欲望掏空。先收一收，再谈扩张，收住了，家底才保得住。"}
 ];
+// 画面象征（v1.4.2）：韦特塔罗原版牌面经典画面，一句、简短、准确；只写牌面里确实有的东西
+var TARO_IMG = {"c-10":"彩虹之下排着十只杯子，一家人靠在一起，远处是安稳的房子。","c-2":"一男一女面对面举杯相碰，两人之间是一根长着狮头的带翼权杖。","c-3":"三位女子在丰收的瓜果间举杯相庆，舞成一个圆圈。","c-4":"一位男子抱臂坐在树下，三只杯子放在身前，云中伸出的手又递来第四只，他看也不看。","c-5":"一位披着黑斗篷的人低着头，三只杯子翻倒在地，另外两只还立着，远处有桥与房子。","c-6":"一个孩童把花杯递给另一个孩童，背景是旧宅的花园，六只杯子装满了花。","c-7":"云端浮现七只杯子，里面分别装着人脸、珠宝、城堡、蛇、桂冠、龙与一个发光的身影。","c-8":"一个月蚀之夜，一位男子转身离去，八只杯子整齐地叠在身后。","c-9":"一位男子心满意足地坐在长椅上，九只杯子在他身后排成拱形。","c-ace":"云中伸出一只手，托着一只圣杯，杯口洒下五滴水，一只白鸽衔着圣饼飞来。","c-king":"国王坐在海上的王座上，左手握权杖、右手持圣杯，座边有鱼跃出水面。","c-knight":"一位白马骑士手持圣杯缓缓前行，近处是平静的河水。","c-page":"一位少年站在海边，望着手中杯子里跃出的一条鱼。","c-queen":"王后坐在贝壳形的王座上，双手端着一只合起盖子的圣杯，凝视着它，脚边是海。","chariot":"战车由一黑一白两头狮身人面兽拉着，车篷是缀满星星的华盖，驾车者头戴星形冠。","death":"黑甲骑士骑着白马，举着绣黑玫瑰的白旗，脚下倒着国王，远处太阳从两塔之间升起。","devil":"长角的恶魔坐在石座上，倒五角星悬在头顶，一男一女脖子被锁链拴着。","emperor":"皇帝身披铠甲坐在石座上，座边有羊头装饰，手握权杖与宝球，身后是群山。","empress":"皇后坐在麦田边的宝座上，身旁是心形盾牌与维纳斯符号，脚下麦穗丰茂。","fool":"年轻人站在悬崖边，肩上挑着行囊，身后一只白狗，仰头望向天空。","hanged":"男子一脚被吊在T形木架上，头朝下，双手背在身后，头顶泛着光晕，口袋里掉出钱币。","hermit":"灰衣老人在雪山顶提着一盏灯，拄着长杖，独自站在高处。","hierophant":"教皇戴着三重冠、举手祝福，脚前交叉着两把钥匙，两位信徒跪在两侧。","judgement":"天使在云端吹响号角，棺中的人张开双臂复活，旗上是红十字。","justice":"正义端坐王座，右手持剑、左手持天秤，身后是紫色帷幕。","lovers":"天使拉斐尔张开双臂，亚当与夏娃站在两棵树下，蛇缠在苹果树上。","magician":"桌上摆着权杖、圣杯、宝剑、星币四样法器，魔术师一手指天、一手指地，头顶无限符号。","moon":"月亮高悬，两座塔分立两边，狼与狗对月嚎叫，一只龙虾从水里爬出。","p-10":"十枚星币按生命树的形状排列，一家人与白狗聚在庭院里，老者看着孩童。","p-2":"一位男子在海浪前抛接两枚星币，两枚星币之间绕着无限符号。","p-3":"一位工匠站在脚手架上雕刻教堂石壁，下方僧侣与贵族抬头看着成品。","p-4":"一位男子双手紧抱一枚星币，头顶放一枚、脚下踩两枚，神情守财。","p-5":"雪夜里两个人互相搀扶着走过教堂窗外，窗户透出温暖的光，五枚星币落在一旁。","p-6":"一位富人手托天秤向两名乞丐施舍，六枚星币撒在他的脚边。","p-7":"一位男子拄着锄头，端详着眼前长满星币的灌木，沉思值不值得继续。","p-8":"一位工匠在作坊里敲打星币，八枚成品整齐地挂在墙上。","p-9":"一位女子独自站在花园里，手上停着猎鹰，九枚星币排在葡萄藤间，还有一只蜗牛。","p-ace":"云中伸出一只手，托着一枚金光闪闪的星币，下方是开满百合的花园与拱门。","p-king":"国王坐在饰着葡萄藤与牛头的王座上，左手持星币、右手持权杖。","p-knight":"一位骑士骑着黑马，手持星币，缓缓走过金色的田野。","p-page":"一位少年站在开阔的田野上，双手捧着一枚星币，认真地端详着它。","p-queen":"王后坐在王座上，手里托着一枚星币，身边是山羊与兔子，脚下是玫瑰丛。","priestess":"女祭司坐在黑白两根柱子之间，身后挂着面纱，脚边一轮新月，膝上摊着一卷书。","s-10":"一位男子俯卧在地，十把宝剑插在他的背上，远方东方正在日出。","s-2":"一位蒙眼女子坐在海边，双手交叉各握一把剑，月亮挂在天空。","s-3":"三把宝剑穿透一颗红心，背景是乌云与骤雨。","s-4":"一位骑士安静地躺在石棺上，双手合十，三把剑挂在墙上，一把平放在身侧，窗外是彩色玻璃。","s-5":"一位胜利者神情冷漠地收起三把剑，两把剑丢在地上，两个人垂头离去。","s-6":"一艘船载着六把剑和一对母子，在平静的水面上向对岸驶去。","s-7":"一位男子鬼祟地抱走五把宝剑，留下两把插在地上，远处是营地帐篷。","s-8":"一位蒙眼女子被绳索捆住，站在八把剑围成的圈里，远处是城堡。","s-9":"深夜里一位女子坐在床上捂脸哭泣，墙上横着九把宝剑。","s-ace":"云中伸出一只手，握着一把竖起的宝剑，剑尖上挂着桂冠与橄榄枝。","s-king":"国王端坐在王座上，右手持剑、左手撑膝，座侧刻着蝴蝶与新月。","s-knight":"一位骑士骑马持剑冲进风暴，树木被风吹得东倒西歪。","s-page":"一位少年站在风里双手握剑，衣袂翻飞，天空布满流云。","s-queen":"王后端坐在雕着蝴蝶的王座上，右手高举宝剑，目光直视前方。","star":"裸体女子跪在水边，一手把水倒入池中、一手倒在地上，头顶一颗大星、周围七颗小星。","strength":"一位女子双手轻轻合上狮子的嘴，头顶无限符号，腰间绕着花环。","sun":"孩童骑在白马上，身后是一大片向日葵，头顶是红脸的太阳。","temperance":"天使一脚踩水、一脚踩岸，把水从一只杯子缓缓倒进另一只，远处是山与初升的太阳。","tower":"高塔被雷劈中、顶部着火，两个人从塔上坠落，皇冠从塔顶飞了出去。","w-10":"一位男子吃力地抱着十根权杖向前走，前面不远就是村庄。","w-2":"一位男子站在城堡露台上，一手握着地球仪，眺望大海，身旁立着两根权杖。","w-3":"一位男子背对着画面，眺望海上的船只，三根权杖插在他身后的地上。","w-4":"四根权杖搭成挂满花果的棚架，两人在下面举手庆祝，远处是城堡。","w-5":"五个人各自挥着棍棒，看似争斗却无人真正受伤，场面混乱。","w-6":"一位骑士披着月桂花环骑马凯旋，身后跟着举杖欢呼的人群。","w-7":"一位男子站在高处单手挥杖，六根权杖从下方朝他打来。","w-8":"八根权杖斜斜地飞过天际，背景是起伏的山丘与一条河。","w-9":"一位男子头裹绷带、倚着一根权杖，八根权杖竖在他身后的围栏上。","w-ace":"云中伸出一只手，握着一根发芽的权杖，下方是绿色山丘与远处的城堡。","w-king":"国王坐在王座上，手握权杖，座上刻着狮子与火蜥蜴。","w-knight":"一位骑士挥舞权杖，骑马在沙漠中疾驰，马蹄扬起沙尘。","w-page":"一位少年站在沙漠里，双手握着一根比他还高的权杖，望向远方。","w-queen":"王后坐在王座上，左手托着向日葵，右手持杖，一只黑猫蹲在脚边。","wheel":"轮盘顶上坐着人面狮身像，四角是天使、鹰、狮子与公牛，蛇与狗头神分列轮的两侧。","world":"舞者在月桂花环中起舞，双手各握一根权杖，红绶带绕成无限符号，四角是天使、鹰、狮与牛。"};
 var TAROT_BY_ID = {};
 TAROT_CARDS.forEach(function(c){ TAROT_BY_ID[c.id] = c; });
 
@@ -4897,6 +4909,14 @@ var TARO_FRAMES = {
   resource:'这张牌说的是你能动用的资源——'
 };
 var TARO_EL = { fire:{zh:'火',suit:'权杖',desc:'行动与欲望在推着这件事走',miss:'行动'}, water:{zh:'水',suit:'圣杯',desc:'情绪与直觉浓度很高',miss:'感受'}, air:{zh:'风',suit:'宝剑',desc:'想得多、谈得多，信息在流动',miss:'沟通与思考'}, earth:{zh:'土',suit:'星币',desc:'落到实处的东西在主导',miss:'落地执行'} };
+// 转化牌对（v1.4.2）：只收有把握的经典配对；两张牌同时出现在本次牌阵里才显示
+var TARO_TRANSFORM = [
+  {a:'tower', b:'star', text:'「高塔」与「星星」同时出现：破坏之后有重建的线索——牌面呈现的是先破后立的过程，先别只盯着塌掉的部分。'},
+  {a:'death', b:'sun', text:'「死神」与「太阳」同时出现：一段结束之后有新生的线索——牌面呈现的是旧周期收尾、新周期开始的转折。'},
+  {a:'lovers', b:'devil', text:'「恋人」与「恶魔」同时出现：关系里有束缚感的线索——基于当前信息推测，值得看看这份连接里有没有让人放不开的执念。'},
+  {a:'fool', b:'world', text:'「愚者」与「世界」同时出现：一趟旅程的起点与终点都在牌面里——基于当前信息推测，新开始与圆满收尾是同一条线上的两端。'},
+  {a:'moon', b:'sun', text:'「月亮」与「太阳」同时出现：从迷雾到清晰的线索——牌面呈现的是看不清的东西正在慢慢显形的过程。'}
+];
 var TARO_NUM_THEME = { 1:'新开始', 2:'合作与平衡', 3:'创造与成长', 4:'稳定与结构', 5:'冲突与变化', 6:'和谐与回报', 7:'坚持与反思', 8:'力量与行动', 9:'接近完成', 10:'一个周期正在收尾' };
 // v1.4.1 起为兜底：正常流程取建议位那张牌自己的 actUp/actRev；只有牌数据缺失的未知牌才走到这里（正常不应发生）
 // 旧版 5 句固定话术导致建议位一抽到大阿卡纳就永远显示同一句话，已废弃作主逻辑
@@ -5193,8 +5213,120 @@ window.taroPickFan = function(i, el, ev){
 };
 
 // ---- 第 5 步：解读（逐张按牌位 + 整体合成 + 可执行建议）----
+// v1.4.2：身份行（只用 TAROT_CARDS 已有字段；大阿卡纳元素对应未定，不写元素）
+function taroIdentity(card){
+  if (card.arc === 'major') return '大阿卡纳 · 编号 ' + card.num;
+  var s = TARO_EL[card.el];
+  return s.suit + ' · ' + s.zh + '元素 · ' + (card.ct ? '宫廷牌 · ' + card.num : '数字 ' + card.num);
+}
+// v1.4.2：找第一个指定牌位类别的位置下标，没有返回 -1
+function taroPosIdx(sp, cat){
+  for (var i = 0; i < sp.positions.length; i++) if (sp.positions[i].cat === cat) return i;
+  return -1;
+}
+// v1.4.2：牌与牌的关系（呼应/冲突 + 转化 + 因果；有才显示，没有就省略）
+function taroRelHtml(data, sp, rels){
+  var lines = [];
+  rels.forEach(function(r){ lines.push('<p>' + (r.k === '冲突' ? '冲突：' : '呼应：') + r.t + '</p>'); });
+  var ids = data.draws.map(function(d){ return d.id; });
+  TARO_TRANSFORM.forEach(function(p){
+    if (ids.indexOf(p.a) >= 0 && ids.indexOf(p.b) >= 0) lines.push('<p>转化：' + p.text + '</p>');
+  });
+  var pi = taroPosIdx(sp, 'past'), ci = taroPosIdx(sp, 'current'), fi = taroPosIdx(sp, 'future');
+  if (pi >= 0 && ci >= 0 && fi >= 0) {
+    var cp = taroCard(data.draws[pi].id), cc = taroCard(data.draws[ci].id), cf = taroCard(data.draws[fi].id);
+    var kp = (data.draws[pi].rev ? cp.rev : cp.up)[0], kc = (data.draws[ci].rev ? cc.rev : cc.up)[0], kf = (data.draws[fi].rev ? cf.rev : cf.up)[0];
+    lines.push('<p>因果：按位置顺序读，「' + sp.positions[pi].zh + '」位的「' + cp.zh + '」（' + kp + '）→「' + sp.positions[ci].zh + '」位的「' + cc.zh + '」（' + kc + '）→「' + sp.positions[fi].zh + '」位的「' + cf.zh + '」（' + kf + '）——这是牌面呈现的来处、现状与走向，不是命运的定论。</p>');
+  }
+  if (!lines.length) return '';
+  return '<div class="r-section taro-rel"><h3>牌与牌的关系</h3>' + lines.join('') + '</div>';
+}
+// v1.4.2：三方视角（只在牌阵含 self/other/connection 位置时出现；缺哪类就不写哪行）
+function taroDynHtml(data, sp){
+  var lines = [];
+  function line(idx, head, tail){
+    var d = data.draws[idx], c = taroCard(d.id);
+    var kws = (d.rev ? c.rev : c.up).slice(0, 2).join('、');
+    return '<p><b>' + head + '：</b>「' + sp.positions[idx].zh + '」位的「' + c.zh + '」（' + (d.rev ? '逆位' : '正位') + '），关键词是' + kws + '。' + tail + '</p>';
+  }
+  var si = taroPosIdx(sp, 'self'), oi = taroPosIdx(sp, 'other'), ci = taroPosIdx(sp, 'connection');
+  if (si >= 0) lines.push(line(si, '我的状态', '牌面呈现的线索是，你现在带着这股能量在面对这件事。'));
+  if (oi >= 0) lines.push(line(oi, '对方状态', '牌面呈现的是对方现在显露出来的状态——这只是牌面线索，不是读心，请以实际沟通为准。'));
+  if (ci >= 0) lines.push(line(ci, '关系动力', '牌面呈现的线索是，你们之间的连接现在是这个质地。'));
+  if (!lines.length) return '';
+  return '<div class="r-section taro-dyn"><h3>三方视角</h3>' + lines.join('') + '</div>';
+}
+// v1.4.2：风险提醒（只从抽到的牌推导：优先挑战位，没有挑战位取逆位牌；都没有就不显示）
+function taroRiskHtml(data, sp){
+  var ch = taroPosIdx(sp, 'challenge');
+  var txt = '';
+  if (ch >= 0) {
+    var d = data.draws[ch], c = taroCard(d.id);
+    var kws = (d.rev ? c.rev : c.up).slice(0, 2).join('、');
+    txt = '「' + sp.positions[ch].zh + '」位的「' + c.zh + '」（' + (d.rev ? '逆位' : '正位') + '）点出的是' + kws + '。牌面呈现的线索是，这股能量现在是阻力所在；基于当前信息推测，建议先别顺着它硬走，等看清再动。';
+  } else {
+    for (var i = 0; i < data.draws.length; i++) {
+      if (data.draws[i].rev) {
+        var d2 = data.draws[i], c2 = taroCard(d2.id);
+        var k2 = c2.rev.slice(0, 2).join('、');
+        txt = '「' + c2.zh + '」（逆位）的关键词是' + k2 + '。牌面呈现的线索是，这股能量被阻塞或延迟了；基于当前信息推测，建议先别强行推进，先处理被卡住的那部分。';
+        break;
+      }
+    }
+  }
+  if (!txt) return '';
+  return '<div class="r-section taro-risk"><h3>风险提醒</h3><p>注意：需要避免的行为——' + txt + '</p></div>';
+}
+// v1.4.2：故事线（起→转→合；原有的一句话合成保留，此段另起；单张牌不写）
+function taroStoryHtml(data, sp){
+  if (data.draws.length < 2) return '';
+  function sent(idx, head, tail){
+    var d = data.draws[idx], c = taroCard(d.id);
+    var kw = (d.rev ? c.rev : c.up)[0];
+    return head + '——「' + sp.positions[idx].zh + '」位的「' + c.zh + '」（' + (d.rev ? '逆位' : '正位') + '）带来' + kw + '，' + tail;
+  }
+  var sIdx = taroPosIdx(sp, 'past'); if (sIdx < 0) sIdx = 0;
+  var tIdx = taroPosIdx(sp, 'challenge'); if (tIdx < 0) tIdx = 1;
+  if (tIdx === sIdx) tIdx = Math.min(sIdx + 1, data.draws.length - 1);
+  var eIdx = Math.min(sp.adviceIdx, data.draws.length - 1);
+  if (eIdx === sIdx || eIdx === tIdx) eIdx = data.draws.length - 1;
+  if (tIdx === eIdx) tIdx = sIdx;
+  var ss = [];
+  ss.push(sent(sIdx, '起', '这是牌面呈现的开端。'));
+  if (tIdx !== sIdx && tIdx !== eIdx) ss.push(sent(tIdx, '转', '事情在这里有了转折的线索。'));
+  ss.push(sent(eIdx, '合', '牌面呈现的收束，是顺着这个方向走。'));
+  return '<div class="r-section taro-story"><h3>故事线</h3><p class="taro-note">以下按位置顺序把牌连起来读，基于当前信息推测，不是定论。</p><p>' + ss.join(' ') + '</p></div>';
+}
+// v1.4.2：行动顺序（最多 3 步：先处理挑战/起点 → 再做建议位行动 → 后留意未来走向；建议顺序，不是命运时间表）
+function taroOrderHtml(data, sp){
+  if (data.draws.length < 2) return '';
+  var ch = taroPosIdx(sp, 'challenge');
+  var steps = [];
+  var baseIdx = 0;
+  if (ch >= 0) {
+    var dc = data.draws[ch], cc = taroCard(dc.id);
+    steps.push('先处理「' + sp.positions[ch].zh + '」位「' + cc.zh + '」点出的' + (dc.rev ? cc.rev : cc.up).slice(0, 2).join('、') + '——把它先稳住，别让阻力继续变大。');
+    baseIdx = ch;
+  } else {
+    var d0 = data.draws[0], c0 = taroCard(d0.id);
+    steps.push('先从「' + sp.positions[0].zh + '」位「' + c0.zh + '」（' + (d0.rev ? c0.rev : c0.up)[0] + '）入手——牌面呈现的起点在这里。');
+    baseIdx = 0;
+  }
+  var aIdx = Math.min(sp.adviceIdx, data.draws.length - 1);
+  if (aIdx !== baseIdx) steps.push('再做建议位那件 30 天行动——见下方「接下来的一步」。');
+  var fIdx = taroPosIdx(sp, 'future');
+  if (fIdx >= 0 && fIdx !== aIdx && fIdx !== baseIdx) {
+    var df = data.draws[fIdx], cf = taroCard(df.id);
+    steps.push('最后留意「' + sp.positions[fIdx].zh + '」位「' + cf.zh + '」的' + (df.rev ? cf.rev : cf.up)[0] + '走向——做完前两步后，回头对照这张牌的提示。');
+  }
+  if (steps.length < 2) return '';
+  return '<div class="r-section taro-order"><h3>行动顺序</h3>' + steps.map(function(s, i){ return '<p>第 ' + (i + 1) + ' 步：' + s + '</p>'; }).join('') + '<p class="taro-note">这是建议的先后顺序，不是命运时间表；顺序可以按你的实际情况调整。</p></div>';
+}
 function taroCardsHtml(data){
   var sp = TAROT_SPREADS[data.spreadId];
+  var ai = Math.min(sp.adviceIdx, data.draws.length - 1);
+  var q = (data.q || '').trim();
+  var qShort = q || (TARO_NEEDS[data.need] ? TARO_NEEDS[data.need].zh : '塔罗') + '这件事';
   var html = '';
   data.draws.forEach(function(d, i){
     var card = taroCard(d.id);
@@ -5203,7 +5335,10 @@ function taroCardsHtml(data){
     html += '<div class="r-section"><h3>' + (i + 1) + ' · ' + pos.zh + ' · 「' + card.zh + '」' + (d.rev ? '逆位' : '正位') + '</h3>' +
       '<div class="taro-cr">' + taroFaceHtml(card, d.rev, 'big') +
       '<div class="taro-cr-body"><p>「' + pos.zh + '」问的是：' + pos.q + '。抽到「' + card.zh + '」（' + (d.rev ? '逆位' : '正位') + '），' + (TARO_FRAMES[pos.cat] || '') + kws.join('、') + '。</p>' +
+      '<p class="taro-id">' + taroIdentity(card) + '</p>' +
+      ((TARO_IMG[card.id]) ? '<p class="taro-img">画面：' + TARO_IMG[card.id] + '</p>' : '') +
       ((d.rev ? card.readRev : card.readUp) ? '<p class="taro-read">' + (d.rev ? card.readRev : card.readUp) + '</p>' : '') +
+      ((!data.isDaily && i === ai && q) ? '<p class="taro-qline">结合你问的「' + taroEsc(qShort) + '」：这张「' + card.zh + '」在「' + pos.zh + '」位，' + kws.join('、') + '是它给出的方向，具体做法见下方「接下来的一步」。</p>' : '') +
       (d.rev ? '<p class="taro-revnote">逆位提示：这不是正位的简单反义词。逆位讲的是同一主题的另一面——阻塞、延迟、内化，或正在松绑。</p>' : '') +
       '</div></div></div>';
   });
@@ -5238,17 +5373,18 @@ function taroSynthesisHtml(data){
   // 宫廷牌
   var courts = draws.map(function(d){ return taroCard(d.id); }).filter(function(c){ return c.ct; });
   if (courts.length) parts.push('宫廷牌出现了：「' + courts.map(function(c){ return c.zh; }).join('」「') + '」。宫廷牌常代表具体的人，或同一种处事姿态的不同面——对照着看，常是两个人。');
-  // 元素相性（只算相邻两张都是小阿卡纳的情形；火+土、风+土有争议，不用）
+  // 元素相性（v1.4.2 起归入“牌与牌的关系”块，标明呼应/冲突；只算相邻两张都是小阿卡纳的情形；火+土、风+土有争议，不用）
+  var rels = [];
   var dig = 0;
   for (var i = 0; i + 1 < draws.length && dig < 2; i++) {
     var a = taroCard(draws[i].id), b = taroCard(draws[i + 1].id);
     if (a.arc !== 'minor' || b.arc !== 'minor') continue;
-    var ea = a.el, eb = b.el, line = '';
-    if (ea === eb) line = '「' + a.zh + '」与「' + b.zh + '」同属' + TARO_EL[ea].zh + '，互相加强——好的更好，坏的也更明显。';
-    else if ((ea === 'fire' && eb === 'air') || (ea === 'air' && eb === 'fire') || (ea === 'earth' && eb === 'water') || (ea === 'water' && eb === 'earth')) line = '「' + a.zh + '」（' + TARO_EL[ea].zh + '）与「' + b.zh + '」（' + TARO_EL[eb].zh + '）互相支持，读作顺风。';
-    else if ((ea === 'fire' && eb === 'water') || (ea === 'water' && eb === 'fire') || (ea === 'air' && eb === 'water') || (ea === 'water' && eb === 'air')) line = '「' + a.zh + '」（' + TARO_EL[ea].zh + '）与「' + b.zh + '」（' + TARO_EL[eb].zh + '）互相削弱——读作还没定论的张力，而不是各说各的。';
+    var ea = a.el, eb = b.el, line = '', kind = '';
+    if (ea === eb) { kind = '呼应'; line = '「' + a.zh + '」与「' + b.zh + '」同属' + TARO_EL[ea].zh + '，互相加强——好的更好，坏的也更明显。'; }
+    else if ((ea === 'fire' && eb === 'air') || (ea === 'air' && eb === 'fire') || (ea === 'earth' && eb === 'water') || (ea === 'water' && eb === 'earth')) { kind = '呼应'; line = '「' + a.zh + '」（' + TARO_EL[ea].zh + '）与「' + b.zh + '」（' + TARO_EL[eb].zh + '）互相支持，读作顺风。'; }
+    else if ((ea === 'fire' && eb === 'water') || (ea === 'water' && eb === 'fire') || (ea === 'air' && eb === 'water') || (ea === 'water' && eb === 'air')) { kind = '冲突'; line = '「' + a.zh + '」（' + TARO_EL[ea].zh + '）与「' + b.zh + '」（' + TARO_EL[eb].zh + '）互相削弱——读作还没定论的张力，而不是各说各的。'; }
     else continue;
-    parts.push(line); dig++;
+    rels.push({k: kind, t: line}); dig++;
   }
   // 合成一句话 + 可执行建议（取牌阵的建议位那张牌）
   var ai = Math.min(sp.adviceIdx, draws.length - 1);
@@ -5267,9 +5403,12 @@ function taroSynthesisHtml(data){
     syn = '你问的「' + taroEsc(qShort) + '」：' + sp.positions[0].zh + '的「' + c1.zh + '」说的是' + k1 + '，对照' + sp.positions[1].zh + '的「' + c2.zh + '」的' + k2 + '，' + sp.positions[ai].zh + '的「' + advCard.zh + '」给出的方向是' + advKw + '。';
   }
   var advice = '接下来 30 天内做一件具体事：' + act + '（「' + advCard.zh + '」的「' + advKw + '」指向这个方向。）';
+  // v1.4.2：关系 / 三方视角 / 风险 / 故事线 / 行动顺序（各块只在有依据时出现，没有就省略）
+  var extraHtml = taroRelHtml(data, sp, rels) + taroDynHtml(data, sp) + taroRiskHtml(data, sp) + taroStoryHtml(data, sp) + taroOrderHtml(data, sp);
   return '<div class="r-section taro-sum"><h3>整体合成</h3>' +
     parts.map(function(p){ return '<p>' + p + '</p>'; }).join('') +
     '<p><b>一句话：</b>' + syn + '</p></div>' +
+    extraHtml +
     '<div class="taro-advice"><b>接下来的一步：</b>' + advice + '</div>';
 }
 function taroYesNoHtml(data){
@@ -5288,6 +5427,7 @@ function taroYesNoHtml(data){
   var act = (d.rev ? card.actRev : card.actUp) || TARO_SUIT_ACTION[card.arc === 'major' ? 'major' : card.suit];
   return '<div class="r-section"><h3>答案倾向：' + t + '</h3><p>' + qFor + '，「' + card.zh + '」（' + (d.rev ? '逆位' : '正位') + '）的能量是' + kws.join('、') + '。' + why + '</p></div>' +
     '<div class="r-section"><h3>这张牌在说什么</h3><p>「答案」位问的是：这件事的答案倾向是什么。抽到「' + card.zh + '」（' + (d.rev ? '逆位' : '正位') + '），' + kws.join('、') + '。</p>' +
+    '<p class="taro-id">' + taroIdentity(card) + '</p>' + ((TARO_IMG[card.id]) ? '<p class="taro-img">画面：' + TARO_IMG[card.id] + '</p>' : '') +
     (card.readUp || card.readRev ? '<p class="taro-read">' + (d.rev ? card.readRev : card.readUp) + '</p>' : '') +
     (d.rev ? '<p class="taro-revnote">逆位提示：这不是正位的简单反义词。逆位讲的是同一主题的另一面——阻塞、延迟、内化，或正在松绑。</p>' : '') + '</div>' +
     '<div class="taro-advice"><b>接下来的一步：</b>接下来 30 天内做一件具体事：' + act + '（「' + card.zh + '」的「' + kws[0] + '」指向这个方向。）</div>';

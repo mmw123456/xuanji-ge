@@ -32,6 +32,10 @@
     color:var(--text); min-height:100vh; min-height:100dvh; line-height:1.6;
   }
   .wrap { max-width:520px; margin:0 auto; padding:0 20px 60px; }
+  /* v1.4.4：表单内联报错（P2-18）+ 桌面端响应式（P2-19） */
+  .form-err { color:#e57373; font-size:12px; margin-top:4px; line-height:1.5; }
+  .input-err { border-color:#e57373 !important; }
+
 
   .page { display:none; }
   .page.active { display:block; animation:pageIn .45s var(--spring); }
@@ -622,6 +626,18 @@
     .taro-flip-in, .taro-deckcard, .taro-need { transition:none !important; }
   }
 
+  @media (min-width: 768px) {
+    .wrap { max-width:780px; }
+    .palace-grid { gap:8px; }
+    .palace { min-height:112px; }
+    .palace .pl-major { font-size:15px; }
+    .palace .pl-name { font-size:14px; }
+    .qm-grid { grid-template-columns:repeat(4,1fr); }
+    .mate-grid { grid-template-columns:repeat(4,1fr); }
+    .couple-wx { max-width:640px; margin-left:auto; margin-right:auto; }
+    .taro-slots { max-width:680px; margin-left:auto; margin-right:auto; }
+    .taro-fan { max-width:640px; margin-left:auto; margin-right:auto; }
+  }
 </style>
 <script>
 /* ============================================================
@@ -634,7 +650,7 @@ window.CONFIG = {
   GOLD_LIGHT: '#e3c88d',             // 主题金色（高亮浅色）
   CONTACT: '微信：wxid_4cs9ei0iftpw22',  // 联系方式（留空则不显示；例如 '微信：xxxx'）
   SHOW_FOOTER: true,                 // 是否显示首页底部的版权与免责信息
-  VERSION: 'v1.4.3',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
+  VERSION: 'v1.4.4',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
   UPDATED: '2026-11-14',              // 更新日期
   FEEDBACK_URL: 'https://wj.qq.com/s2/28674644/054w/',  // 反馈表单链接（腾讯问卷，用户 2026-11-13 自己建的免费表单；改成 '' 则恢复显示微信联系方式）
   SITE_URL: 'https://mmw123456.github.io/xuanji-ge/',  // 官网链接（结果卡片分享区二维码与文字用）
@@ -748,7 +764,10 @@ document.addEventListener('touchstart', function(){}, {passive:true});
     <h3 style="text-align:center">更新日志</h3>
     <div class="tip-note" style="text-align:center" id="clVersion"></div>
     <div style="font-size:13px;color:var(--text-dim);line-height:2">
-      <div style="color:var(--gold-light);font-weight:600">v1.4.3 · 2026-11-14</div>
+      <div style="color:var(--gold-light);font-weight:600">v1.4.4 · 2026-11-14</div>
+      <div>· 评审报告 P1 / P2 全修：姓名分数与结论联动、匹配两段不再相同、塔罗四处文本毛病、起名卡片数字带标签、起名跳转可返回、名库性别过滤、历史摘要“命宫命宫”、紫微报错改中文、反馈入口接通、号码加格式校验</div>
+      <div>· 结构升级：性别与时辰走同一套枚举、表单报错改内联红字、桌面端放宽到 780px 并加响应式、hash 路由（刷新 / 后退 / 分享不丢页）、结果页默认展开前 4 段、MBTI 性格特质去重、双人速配加厚</div>
+      <div style="color:var(--gold-light);font-weight:600;margin-top:6px">v1.4.3 · 2026-11-14</div>
       <div>· 修了 16 型人格图鉴点类型没反应：两个共用函数只在 MBTI 模块内可见，图鉴点开会空白报错；现在图鉴与测评共用同一份渲染</div>
       <div>· 农历日期不再写“月月”：十月月初六日 → 十月初六日，八字、择吉日、首页、历史摘要一起改</div>
       <div>· 八字、紫微、百科的“感情感情”“财运财运”去重：数据里带的前缀清掉了，标签只显示一次</div>
@@ -793,7 +812,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
   <div class="tip-card">
     <span class="tip-close" onclick="closeFeedback()">×</span>
     <h3>反馈</h3>
-    <div class="tip-note">反馈表还没设置，可以先加微信联系作者：<br><b id="fbContact" style="color:var(--gold-light)"></b></div>
+    <div class="tip-note"><span id="fbNote">表单没能直接打开，点下面的链接去填，或加微信联系作者：</span><br><a id="fbLink" href="#" target="_blank" style="color:var(--gold-light)">打开反馈表 →</a><br><b id="fbContact" style="color:var(--gold-light)"></b></div>
     <button class="btn ghost" style="margin-top:14px" onclick="closeFeedback()">知道了</button>
   </div>
 </div>
@@ -1005,8 +1024,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
           <div class="field">
             <label>出生日期</label>
             <input type="date" id="baziBirthdate" placeholder="请选择出生日期">
-            <div class="hint">请选择出生日期</div>
-          </div>
+                      </div>
         </div>
         <div class="field">
           <label>出生时间</label>
@@ -1065,44 +1083,43 @@ document.addEventListener('touchstart', function(){}, {passive:true});
           <div class="field">
             <label>性别</label>
             <select id="zwGender">
-              <option value="男">男</option>
-              <option value="女">女</option>
+              <option value="male">男</option>
+              <option value="female">女</option>
             </select>
           </div>
           <div class="field">
             <label>出生日期</label>
             <input type="date" id="zwBirthdate" placeholder="请选择出生日期">
-            <div class="hint">请选择出生日期</div>
-          </div>
+                      </div>
         </div>
         <div class="field">
           <label>出生时间</label>
           <select id="zwBirthtime">
             <option value="">请选择出生时间（24 时制）</option>
-            <option value="0">00:00 子时</option>
-            <option value="1">01:00 丑时</option>
-            <option value="2">02:00 丑时</option>
-            <option value="3">03:00 寅时</option>
-            <option value="4">04:00 寅时</option>
-            <option value="5">05:00 卯时</option>
-            <option value="6">06:00 卯时</option>
-            <option value="7">07:00 辰时</option>
-            <option value="8">08:00 辰时</option>
-            <option value="9">09:00 巳时</option>
-            <option value="10">10:00 巳时</option>
-            <option value="11">11:00 午时</option>
-            <option value="12">12:00 午时</option>
-            <option value="13">13:00 未时</option>
-            <option value="14">14:00 未时</option>
-            <option value="15">15:00 申时</option>
-            <option value="16">16:00 申时</option>
-            <option value="17">17:00 酉时</option>
-            <option value="18">18:00 酉时</option>
-            <option value="19">19:00 戌时</option>
-            <option value="20">20:00 戌时</option>
-            <option value="21">21:00 亥时</option>
-            <option value="22">22:00 亥时</option>
-            <option value="23">23:00 子时</option>
+            <option value="00:00">00:00 子时</option>
+            <option value="01:00">01:00 丑时</option>
+            <option value="02:00">02:00 丑时</option>
+            <option value="03:00">03:00 寅时</option>
+            <option value="04:00">04:00 寅时</option>
+            <option value="05:00">05:00 卯时</option>
+            <option value="06:00">06:00 卯时</option>
+            <option value="07:00">07:00 辰时</option>
+            <option value="08:00">08:00 辰时</option>
+            <option value="09:00">09:00 巳时</option>
+            <option value="10:00">10:00 巳时</option>
+            <option value="11:00">11:00 午时</option>
+            <option value="12:00">12:00 午时</option>
+            <option value="13:00">13:00 未时</option>
+            <option value="14:00">14:00 未时</option>
+            <option value="15:00">15:00 申时</option>
+            <option value="16:00">16:00 申时</option>
+            <option value="17:00">17:00 酉时</option>
+            <option value="18:00">18:00 酉时</option>
+            <option value="19:00">19:00 戌时</option>
+            <option value="20:00">20:00 戌时</option>
+            <option value="21:00">21:00 亥时</option>
+            <option value="22:00">22:00 亥时</option>
+            <option value="23:00">23:00 子时</option>
           </select>
           <div class="hint">时辰影响命宫位置，请尽量准确；如不确定可留空，将按午时排盘</div>
         </div>
@@ -2148,7 +2165,8 @@ function getWugeInfo(num) {
 }
 
 // 三才配置（简化版：基于天格、人格、地格的五行生克）
-function getSancai(tiange, renge, dige) {
+// v1.4.4：评语与总分联动（P1-6）——三才再顺也不写“配置大吉/较佳”这种绝对判断，低分时补一句总分视角，免得 44 分配“配置较佳”
+function getSancai(tiange, renge, dige, avgScore) {
   const wxOf = (n) => {
     const last = n % 10;
     if (last === 1 || last === 2) return '木';
@@ -2164,12 +2182,16 @@ function getSancai(tiange, renge, dige) {
   const ke = { '木':'土','土':'水','水':'火','火':'金','金':'木' };
 
   let desc = '';
-  if (sheng[t] === r && sheng[r] === d) desc = '天格生人格、人格生地格，三才相生，配置大吉。基础稳固，家庭和睦，事业顺利，一生平顺。';
-  else if (sheng[t] === r) desc = '天格生人格，长辈上司提携，得贵人相助，起步顺利，配置较佳。';
-  else if (sheng[r] === d) desc = '人格生地格，家庭基础稳固，子女孝顺，晚年幸福，配置良好。';
+  if (sheng[t] === r && sheng[r] === d) desc = '天格生人格、人格生地格，三才相生，是名字里的一个亮点。基础相对稳固，家庭和睦，事业相对顺利。';
+  else if (sheng[t] === r) desc = '天格生人格，长辈上司多有提携，得贵人相助，起步相对顺利。';
+  else if (sheng[r] === d) desc = '人格生地格，家庭基础相对稳固，子女孝顺，晚年相对安稳。';
   else if (ke[t] === r) desc = '天格克人格，早年多有波折，需努力奋斗方能有所成，宜谦逊忍耐。';
   else if (ke[r] === d) desc = '人格克地格，家庭或基础略有压力，需注意家庭关系，多沟通包容。';
   else desc = '三才配置平和，五行流通一般，宜稳扎稳打，随遇而安。';
+  if (typeof avgScore === 'number') {
+    if (avgScore < 60) desc += '不过从总分看，五格凶数较多、数理整体偏弱，三才这一点顺意不足以扭转全局，建议认真参考下方用字建议。';
+    else if (avgScore < 70) desc += '结合总分看，名字仍有短板，三才的顺意只是其中一部分，宜参考用字建议微调。';
+  }
 
   return { text: '天格' + t + ' · 人格' + r + ' · 地格' + d + '（' + config + '）', desc: desc };
 }
@@ -2222,7 +2244,17 @@ function showPage(id) {
   }
   if (id === 'history' && typeof renderHistoryList === 'function') renderHistoryList(); /* v1.4.3：别处进历史页也渲染——之前只在首页入口 showHistory() 里渲染 */
   if (id === 'xingming') requestAnimationFrame(function(){ if (window.positionXmBlob) window.positionXmBlob(true); });
+  /* v1.4.4：hash 路由（P2-20）——切页同步写 #/页名，刷新/后退/分享不丢页；pushState 不触发 hashchange，不会循环 */
+  if (location.hash !== '#/' + id) { try { history.pushState(null, '', '#/' + id); } catch (e) {} }
 }
+window.addEventListener('hashchange', function(){
+  var m = (location.hash || '').match(/^#\/([a-z]+)$/);
+  if (m && document.getElementById('page-' + m[1])) showPage(m[1]);
+});
+document.addEventListener('DOMContentLoaded', function(){
+  var m = (location.hash || '').match(/^#\/([a-z]+)$/);
+  if (m && document.getElementById('page-' + m[1])) showPage(m[1]);
+});
 
 // 打赏浮层
 window.showTip = function() {
@@ -2281,10 +2313,21 @@ window.closeChangelog = function() {
 window.showFeedback = function() {
   var CFG = window.CONFIG || {};
   var url = (CFG.FEEDBACK_URL || '').trim();
-  if (url) { window.open(url, '_blank'); return; }
+  if (url) {
+    var w = null;
+    try { w = window.open(url, '_blank'); } catch (e) { w = null; }
+    if (w) return; // 成功打开表单，直接走
+    // v1.4.4：window.open 被拦（返回 null）时不再静默无事——落到浮层，浮层里给可点的表单链接 + 微信
+  }
   var contact = (CFG.CONTACT || '').replace(/^微信[：:]\s*/, '');
   var el = document.getElementById('fbContact');
   if (el) el.textContent = contact || '作者';
+  // v1.4.4：文案分两种情况写——链接被拦说“没能直接打开”，根本没配说“还没设置”，别把两种说成一种（P1-15）
+  // 注意：只改 #fbNote 自己的文本，不能改整个 .tip-note 的 textContent——那会把里面的 fbLink、fbContact 一起删掉（v4 回归抓到的真 bug）
+  var note = document.getElementById('fbNote');
+  if (note) note.textContent = url ? '表单没能直接打开，点下面的链接去填，或加微信联系作者：' : '反馈表还没设置，可以先加微信联系作者：';
+  var link = document.getElementById('fbLink');
+  if (link) { if (url) { link.href = url; link.style.display = ''; } else { link.style.display = 'none'; } }
   var ov = document.getElementById('fbOverlay');
   if (ov) ov.classList.add('open');
 };
@@ -2686,6 +2729,33 @@ var SHENG = { '木':'火','火':'土','土':'金','金':'水','水':'木' };
 var KE = { '木':'土','土':'水','水':'火','火':'金','金':'木' };
 var WX_COLORS = { '木':'#7cb342','火':'#e53935','土':'#c99a4b','金':'#b0bec5','水':'#42a5f5' };
 var WX_ORDER = ['木','火','土','金','水'];
+
+// v1.4.4：统一枚举（P2-17）——性别与时辰只走这一套，紫微/八字/配对共用，杜绝 invalid gender 一类跨页隐患
+var GENDER = { MALE: 'male', FEMALE: 'female' };
+var GENDER_LABEL = { male: '男', female: '女' };
+function normGender(v) { if (v === 'male' || v === '男') return 'male'; if (v === 'female' || v === '女') return 'female'; return ''; }
+// 'HH:00' 或 0-23 数字/字符串 → 0-23 整数；空或非法返回 null
+function hourOf(v) {
+  if (v === '' || v == null) return null;
+  var h = parseInt(v, 10);
+  return isNaN(h) ? null : ((h % 24) + 24) % 24;
+}
+// v1.4.4：表单内联报错（P2-18）——替代原生 alert，错误显示在字段下方红字；提交时先清旧错
+function showFormErr(inputId, msg) {
+  var el = document.getElementById(inputId);
+  if (!el) return;
+  var wrap = (el.closest && el.closest('.field')) || el.parentElement;
+  if (!wrap) return;
+  var err = wrap.querySelector('.form-err');
+  if (!err) { err = document.createElement('div'); err.className = 'form-err'; wrap.appendChild(err); }
+  err.textContent = msg;
+  el.classList.add('input-err');
+}
+function clearFormErrs(containerId) {
+  var root = document.getElementById(containerId) || document;
+  root.querySelectorAll('.form-err').forEach(function(e){ e.remove(); });
+  root.querySelectorAll('.input-err').forEach(function(e){ e.classList.remove('input-err'); });
+}
 var WX_DESC = {
   '木':'主仁，代表生发、条达。木旺者仁慈善良、有上进心，富有生命力与创造力。',
   '火':'主礼，代表热情、光明。火旺者热情开朗、行动力强，富有感染力与表现欲。',
@@ -2966,7 +3036,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       '<div class="r-hero"><div class="r-type">' + type + '</div><div class="r-name">' + info.name + '</div><div class="r-title">' + info.title + '</div></div>' +
       '<div class="r-bars">' + bars + '</div>' +
       '<div class="r-section"><h3>四维解析</h3><p class="sub">由你的答题直接算出：每维的倾向强度与具体表现。</p>' + dimHtml + '</div>' +
-      '<div class="r-section"><h3>性格特质</h3><p>' + info.overview + '</p><p class="sub">' + (info.personality || '') + '</p></div>' +
+      '<div class="r-section"><h3>性格特质</h3><p>' + info.overview + '</p></div>' +
       '<div class="r-section"><h3>为人处世</h3><p>' + (info.conduct || '') + '</p></div>' +
       '<div class="r-section"><h3>优势</h3>' + listHtml(info.strengths) + '</div>' +
       '<div class="r-section"><h3>盲点与成长</h3>' + listHtml(info.weaknesses) + '</div>' +
@@ -2983,7 +3053,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       '<button class="btn" onclick="saveMbtiCard()">保存结果卡片</button>' +
       '<button class="btn ghost" onclick="mbtiReset()">重新测试</button>' +
       '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
-    segmentize('mbtiResult', 2);
+    segmentize('mbtiResult', 4);
     window.scrollTo(0, 0);
   }
 
@@ -3034,7 +3104,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     var detail = document.getElementById('tjDetail');
     detail.style.display = 'block';
     detail.innerHTML = '<div class="r-hero"><div class="r-type">' + type + '</div><div class="r-name">' + info.name + '</div><div class="r-title">' + info.title + '</div></div>' +
-      '<div class="r-section"><h3>性格特质</h3><p>' + info.overview + '</p><p class="sub">' + (info.personality || '') + '</p></div>' +
+      '<div class="r-section"><h3>性格特质</h3><p>' + info.overview + '</p></div>' +
       '<div class="r-section"><h3>优势</h3>' + listHtml(info.strengths) + '</div>' +
       '<div class="r-section"><h3>盲点与成长</h3>' + listHtml(info.weaknesses) + '</div>' +
       '<div class="r-section"><h3>成长建议</h3><p>' + (MBTI_GROWTH[type] || '') + '</p></div>' +
@@ -3077,10 +3147,34 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     else if (sameDims === 2) { score = 62; level = '互补平衡'; lvClass = 'ji-mid'; desc = '你们一半相似、一半互补，既能互相理解，又能从对方身上学到不同的东西，是很有潜力的组合。'; }
     else if (sameDims === 1) { score = 48; level = '差异互补'; lvClass = 'ji-mid'; desc = '你们只有 1 个维度一致，差异很大。初期可能互相吸引，久了需要更多耐心和磨合，但也能碰撞出别样火花。'; }
     else { score = 40; level = '截然不同'; lvClass = 'ji-bad'; desc = '你们四个维度都不同，几乎是完全相反的类型。可能强烈吸引也可能强烈冲突，需要极大的包容与理解。'; }
+
+    // v1.4.4：速配加厚（P2-23）——原来只两段约 150 字；补上各自的样子、维度对照、相处建议，全部从已有数据与规则推导
+    var DIMS = [
+      { label: '能量来源', names: { E: '外向', I: '内向' } },
+      { label: '接收信息', names: { S: '感觉', N: '直觉' } },
+      { label: '做决定', names: { T: '思考', F: '情感' } },
+      { label: '生活态度', names: { J: '判断', P: '知觉' } }
+    ];
+    var dimHtml = DIMS.map(function(d, i) {
+      var same = a[i] === b[i];
+      return '<div class="sd-item"><b>' + d.label + '</b>' + (same
+        ? '两个人都偏' + d.names[a[i]] + '，这是你们的同频之处，容易自然理解。'
+        : a + '偏' + d.names[a[i]] + '，' + b + '偏' + d.names[b[i]] + '，这里是差异点，看法容易不一样，需要多商量。') + '</div>';
+    }).join('');
+    var advice;
+    if (isMate) advice = '你们互为最佳伴侣的组合：一方想做、一方会接，互补而不较劲。舒服的时候多聊长远打算，意见不一致时先肯定对方的出发点，再谈具体分歧。';
+    else if (isAvoid) advice = '你们的节奏差得比较大，最怕的是“他明明不懂我还非要按他的来”。摩擦其实大多是节奏不同、不是感情问题：重要的事先冷静下来再谈，吵架不翻旧账，约定一个固定的沟通方式（比如每天留 15 分钟好好说话），慢慢就能走到一块。';
+    else if (sameDims >= 3) advice = '你们相似度很高，相处起来省心，但要注意别因为太像而少了新鲜感：可以一起试点新东西（比如一起学一样新的技能、去没去过的地方），别只待在舒适圈里。';
+    else if (sameDims >= 2) advice = '一半像、一半不一样，是很好的平衡：像的地方让你们合拍，不一样的地方让你们互相补位。遇到分歧，先找“像的那一半”打底，再慢慢谈“不一样的那一半”。';
+    else advice = '差异大，吸引力也大：互相欣赏的时候请多说出来，互相看不惯的时候先停一停。建议把分工分清楚——各做各擅长的，少在对方的弱项上较劲。';
+    var dimSection = '<div class="r-section"><h3>各自的样子</h3><p><b>' + a + '（' + ia.name + '）</b>：' + ia.overview + '</p><p style="margin-top:8px"><b>' + b + '（' + ib.name + '）</b>：' + ib.overview + '</p></div>' +
+      '<div class="r-section"><h3>维度对照</h3>' + dimHtml + '</div>';
+    var adviceSection = '<div class="r-section"><h3>相处建议</h3><p>' + advice + '</p></div>';
     var html = '<div class="xm-name">' + a + ' ♥ ' + b + '</div>' +
       '<div class="r-score"><div class="score-num">' + score + '</div><div class="score-label">契合度 · ' + level + '</div></div>' +
       '<div class="r-section"><h3>配对解读</h3><p>' + desc + '</p></div>' +
       '<div class="r-section"><h3>双方画像</h3><p><b>' + a + '（' + ia.name + '）</b>：' + ia.title + '。<br><b>' + b + '（' + ib.name + '）</b>：' + ib.title + '。</p></div>' +
+      dimSection + adviceSection +
       '<div class="disclaim">本内容仅供文化娱乐参考，请理性看待。</div>' +
       '<button class="btn" onclick="saveSpCard()">保存结果卡片</button>' +
       '<button class="btn ghost" onclick="spReset()">重新速配</button>' +
@@ -3150,11 +3244,12 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
   };
 
   window.calculate = function() {
+    clearFormErrs('page-bazi');
     var birthdate = document.getElementById('baziBirthdate').value;
-    if (!birthdate) { alert('请选择出生日期'); return; }
+    if (!birthdate) { showFormErr('baziBirthdate', '请选择出生日期'); return; }
     var timeUnknown = !!document.getElementById('baziTimeUnknown').checked;
     var time = document.getElementById('baziBirthtime').value;
-    if (!timeUnknown && !time) { alert('请选择出生时间，或勾选“我不清楚出生时间”'); return; }
+    if (!timeUnknown && !time) { showFormErr('baziBirthtime', '请选择出生时间，或勾选“我不清楚出生时间”'); return; }
     if (timeUnknown) time = '12:00'; // 仅用于换算年月日三柱（取正午可避开子时换日），时柱不取用
     var name = document.getElementById('baziName').value || '';
     var gender = document.getElementById('baziGender').value;
@@ -3375,7 +3470,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
 
     document.getElementById('baziForm').style.display = 'none';
     document.getElementById('baziResult').innerHTML = html;
-    segmentize('baziResult', 2);
+    segmentize('baziResult', 4);
     window.scrollTo(0, 0);
   };
 
@@ -3499,25 +3594,37 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     return Math.floor((hour + 1) / 2);
   }
 
+  // v1.4.4：排盘失败时清空并隐藏结果块（P1-14）
+  function hideZwResult() {
+    var el = document.getElementById('zwResult');
+    if (el) { el.innerHTML = ''; el.style.display = 'none'; }
+  }
+
   window.zwCalculate = function() {
+    clearFormErrs('page-ziwei');
     var birthdate = document.getElementById('zwBirthdate').value;
-    if (!birthdate) { alert('请选择出生日期'); return; }
+    if (!birthdate) { showFormErr('zwBirthdate', '请选择出生日期'); return; }
     var time = document.getElementById('zwBirthtime').value;
     var timeUnknown = (time === '');
-    if (timeUnknown) time = '12';
+    if (timeUnknown) time = '12:00';
     var name = document.getElementById('zwName').value || '';
-    var gender = document.getElementById('zwGender').value;
+    // v1.4.4：性别走统一枚举（P2-17）——非白名单值直接中文提示，不再把原样传给排盘库
+    var gender = normGender(document.getElementById('zwGender').value);
+    if (!gender) { showFormErr('zwGender', '请选择性别'); hideZwResult(); return; }
+    var hour = hourOf(time);
+    if (hour === null) { showFormErr('zwBirthtime', '请选择出生时间'); hideZwResult(); return; }
 
     var parts = birthdate.split('-').map(Number);
-    var hour = parseInt(time, 10);
     var timeIndex = hourToTimeIndex(hour);
     var dateStr = parts[0] + '-' + parts[1] + '-' + parts[2];
 
     var r;
     try {
-      r = iztro.astro.bySolar(dateStr, timeIndex, gender, true, 'zh-CN');
+      r = iztro.astro.bySolar(dateStr, timeIndex, GENDER_LABEL[gender], true, 'zh-CN');
     } catch (e) {
-      alert('排盘失败：' + e.message);
+      // v1.4.4：排盘失败改中文提示 + 隐藏空白结果块（P1-14），不再弹英文内部错误
+      showFormErr('zwBirthdate', '排盘失败，请检查出生日期、时间与性别后重试');
+      hideZwResult();
       return;
     }
 
@@ -3582,7 +3689,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       element: r.fiveElementsClass, soul: r.soul, body: r.body,
       lunar: r.lunarDate, zodiac: r.zodiac, sign: r.sign
     };
-    addHistory({ type:'紫微', time:Date.now(), page:'ziwei', summary: '命宫 ' + lastZiwei.star + ' · ' + lastZiwei.element, data:{ birthdate: birthdate, time: (document.getElementById('zwBirthtime').value || ''), name: name, gender: gender } });
+    addHistory({ type:'紫微', time:Date.now(), page:'ziwei', summary: (lastZiwei.star.indexOf('命宫') === 0 ? lastZiwei.star : '命宫 ' + lastZiwei.star) + ' · ' + lastZiwei.element, data:{ birthdate: birthdate, time: (document.getElementById('zwBirthtime').value || ''), name: name, gender: gender } });
     var soulDetailHtml = majorStars.map(function(s) {
       var info = STAR_INFO[s.name];
       if (!info) return '<div class="star-detail"><div class="sd-head">' + s.name + '</div><p class="pd-meaning">（暂缺详解）</p></div>';
@@ -3761,8 +3868,9 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
 
     document.getElementById('zwForm').style.display = 'none';
+    document.getElementById('zwResult').style.display = ''; // v1.4.4：排盘失败藏过结果块，成功时要恢复显示（P1-14）
     document.getElementById('zwResult').innerHTML = html;
-    segmentize('zwResult', 2);
+    segmentize('zwResult', 4);
     window.scrollTo(0, 0);
   };
 
@@ -3783,6 +3891,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
   window.zwReset = function() {
     document.getElementById('zwForm').style.display = '';
     document.getElementById('zwResult').innerHTML = '';
+    document.getElementById('zwResult').style.display = '';
     window.scrollTo(0, 0);
   };
 
@@ -3834,15 +3943,17 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
   var WX_CLASS = { '木':'wood','火':'fire','土':'earth','金':'metal','水':'water' };
 
   // 五行相生相克关系
-  function wxRel(a, b) {
+  // v1.4.4：两个维度用两套文案（P1-7）——性格层面讲相处、运势层面讲节奏，不再同一段模板复用
+  function wxRel(a, b, dim) {
     var SHENG = { '木':'火','火':'土','土':'金','金':'水','水':'木' };
     var KE = { '木':'土','土':'水','水':'火','火':'金','金':'木' };
-    if (a === b) return { type:'比和', score:15, desc:a + '对' + b + '，五行相同，彼此志同道合、心意相通，相处轻松自然，但少了一些互补的张力。' };
-    if (SHENG[a] === b) return { type:'相生', score:20, desc:a + '生' + b + '，你的能量能滋养对方，一方付出、一方受益，关系和谐、互有助益。' };
-    if (SHENG[b] === a) return { type:'相生', score:20, desc:b + '生' + a + '，对方能扶持你、带给你助力，彼此形成良性循环，感情或合作都能长久。' };
-    if (KE[a] === b) return { type:'相克', score:-15, desc:a + '克' + b + '，你在相处中容易占据主导、无形中给对方压力，需注意方式、多包容退让。' };
-    if (KE[b] === a) return { type:'相克', score:-15, desc:b + '克' + a + '，你容易被对方牵制、感到被动，需保持独立、学会理性沟通。' };
-    return { type:'平和', score:0, desc:'五行关系平顺，无明显的生克，相处随缘自然。' };
+    var isRen = (dim === 'ren'); // ren=性格层面（人格），zong=运势层面（总格）
+    if (a === b) return { type:'比和', score:15, desc: isRen ? (a + '对' + b + '，五行相同，性格合拍、心意相通，相处轻松自然，但少了一些互补的张力。') : (a + '对' + b + '，五行相同，运势节奏一致，步调合拍、少有冲撞，但难有互相推一把的助力。') };
+    if (SHENG[a] === b) return { type:'相生', score:20, desc: isRen ? (a + '生' + b + '，性格上你的能量能滋养对方，你主动、对方热忱，相处越久越舒服。') : (a + '生' + b + '，运势上你的起势能带起对方，一方的机会常是另一方的机会，适合一起做长远打算。') };
+    if (SHENG[b] === a) return { type:'相生', score:20, desc: isRen ? (b + '生' + a + '，性格上对方能扶持你、带给你助力，你被照顾、也被点燃。') : (b + '生' + a + '，运势上对方的起势能带起你，贵人常在对方那边，适合借力前行。') };
+    if (KE[a] === b) return { type:'相克', score:-15, desc: isRen ? (a + '克' + b + '，性格上你在相处中容易占主导、无形中给对方压力，需注意方式、多包容退让。') : (a + '克' + b + '，运势上你的节奏常压着对方，快慢不一时易耗损彼此心力，需分工清楚、别硬跟。') };
+    if (KE[b] === a) return { type:'相克', score:-15, desc: isRen ? (b + '克' + a + '，性格上你容易被对方牵制、感到被动，需保持独立、学会理性沟通。') : (b + '克' + a + '，运势上对方的节奏常压着你，重大决定别被带着走，商量着来。') };
+    return { type:'平和', score:0, desc: isRen ? '性格上五行关系平顺，无明显的生克，相处随缘自然。' : '运势上五行关系平顺，无明显的生克，各自的节奏互不干扰。' };
   }
 
   // 姓名页 gooey 指示块：定位到当前激活标签；滑动时与淡金色幽灵块融合
@@ -3865,6 +3976,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
   });
 
   window.xmSwitch = function(mode, el) {
+    window.__xjgQmBack = null; // v1.4.4：手动切标签就不再是从起名跳过来的，返回按钮不再出现（P1-11）
     document.querySelectorAll('#page-xingming .mode-tab').forEach(function(t){ t.classList.remove('active'); });
     el.classList.add('active');
     document.getElementById('xmForm').style.display = (mode === 'single') ? '' : 'none';
@@ -3908,13 +4020,14 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
   };
 
   window.analyze = function() {
+    clearFormErrs('page-xingming');
     var xing = document.getElementById('xmXing').value.trim();
     var ming = document.getElementById('xmMing').value.trim();
-    if (!xing || !ming) { alert('请输入姓氏和名字'); return; }
-    if (xing.length > 2 || ming.length > 2) { alert('姓氏和名字请各填 1–2 个字'); return; }
+    if (!xing || !ming) { showFormErr(!xing ? 'xmXing' : 'xmMing', '请输入姓氏和名字'); return; }
+    if (xing.length > 2 || ming.length > 2) { showFormErr(xing.length > 2 ? 'xmXing' : 'xmMing', '姓氏和名字请各填 1–2 个字'); return; }
     var full = xing + ming;
     var unknown = Array.from(full).filter(function(c){ return !KANGXI[c]; });
-    if (unknown.length > 0) { alert('抱歉，「' + unknown.join('、') + '」暂未收录康熙笔画，请换个字或稍后再试'); return; }
+    if (unknown.length > 0) { showFormErr('xmMing', '抱歉，「' + unknown.join('、') + '」暂未收录康熙笔画，请换个字或稍后再试'); return; }
 
     var g = calcWuge(xing, ming);
     var tiange = g.tiange, renge = g.renge, dige = g.dige, waige = g.waige, zongge = g.zongge;
@@ -3939,7 +4052,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
         '<span class="gd-tag ' + w.jiClass + '">' + w.jiText + '</span></div><div class="gd-desc">' + w.desc + '</div></div>';
     }).join('');
 
-    var sancai = getSancai(tiange, renge, dige);
+    var sancai = getSancai(tiange, renge, dige, avgScore);
     var totalWx = wxOfName(zongge);
     lastXm = { name: full, score: avgScore, wx: totalWx };
 
@@ -3964,6 +4077,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       '<div class="r-section"><h3>三才配置</h3><p>' + sancai.text + '</p><p style="margin-top:8px;color:var(--text-dim)">' + sancai.desc + '</p></div>' +
       '<div class="r-section"><h3>姓名五行</h3><p>本名总格属「' + totalWx + '」，' + WX_DESC[totalWx] + '</p></div>' +
       '<div class="r-section"><h3>姓名总评</h3><p>' + zongping + '</p></div>' +
+      (avgScore < 70 ? '<div class="r-section"><h3>分数说明</h3><p>五格数理是传统说法，凶数的措辞一向偏重；低分不等于名字不好，读音、字义和家人的心意同样重要。改名与否，以家人商量为准。</p></div>' : '') +
       (yongzi ? '<div class="r-section"><h3>用字建议</h3><p>' + yongzi + '</p></div>' : '') +
       '<div class="fold"><div class="fold-head" onclick="toggleFold(this)"><span class="fh-title">分数怎么算的</span><span class="fh-arrow">▼</span></div>' +
       '<div class="fold-body"><b>五格笔画（按康熙字典）：</b><ul>' +
@@ -3978,26 +4092,28 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       recommendHtml('xingming') +
       '<div class="disclaim">本内容仅供文化娱乐参考，请理性看待。</div>' +
       '<span class="tip-link" onclick="showTip()">觉得有用？打赏支持一下</span><span class="tip-link" onclick="showFeedback()">有问题？点这里反馈</span>' +
+      (window.__xjgQmBack ? '<button class="btn" onclick="qmBackToList()">‹ 返回起名列表</button>' : '') +
       '<button class="btn" onclick="saveXmCard()">保存结果卡片</button>' +
       '<button class="btn ghost" onclick="xmReset()">重新分析</button>' +
       '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
 
     document.getElementById('xmForm').style.display = 'none';
     document.getElementById('xmResult').innerHTML = html;
-    segmentize('xmResult', 2);
+    segmentize('xmResult', 4);
     window.scrollTo(0, 0);
   };
 
   window.analyzeCouple = function() {
+    clearFormErrs('page-xingming');
     var xa = document.getElementById('xmXingA').value.trim();
     var ma = document.getElementById('xmMingA').value.trim();
     var xb = document.getElementById('xmXingB').value.trim();
     var mb = document.getElementById('xmMingB').value.trim();
-    if (!xa || !ma || !xb || !mb) { alert('请完整输入两人的姓氏和名字'); return; }
-    if (xa.length > 2 || ma.length > 2 || xb.length > 2 || mb.length > 2) { alert('姓氏和名字请各填 1–2 个字'); return; }
+    if (!xa || !ma || !xb || !mb) { showFormErr(!xa ? 'xmXingA' : !ma ? 'xmMingA' : !xb ? 'xmXingB' : 'xmMingB', '请完整输入两人的姓氏和名字'); return; }
+    if (xa.length > 2 || ma.length > 2 || xb.length > 2 || mb.length > 2) { showFormErr(xa.length > 2 ? 'xmXingA' : ma.length > 2 ? 'xmMingA' : xb.length > 2 ? 'xmXingB' : 'xmMingB', '姓氏和名字请各填 1–2 个字'); return; }
     var fullA = xa + ma, fullB = xb + mb;
     var unknown = Array.from(fullA + fullB).filter(function(c){ return !KANGXI[c]; });
-    if (unknown.length > 0) { alert('抱歉，「' + unknown.join('、') + '」暂未收录康熙笔画，请换个字或稍后再试'); return; }
+    if (unknown.length > 0) { showFormErr('xmMingA', '抱歉，「' + unknown.join('、') + '」暂未收录康熙笔画，请换个字或稍后再试'); return; }
 
     var gA = calcWuge(xa, ma), gB = calcWuge(xb, mb);
 
@@ -4013,8 +4129,8 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     var renA = wxOfName(gA.renge), renB = wxOfName(gB.renge);
     var zongA = wxOfName(gA.zongge), zongB = wxOfName(gB.zongge);
 
-    var renRel = wxRel(renA, renB);
-    var zongRel = wxRel(zongA, zongB);
+    var renRel = wxRel(renA, renB, 'ren');
+    var zongRel = wxRel(zongA, zongB, 'zong');
 
     // 综合缘分评分
     var raw = 50 + renRel.score + zongRel.score + ((scoreA + scoreB) / 2 - 50) * 0.4;
@@ -4073,21 +4189,22 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
 
     document.getElementById('xmCoupleForm').style.display = 'none';
     document.getElementById('xmResult').innerHTML = html;
-    segmentize('xmResult', 2);
+    segmentize('xmResult', 4);
     window.scrollTo(0, 0);
   };
 
   // 姓名缘分（异性）：重点分析男女适不适合在一起 + 原因
   window.analyzeLove = function() {
+    clearFormErrs('page-xingming');
     var xa = document.getElementById('xmLoveXingA').value.trim();
     var ma = document.getElementById('xmLoveMingA').value.trim();
     var xb = document.getElementById('xmLoveXingB').value.trim();
     var mb = document.getElementById('xmLoveMingB').value.trim();
-    if (!xa || !ma || !xb || !mb) { alert('请完整输入男方和女方的姓氏、名字'); return; }
-    if (xa.length > 2 || ma.length > 2 || xb.length > 2 || mb.length > 2) { alert('姓氏和名字请各填 1–2 个字'); return; }
+    if (!xa || !ma || !xb || !mb) { showFormErr(!xa ? 'xmLoveXingA' : !ma ? 'xmLoveMingA' : !xb ? 'xmLoveXingB' : 'xmLoveMingB', '请完整输入男方和女方的姓氏、名字'); return; }
+    if (xa.length > 2 || ma.length > 2 || xb.length > 2 || mb.length > 2) { showFormErr(xa.length > 2 ? 'xmLoveXingA' : ma.length > 2 ? 'xmLoveMingA' : xb.length > 2 ? 'xmLoveXingB' : 'xmLoveMingB', '姓氏和名字请各填 1–2 个字'); return; }
     var fullA = xa + ma, fullB = xb + mb;
     var unknown = Array.from(fullA + fullB).filter(function(c){ return !KANGXI[c]; });
-    if (unknown.length > 0) { alert('抱歉，「' + unknown.join('、') + '」暂未收录康熙笔画，请换个字或稍后再试'); return; }
+    if (unknown.length > 0) { showFormErr('xmLoveMingA', '抱歉，「' + unknown.join('、') + '」暂未收录康熙笔画，请换个字或稍后再试'); return; }
 
     var gA = calcWuge(xa, ma), gB = calcWuge(xb, mb);
 
@@ -4102,8 +4219,8 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     // 五行属性（人格=性格，总格=整体运势）
     var renA = wxOfName(gA.renge), renB = wxOfName(gB.renge);
     var zongA = wxOfName(gA.zongge), zongB = wxOfName(gB.zongge);
-    var renRel = wxRel(renA, renB);
-    var zongRel = wxRel(zongA, zongB);
+    var renRel = wxRel(renA, renB, 'ren');
+    var zongRel = wxRel(zongA, zongB, 'zong');
 
     // 异性缘分指数（恋爱语境，权重偏向性格相合）
     var raw = 50 + renRel.score * 1.2 + zongRel.score * 0.8 + ((scoreA + scoreB) / 2 - 50) * 0.3;
@@ -4130,7 +4247,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       verdict = '非常合适，是难得的良配';
       reasons.push('<b>性格相合</b>：人格五行' + renRel.type + '（' + renA + '与' + renB + '），' + (renRel.type === '相生' ? '一方滋养一方，天然互补，相处自在又安心。' : '彼此心意相通、默契十足，少有隔阂。'));
       reasons.push('<b>运势相扶</b>：总格五行' + zongRel.type + '，两人在一起能互相成就，事业与生活往往都越走越顺。');
-      reasons.push('<b>五格俱佳</b>：双方姓名数理评分分别为 ' + scoreA + ' 分与 ' + scoreB + ' 分，先天条件优越，是难得的好姻缘。');
+      reasons.push('<b>五格俱佳</b>：双方姓名综合评分分别为 ' + scoreA + ' 分与 ' + scoreB + ' 分，先天条件优越，是难得的好姻缘。');
     } else if (tier === 'good') {
       verdict = '比较合适，值得用心发展';
       reasons.push('<b>性格契合</b>：人格五行' + renRel.type + '，你们有共同话题、相处轻松，是"越处越舒服"的组合。');
@@ -4161,9 +4278,9 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     // 五行对比卡
     var wxPairHtml =
       '<div class="couple-wx">' +
-        '<div class="cw-person"><div class="cw-name">' + fullA + '</div><div class="cw-row"><span>人格（性格）</span><b class="wx-' + WX_CLASS[renA] + '">' + renA + '</b></div><div class="cw-row"><span>总格（运势）</span><b class="wx-' + WX_CLASS[zongA] + '">' + zongA + '</b></div><div class="cw-row"><span>数理评分</span><b>' + scoreA + ' 分</b></div></div>' +
+        '<div class="cw-person"><div class="cw-name">' + fullA + '</div><div class="cw-row"><span>人格（性格）</span><b class="wx-' + WX_CLASS[renA] + '">' + renA + '</b></div><div class="cw-row"><span>总格（运势）</span><b class="wx-' + WX_CLASS[zongA] + '">' + zongA + '</b></div><div class="cw-row"><span>综合评分</span><b>' + scoreA + ' 分</b></div></div>' +
         '<div class="cw-vs">♥</div>' +
-        '<div class="cw-person"><div class="cw-name">' + fullB + '</div><div class="cw-row"><span>人格（性格）</span><b class="wx-' + WX_CLASS[renB] + '">' + renB + '</b></div><div class="cw-row"><span>总格（运势）</span><b class="wx-' + WX_CLASS[zongB] + '">' + zongB + '</b></div><div class="cw-row"><span>数理评分</span><b>' + scoreB + ' 分</b></div></div>' +
+        '<div class="cw-person"><div class="cw-name">' + fullB + '</div><div class="cw-row"><span>人格（性格）</span><b class="wx-' + WX_CLASS[renB] + '">' + renB + '</b></div><div class="cw-row"><span>总格（运势）</span><b class="wx-' + WX_CLASS[zongB] + '">' + zongB + '</b></div><div class="cw-row"><span>综合评分</span><b>' + scoreB + ' 分</b></div></div>' +
       '</div>';
 
     // 缘分短评（对仗三行）
@@ -4196,7 +4313,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
 
     document.getElementById('xmLoveForm').style.display = 'none';
     document.getElementById('xmResult').innerHTML = html;
-    segmentize('xmResult', 2);
+    segmentize('xmResult', 4);
     window.scrollTo(0, 0);
   };
 
@@ -4239,19 +4356,23 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
   var QM_BOY = {
     '木':'宇林森杰彬楠松树柳桂荣楚棋桦华文景风果桃',
     '火':'明晨阳旭晖辉晴晓晶星昭炎昊易光红时显昕晟',
-    '土':'坤磊峻峰岩圣堂基岳岱山石培坚玉珍珊琳琦琪',
+    '土':'坤磊峻峰岩圣堂基岳岱山石培坚',
     '金':'铭鑫银钰钟金瑞锦钦钢铁刚利贵赞顺',
-    '水':'泽浩潇沐涵润江涛海洋清波源汉泉雨雪河泰流洁雯露湘'
+    '水':'泽浩潇沐涵润江涛海洋清波源汉泉雨雪河泰流洁'
   };
   var QM_GIRL = {
-    '木':'梅兰菊芳桂春华菲薇萱萌莎英若芷桃杏萍萧蓝范苗蔡苏叶董茂',
-    '火':'丹彤晴晓晶星晨阳灿昭明景辉红昕晟',
+    '木':'梅兰菊芳桂春华菲薇萱萌莎英若芷桃杏萍蓝',
+    '火':'丹彤晴晓晶星灿红昕',
     '土':'玉婉珊琪瑶玥琳静培珍莹琦珠玲琴瑾蕾莉梦慧巧碧安宁',
-    '金':'钰锦银铭鑫瑞钟金贵钦',
-    '水':'雨雪洁涵润潇沐清雯露波源泉江海淑湘霜惠喜云韵妍'
+    '金':'钰锦银瑞',
+    '水':'雨雪洁涵润潇沐清雯露波湘霜惠喜云韵妍'
   };
+  // v1.4.4：性别一致性过滤（P1-12）——字库已清一遍，生成时再拦一道：男孩不用偏女字，女孩不用偏男字
+  var QM_FEM = '琳琦琪珊珍玉雯露湘';
+  var QM_MASC = '萧范苗蔡苏叶董茂晨阳昭明景辉晟铭鑫钟金贵钦江源泉海';
   var qmSex = 'boy';
   var qmXing = '';
+  var lastQmResults = null; // v1.4.4：记下最近一批名字，供“返回起名列表”重渲染（P1-11）
 
   window.qmGender = function(sex, el) {
     qmSex = sex;
@@ -4311,6 +4432,8 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       var b = chars[Math.floor(Math.random()*chars.length)];
       if (a === b) continue;
       var r = build(a + b);
+      if (qmSex === 'boy' && (QM_FEM.indexOf(a) >= 0 || QM_FEM.indexOf(b) >= 0)) continue;
+      if (qmSex === 'girl' && (QM_MASC.indexOf(a) >= 0 || QM_MASC.indexOf(b) >= 0)) continue;
       var zi = getWugeInfo(r.zongge);
       if (zi && zi.jiClass === 'ji-bad') continue;
       return r;
@@ -4319,14 +4442,14 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
   }
 
   function renderNames(results) {
-    var html = '<div class="qm-tip">为「' + qmXing + '」姓' + (qmSex === 'boy' ? '男孩' : '女孩') + '精选 12 个吉祥名字，点击名字可查看详细打分</div>' +
+    var html = '<div class="qm-tip">为「' + qmXing + '」姓' + (qmSex === 'boy' ? '男孩' : '女孩') + '精选 12 个吉祥名字，点击名字查看详细打分，点“返回起名列表”回到这里</div>' +
       '<div class="qm-grid">' +
       results.map(function(r){
         return '<div class="qm-name-card" onclick="qmUseName(\'' + r.ming + '\')">' +
           '<div class="qn-text">' + r.ming + '</div>' +
           '<div class="qn-wx" style="background:' + WX_COLORS[r.wx] + '">' + r.wx + '</div>' +
-          '<div class="qn-score">总格 ' + r.zongge + ' · ' + r.score + ' 分</div>' +
-          '<div class="qn-detail">' + r.detail.map(function(d){ return d.name[0] + d.score; }).join('·') + '</div></div>';
+          '<div class="qn-score">总格 ' + r.zongge + ' 画 · ' + r.score + ' 分</div>' +
+          '<div class="qn-detail">' + r.detail.map(function(d){ return d.name + d.score + '分'; }).join(' · ') + '</div></div>';
       }).join('') +
       '</div>' +
       '<div class="disclaim">本内容仅供文化娱乐参考，请理性看待。</div>' +
@@ -4339,11 +4462,12 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
   }
 
   window.qmGenerate = function() {
+    clearFormErrs('page-qiming');
     var xing = document.getElementById('qmXing').value.trim();
-    if (!xing) { alert('请输入姓氏'); return; }
-    if (xing.length > 2) { alert('姓氏请填 1–2 个字'); return; }
+    if (!xing) { showFormErr('qmXing', '请输入姓氏'); return; }
+    if (xing.length > 2) { showFormErr('qmXing', '姓氏请填 1–2 个字'); return; }
     var unknown = Array.from(xing).filter(function(c){ return !KANGXI[c]; });
-    if (unknown.length > 0) { alert('抱歉，「' + unknown.join('、') + '」暂未收录，请换个姓氏'); return; }
+    if (unknown.length > 0) { showFormErr('qmXing', '抱歉，「' + unknown.join('、') + '」暂未收录，请换个姓氏'); return; }
     qmXing = xing;
     var pool = qmSex === 'boy' ? QM_BOY : QM_GIRL;
     var results = [];
@@ -4357,6 +4481,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       results.push(r);
     }
     renderNames(results);
+    lastQmResults = results;
     addHistory({ type:'起名', time:Date.now(), page:'qiming', summary: '为「' + xing + '」姓' + (qmSex === 'boy' ? '男孩' : '女孩') + '起名 12 个', data:{ xing: xing, sex: qmSex, names: results } });
   };
 
@@ -4369,6 +4494,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     tabs.forEach(function(t){ t.classList.remove('active'); });
     var idx = sex === 'boy' ? 0 : 1;
     if (tabs[idx]) tabs[idx].classList.add('active');
+    lastQmResults = names;
     renderNames(names);
   };
 
@@ -4378,7 +4504,24 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     showPage('xingming');
     var firstTab = document.querySelector('#page-xingming .mode-tab');
     if (firstTab) window.xmSwitch('single', firstTab);
+    // v1.4.4：起名跳转带返回（P1-11）——记下这批名字，姓名结果页出现“返回起名列表”（xmSwitch 会清标志，所以在它之后再记）
+    window.__xjgQmBack = { xing: qmXing, sex: qmSex, results: lastQmResults };
     window.analyze();
+  };
+  // v1.4.4：回到起名列表（P1-11）——先回起名页（会重置表单），再重渲染上一批名字
+  window.qmBackToList = function() {
+    var back = window.__xjgQmBack;
+    showPage('qiming');
+    if (back && back.results) {
+      qmXing = back.xing; qmSex = back.sex;
+      var inp = document.getElementById('qmXing');
+      if (inp) inp.value = back.xing;
+      var tabs = document.querySelectorAll('#page-qiming .mode-tab');
+      tabs.forEach(function(t){ t.classList.remove('active'); });
+      var idx = back.sex === 'boy' ? 0 : 1;
+      if (tabs[idx]) tabs[idx].classList.add('active');
+      renderNames(back.results);
+    }
   };
 
   window.QM_BOY = QM_BOY;
@@ -4610,8 +4753,12 @@ function histRestore(item) {
         break;
       case '紫微':
         showPage('ziwei');
-        setHistVal('zwName', d.name || ''); setHistVal('zwGender', d.gender || '男');
-        setHistVal('zwBirthdate', d.birthdate); setHistVal('zwBirthtime', d.time || '');
+        setHistVal('zwName', d.name || '');
+        // v1.4.4：老记录存的是“男/女”和数字小时（'12'），新版用 male/female 与 'HH:00'——还原时做一次兼容换算，不丢旧记录
+        setHistVal('zwGender', (typeof normGender === 'function' ? normGender(d.gender) : '') || 'male');
+        var zwT = d.time || '';
+        if (/^\d{1,2}$/.test(zwT)) zwT = String(parseInt(zwT, 10)).padStart(2, '0') + ':00';
+        setHistVal('zwBirthdate', d.birthdate); setHistVal('zwBirthtime', zwT);
         if (window.zwCalculate) window.zwCalculate();
         break;
       case '姓名':
@@ -4778,8 +4925,9 @@ function renderToday() {
     '</div></div>';
 }
 window.zjCalc = function() {
+  clearFormErrs('page-zejiri');
   var dateStr = document.getElementById('zjDate').value;
-  if (!dateStr) { alert('请选择日期'); return; }
+  if (!dateStr) { showFormErr('zjDate', '请选择日期'); return; }
   var d = lunisolar(dateStr);
   var jc = jianchuOf(dateStr);
   var dayBranch = d.char8.day.branch.toString();
@@ -5175,7 +5323,7 @@ function taroRenderDraw(){
     '<div class="subtitle" style="margin-top:6px">' + sp.zh + ' · 凭直觉点一张牌</div>' +
     '<div class="taro-fan" id="taroFan">' + fan + '</div>' +
     '<div class="taro-stars">' + stars + '</div>' +
-    '<div class="hint" id="taroProg" style="text-align:center">第 ' + done + ' / ' + total + ' 张</div>' +
+    '<div class="hint" id="taroProg" style="text-align:center">' + (done === 0 ? '还没抽 · 共 ' + total + ' 张，凭直觉点一张' : '第 ' + done + ' / ' + total + ' 张') + '</div>' +
     '<div class="taro-slots" id="taroSlots">' + slots + '</div>' +
     '<div style="text-align:center;margin-top:12px"><span class="tip-link" onclick="taroHome()">这次不抽了，回去</span></div>';
   window.scrollTo(0, 0);
@@ -5255,19 +5403,21 @@ function taroRelHtml(data, sp, rels){
   return '<div class="r-section taro-rel"><h3>牌与牌的关系</h3>' + lines.join('') + '</div>';
 }
 // v1.4.2：三方视角（只在牌阵含 self/other/connection 位置时出现；缺哪类就不写哪行）
+// v1.4.4：只有一行时不再顶“三方视角”的标题（P1-9）——名不符实，单行就用它自己的标题
 function taroDynHtml(data, sp){
-  var lines = [];
-  function line(idx, head, tail){
+  var rows = [];
+  function row(idx, head, tail){
     var d = data.draws[idx], c = taroCard(d.id);
     var kws = (d.rev ? c.rev : c.up).slice(0, 2).join('、');
-    return '<p><b>' + head + '：</b>「' + sp.positions[idx].zh + '」位的「' + c.zh + '」（' + (d.rev ? '逆位' : '正位') + '），关键词是' + kws + '。' + tail + '</p>';
+    rows.push({ head: head, body: '「' + sp.positions[idx].zh + '」位的「' + c.zh + '」（' + (d.rev ? '逆位' : '正位') + '），关键词是' + kws + '。' + tail });
   }
   var si = taroPosIdx(sp, 'self'), oi = taroPosIdx(sp, 'other'), ci = taroPosIdx(sp, 'connection');
-  if (si >= 0) lines.push(line(si, '我的状态', '牌面呈现的线索是，你现在带着这股能量在面对这件事。'));
-  if (oi >= 0) lines.push(line(oi, '对方状态', '牌面呈现的是对方现在显露出来的状态——这只是牌面线索，不是读心，请以实际沟通为准。'));
-  if (ci >= 0) lines.push(line(ci, '关系动力', '牌面呈现的线索是，你们之间的连接现在是这个质地。'));
-  if (!lines.length) return '';
-  return '<div class="r-section taro-dyn"><h3>三方视角</h3>' + lines.join('') + '</div>';
+  if (si >= 0) row(si, '我的状态', '牌面呈现的线索是，你现在带着这股能量在面对这件事。');
+  if (oi >= 0) row(oi, '对方状态', '牌面呈现的是对方现在显露出来的状态——这只是牌面线索，不是读心，请以实际沟通为准。');
+  if (ci >= 0) row(ci, '关系动力', '牌面呈现的线索是，你们之间的连接现在是这个质地。');
+  if (!rows.length) return '';
+  if (rows.length === 1) return '<div class="r-section"><h3>' + rows[0].head + '</h3><p>' + rows[0].body + '</p></div>';
+  return '<div class="r-section taro-dyn"><h3>三方视角</h3>' + rows.map(function(r){ return '<p><b>' + r.head + '：</b>' + r.body + '</p>'; }).join('') + '</div>';
 }
 // v1.4.2：风险提醒（只从抽到的牌推导：优先挑战位，没有挑战位取逆位牌；都没有就不显示）
 function taroRiskHtml(data, sp){
@@ -5341,10 +5491,13 @@ function taroCardsHtml(data){
   var q = (data.q || '').trim();
   var qShort = q || (TARO_NEEDS[data.need] ? TARO_NEEDS[data.need].zh : '塔罗') + '这件事';
   var html = '';
+  var revNoteShown = false; // v1.4.4：逆位提示一结果只写一次（P1-9）——原来每张逆位牌都重复一遍
   data.draws.forEach(function(d, i){
     var card = taroCard(d.id);
     var pos = sp.positions[i];
     var kws = (d.rev ? card.rev : card.up).slice(0, 2);
+    var revNote = '';
+    if (d.rev && !revNoteShown) { revNote = '<p class="taro-revnote">逆位提示：这不是正位的简单反义词。逆位讲的是同一主题的另一面——阻塞、延迟、内化，或正在松绑。</p>'; revNoteShown = true; }
     html += '<div class="r-section"><h3>' + (i + 1) + ' · ' + pos.zh + ' · 「' + card.zh + '」' + (d.rev ? '逆位' : '正位') + '</h3>' +
       '<div class="taro-cr">' + taroFaceHtml(card, d.rev, 'big') +
       '<div class="taro-cr-body"><p>「' + pos.zh + '」问的是：' + pos.q + '。抽到「' + card.zh + '」（' + (d.rev ? '逆位' : '正位') + '），' + (TARO_FRAMES[pos.cat] || '') + kws.join('、') + '。</p>' +
@@ -5352,7 +5505,7 @@ function taroCardsHtml(data){
       ((TARO_IMG[card.id]) ? '<p class="taro-img">画面：' + TARO_IMG[card.id] + '</p>' : '') +
       ((d.rev ? card.readRev : card.readUp) ? '<p class="taro-read">' + (d.rev ? card.readRev : card.readUp) + '</p>' : '') +
       ((!data.isDaily && i === ai && q) ? '<p class="taro-qline">结合你问的「' + taroEsc(qShort) + '」：这张「' + card.zh + '」在「' + pos.zh + '」位，' + kws.join('、') + '是它给出的方向，具体做法见下方「接下来的一步」。</p>' : '') +
-      (d.rev ? '<p class="taro-revnote">逆位提示：这不是正位的简单反义词。逆位讲的是同一主题的另一面——阻塞、延迟、内化，或正在松绑。</p>' : '') +
+      revNote +
       '</div></div></div>';
   });
   return html;
@@ -5386,7 +5539,7 @@ function taroSynthesisHtml(data){
   // 宫廷牌
   var courts = draws.map(function(d){ return taroCard(d.id); }).filter(function(c){ return c.ct; });
   if (courts.length) parts.push('宫廷牌出现了：「' + courts.map(function(c){ return c.zh; }).join('」「') + '」。宫廷牌常代表具体的人，或同一种处事姿态的不同面——对照着看，常是两个人。');
-  // 元素相性（v1.4.2 起归入“牌与牌的关系”块，标明呼应/冲突；只算相邻两张都是小阿卡纳的情形；火+土、风+土有争议，不用）
+  // 元素相性（v1.4.2 起归入“牌与牌的关系”块，标明呼应/冲突；只算相邻两张都是小阿卡纳的情形；火+土、风+土有争议，不用；v1.4.4：风+火、土+水在五行里没有相生关系，也不判呼应——不写没把握的判断）
   var rels = [];
   var dig = 0;
   for (var i = 0; i + 1 < draws.length && dig < 2; i++) {
@@ -5394,7 +5547,6 @@ function taroSynthesisHtml(data){
     if (a.arc !== 'minor' || b.arc !== 'minor') continue;
     var ea = a.el, eb = b.el, line = '', kind = '';
     if (ea === eb) { kind = '呼应'; line = '「' + a.zh + '」与「' + b.zh + '」同属' + TARO_EL[ea].zh + '，互相加强——好的更好，坏的也更明显。'; }
-    else if ((ea === 'fire' && eb === 'air') || (ea === 'air' && eb === 'fire') || (ea === 'earth' && eb === 'water') || (ea === 'water' && eb === 'earth')) { kind = '呼应'; line = '「' + a.zh + '」（' + TARO_EL[ea].zh + '）与「' + b.zh + '」（' + TARO_EL[eb].zh + '）互相支持，读作顺风。'; }
     else if ((ea === 'fire' && eb === 'water') || (ea === 'water' && eb === 'fire') || (ea === 'air' && eb === 'water') || (ea === 'water' && eb === 'air')) { kind = '冲突'; line = '「' + a.zh + '」（' + TARO_EL[ea].zh + '）与「' + b.zh + '」（' + TARO_EL[eb].zh + '）互相削弱——读作还没定论的张力，而不是各说各的。'; }
     else continue;
     rels.push({k: kind, t: line}); dig++;
@@ -5413,7 +5565,8 @@ function taroSynthesisHtml(data){
     var d0 = draws[0], d1 = draws[1];
     var c1 = taroCard(d0.id), c2 = taroCard(d1.id);
     var k1 = (d0.rev ? c1.rev : c1.up)[0], k2 = (d1.rev ? c2.rev : c2.up)[0];
-    syn = '你问的「' + taroEsc(qShort) + '」：' + sp.positions[0].zh + '的「' + c1.zh + '」说的是' + k1 + '，对照' + sp.positions[1].zh + '的「' + c2.zh + '」的' + k2 + '，' + sp.positions[ai].zh + '的「' + advCard.zh + '」给出的方向是' + advKw + '。';
+    // v1.4.4：合成句改模板化短句（P1-9）——原来“'位置'的「牌」说的是关键词，对照'位置'的「牌」的关键词”拼接生硬，每句只讲一张牌
+    syn = '你问的「' + taroEsc(qShort) + '」，整体来看：「' + sp.positions[0].zh + '」位是「' + c1.zh + '」' + (d0.rev ? '逆位' : '正位') + '，讲的是' + k1 + '；「' + sp.positions[1].zh + '」位是「' + c2.zh + '」' + (d1.rev ? '逆位' : '正位') + '，讲的是' + k2 + '。方向在「' + sp.positions[ai].zh + '」位的「' + advCard.zh + '」：' + advKw + '。';
   }
   var advice = '接下来 30 天内做一件具体事：' + act + '（「' + advCard.zh + '」的「' + advKw + '」指向这个方向。）';
   // v1.4.2：关系 / 三方视角 / 风险 / 故事线 / 行动顺序（各块只在有依据时出现，没有就省略）
@@ -5630,21 +5783,39 @@ window.hmType = function(t, el) {
   else { label.textContent = '请输入 QQ 号'; input.placeholder = '请输入 QQ 号'; input.maxLength = 12; }
 };
 window.hmCalc = function() {
+  clearFormErrs('page-haoma');
   var val = document.getElementById('hmInput').value.trim();
-  if (!val) { alert('请输入号码'); return; }
-  var digits = val.replace(/\D/g, '');
-  if (!digits) { alert('号码中没有数字，请重新输入'); return; }
-  if (curHmType === 'phone' && digits.length !== 11) { alert('请输入 11 位手机号'); return; }
-  if (curHmType === 'qq' && (digits.length < 5 || digits.length > 12)) { alert('QQ 号一般为 5–12 位数字，请检查后重新输入'); return; }
-  if (curHmType === 'car' && digits.length < 4) { alert('请输入完整车牌号'); return; }
-  var sum = 0;
-  for (var i = 0; i < digits.length; i++) sum += parseInt(digits[i], 10);
+  if (!val) { showFormErr('hmInput', '请输入号码'); return; }
+  var typeName = curHmType === 'phone' ? '手机号' : (curHmType === 'car' ? '车牌号' : 'QQ 号');
+  // v1.4.4：按类型做真实格式校验（P1-16）——原来只数数字，云A88888 与京B88888 都会算成同一个 35 分
+  var sum, parts = null;
+  if (curHmType === 'phone') {
+    if (!/^1[3-9]\d{9}$/.test(val)) { showFormErr('hmInput', '手机号格式不对：应为 11 位数字，以 1 开头，第二位 3–9'); return; }
+    sum = 0;
+    for (var i = 0; i < val.length; i++) sum += parseInt(val[i], 10);
+  } else if (curHmType === 'qq') {
+    if (!/^\d{5,12}$/.test(val)) { showFormErr('hmInput', 'QQ 号应为 5–12 位纯数字'); return; }
+    sum = 0;
+    for (var j = 0; j < val.length; j++) sum += parseInt(val[j], 10);
+  } else {
+    var car = val.toUpperCase();
+    if (!/^[\u4e00-\u9fa5][A-Z][A-Z0-9]{5,6}$/.test(car)) { showFormErr('hmInput', '车牌格式不对：如 京A88888（1 个汉字 + 1 个字母 + 5–6 位字母数字）'); return; }
+    sum = 0; parts = [];
+    for (var k = 0; k < car.length; k++) {
+      var ch = car[k], v;
+      if (ch >= '0' && ch <= '9') v = parseInt(ch, 10);
+      else if (ch >= 'A' && ch <= 'Z') v = ch.charCodeAt(0) - 64;
+      else v = KANGXI[ch] || 0;
+      parts.push(ch + '=' + v);
+      sum += v;
+    }
+    val = car; // 统一存大写
+  }
   var n = sum % 81; if (n === 0) n = 81;
   var info = getWugeInfo(n);
   var score = info ? info.score : 50;
   var jiText = info ? info.jiText : '—';
   var mask = val.length > 4 ? '•••• ' + val.slice(-4) : val;
-  var typeName = curHmType === 'phone' ? '手机号' : (curHmType === 'car' ? '车牌号' : 'QQ 号');
   // 数字能量：数字总和 + 81 数理 + 号码五行（按数理末位定五行）
   var numWx = (function(nn) {
     var last = ((nn % 10) + 10) % 10;
@@ -5654,7 +5825,8 @@ window.hmCalc = function() {
     if (last === 7 || last === 8) return '金';
     return '水';
   })(n);
-  var energyHtml = '<div class="sd-item"><b>数字总和</b>各数字相加为 ' + sum + '，对应 81 数理第 ' + n + ' 数。</div>' +
+  var energyHtml = '<div class="sd-item"><b>数字总和</b>' + (parts ? '各字符相加为 ' : '各数字相加为 ') + sum + '，对应 81 数理第 ' + n + ' 数。</div>' +
+    (parts ? '<div class="sd-item"><b>字符能量</b>车牌按“汉字取康熙笔画、字母 A=1…Z=26、数字即本身”相加：' + parts.join(' + ') + ' = ' + sum + '。</div>' : '') +
     '<div class="sd-item"><b>号码五行</b>数理 ' + n + ' 属「' + numWx + '」，' + WX_DESC[numWx] + '</div>';
   var html = '<div class="r-score"><div class="score-num">' + score + '</div><div class="score-label">' + typeName + '吉凶评分 · ' + jiText + '</div></div>' +
     '<div class="r-section"><h3>' + typeName + '：' + mask + '</h3><p>' + (info ? info.desc : '') + '</p></div>' +
@@ -5688,9 +5860,10 @@ window.pdSwitch = function(mode, el) {
   document.getElementById('pdResult').innerHTML = '';
 };
 window.pdSxCalc = function() {
+  clearFormErrs('page-peidui');
   var a = document.getElementById('pdSxA').value;
   var b = document.getElementById('pdSxB').value;
-  if (!a || !b) { alert('请选择两人的生肖'); return; }
+  if (!a || !b) { showFormErr(!a ? 'pdSxA' : 'pdSxB', '请选择两人的生肖'); return; }
   var rel, level, lvClass, desc, advice;
   if (LIUHE[a] === b) { rel = '六合'; level = '上等婚配 · 天作之合'; lvClass = 'ji-good'; desc = a + '与' + b + '是六合生肖，性格互补、情投意合，是十二生肖中最佳的婚配组合之一。'; advice = '彼此是对方最好的伴侣，宜珍惜、互相成就，婚姻家庭和美顺遂。'; }
   else if (SANHE[a] && SANHE[a].indexOf(b) >= 0) { rel = '三合'; level = '上等婚配 · 志同道合'; lvClass = 'ji-good'; desc = a + '与' + b + '是三合生肖，志趣相投、理念一致，相处和谐、彼此扶持。'; advice = '你们是理想的事业与生活搭档，宜携手并进、共同成长。'; }
@@ -5737,9 +5910,10 @@ function pdWxRelStr(wxA, wxB) {
 }
 
 window.pdBzCalc = function() {
+  clearFormErrs('page-peidui');
   var da = document.getElementById('pdBzDateA').value;
   var db = document.getElementById('pdBzDateB').value;
-  if (!da || !db) { alert('请选择两人的出生日期'); return; }
+  if (!da || !db) { showFormErr(!da ? 'pdBzDateA' : 'pdBzDateB', '请选择两人的出生日期'); return; }
   var taUnknown = document.getElementById('pdBzTimeUnknownA').checked || !document.getElementById('pdBzTimeA').value;
   var tbUnknown = document.getElementById('pdBzTimeUnknownB').checked || !document.getElementById('pdBzTimeB').value;
   var ta = taUnknown ? '12:00' : document.getElementById('pdBzTimeA').value; // 仅用于换算年月日三柱，时柱不取用

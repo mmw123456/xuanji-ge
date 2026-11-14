@@ -525,13 +525,18 @@ window.CONFIG = {
   GOLD_LIGHT: '#e3c88d',             // 主题金色（高亮浅色）
   CONTACT: '微信：wxid_4cs9ei0iftpw22',  // 联系方式（留空则不显示；例如 '微信：xxxx'）
   SHOW_FOOTER: true,                 // 是否显示首页底部的版权与免责信息
-  VERSION: 'v1.2.1',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
-  UPDATED: '2026-11-13',              // 更新日期
-  FEEDBACK_URL: 'https://wj.qq.com/s2/28674644/054w/'  // 反馈表单链接（腾讯问卷，用户 2026-11-13 自己建的免费表单；改成 '' 则恢复显示微信联系方式）
+  VERSION: 'v1.2.2',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
+  UPDATED: '2026-11-14',              // 更新日期
+  FEEDBACK_URL: 'https://wj.qq.com/s2/28674644/054w/',  // 反馈表单链接（腾讯问卷，用户 2026-11-13 自己建的免费表单；改成 '' 则恢复显示微信联系方式）
+  SITE_URL: 'https://mmw123456.github.io/xuanji-ge/',  // 官网链接（结果卡片分享区二维码与文字用）
+  SITE_QR: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoAQAAAADDfFG0AAABr0lEQVR4nO2ZwW7DMAxDH4f+/y9zB0uOM/TQwxCpgHxoHYNACEJ2SFnmg/HzCWhQgxrUoB5FvQC05haWBfhcLeHVFfUCtj6WDEYgfKjWlX2VXig0M7Jsba1cxOsrUFpySc7N2INXa5QFWVfPvPGbULEfUx4hGwnhQ7Su7Kv0unafhRyfyWu1K/siva7NZxlk+bbaln2V/1oirZlgeQtY38sSXs1RYVLj3FoPGKRaXj1RjsLy0oz9Z4//eoNaReUdhiRjLMTU1xuUhYUE3vExj3wX8mqI0go+VuRG75Stw7l2ZV+FsrwjkFdhHd2J7uyfRMmwP4pkhIRUSlNfb1AWkpZ9WAYfwt/P+XUbirM9j65VbntDeurrPq48dDS9sK5oVMOrKyr7haHW4fMB2eO/3qAktH6ALdqRjlqzfxSlszGoDEKQIWny9n3c7oewLGeTIiJlDa+uqPv9EKtNqDz9o53Tln1dP0cirJew05DpjnqeVzvU63zIK7U9D1fRln2xXmRbIutq6uvvuN8P6ZDK8lauK/sqvdJ4ha8Ps3rdenRlX+y/HnnjoAY1qEH9D+oXBfCka8ulQk4AAAAASUVORK5CYII='  // 官网二维码（Python qrcode 生成，纠错等级 M，29×29 模块；链接不变则不用换；更换方法见改动说明）
 };
 </script>
 <script>
 /* 全局错误捕获（离线、无后端）：把错误记到本地，出问题时才提示，平时不打扰 */
+/* 官网二维码预加载（结果卡片分享区用；data URI 内嵌，离线可用） */
+window.__xjgSiteQR = new Image();
+try { window.__xjgSiteQR.src = (window.CONFIG && window.CONFIG.SITE_QR) || ''; } catch (e) {}
 window.__xjgErrors = [];
 try { window.__xjgErrors = JSON.parse(localStorage.getItem('xjg_errors') || '[]'); } catch (e) { window.__xjgErrors = []; }
 window.__xjgRecordErr = function(msg, src, line, col) {
@@ -584,7 +589,9 @@ document.addEventListener('touchstart', function(){}, {passive:true});
     <h3 style="text-align:center">更新日志</h3>
     <div class="tip-note" style="text-align:center" id="clVersion"></div>
     <div style="font-size:13px;color:var(--text-dim);line-height:2">
-      <div style="color:var(--gold-light);font-weight:600">v1.2 · 2026-11-13</div>
+      <div style="color:var(--gold-light);font-weight:600">v1.2.2 · 2026-11-14</div>
+      <div>· 结果卡片带分享入口：底部加二维码 + 链接，扫码就能打开玄机阁</div>
+      <div style="color:var(--gold-light);font-weight:600;margin-top:6px">v1.2 · 2026-11-13</div>
       <div>· 反馈改走表单链接：点“反馈”直接打开问卷表，不用再加微信发</div>
       <div>· 历史能还原完整结果：点一条历史记录，回到当时那份完整报告</div>
       <div style="color:var(--gold-light);font-weight:600;margin-top:6px">v1.1 · 2026-11-13</div>
@@ -2105,6 +2112,9 @@ window.copyErrDetail = function() {
 
 // ============ 保存结果卡片（canvas 生成竖版图片，纯本地，不上传）============
 function saveResultCard(opts) {
+  // 官网二维码还没解码完时等它一下再画（data URI 正常是瞬间就绪）
+  var _qr = window.__xjgSiteQR;
+  if (_qr && !_qr.complete) { _qr.onload = function() { saveResultCard(opts); }; return; }
   var W = 1080, H = 1440, M = 60;
   var OUT_W = 750;                                   // 输出宽度（逻辑坐标仍按 1080×1440 绘制，整体等比缩放到 750×1000，打开即可看全）
   var c = document.createElement('canvas');
@@ -2290,7 +2300,7 @@ function saveResultCard(opts) {
 
   // ===== 信息卡片区 =====
   var rows = opts.rows || [];
-  var topY = 840, botY = 1230;
+  var topY = 840, botY = 1170;
   var avail = botY - topY;
   var gap = 16;
   var cardH = Math.min(92, (avail - (rows.length - 1) * gap) / rows.length);
@@ -2340,18 +2350,37 @@ function saveResultCard(opts) {
     x.textAlign = 'center';
   });
 
-  // ===== 底部 =====
+  // ===== 底部：分享区（二维码 + 链接，别人扫码/按链接打开玄机阁） =====
   var d = new Date();
   var dateStr = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
-  x.fillStyle = goldA(0.7);
-  x.font = '24px ' + SERIF;
-  x.fillText('✦', cx, H - 170);
+  var siteUrl = (window.CONFIG && window.CONFIG.SITE_URL) || 'https://mmw123456.github.io/xuanji-ge/';
+  // 免责（居中）
   x.fillStyle = lightA(0.62);
-  x.font = '26px ' + SANS;
-  x.fillText('本内容仅供文化娱乐参考，请理性看待', cx, H - 135);
+  x.font = '24px ' + SANS;
+  x.fillText('本内容仅供文化娱乐参考，请理性看待', cx, 1208);
+  // 二维码（白底圆角衬底 + 码图；120 逻辑 px ≈ 83px 输出）
+  var QR_SIZE = 120, QR_X = 88, QR_Y = 1230;
+  var qrImg = window.__xjgSiteQR;
+  if (qrImg && qrImg.complete && qrImg.naturalWidth) {
+    x.fillStyle = '#ffffff';
+    rr(QR_X - 8, QR_Y - 8, QR_SIZE + 16, QR_SIZE + 16, 12);
+    x.fill();
+    x.drawImage(qrImg, QR_X, QR_Y, QR_SIZE, QR_SIZE);
+  }
+  // 二维码右侧文字（左对齐）
+  x.textAlign = 'left';
+  var tx = QR_X + QR_SIZE + 28;
+  x.fillStyle = goldLight;
+  x.font = 'bold 34px ' + SANS;
+  x.fillText('扫码打开玄机阁', tx, 1268);
+  x.fillStyle = gold;
+  var urlSize = fitFont(siteUrl, 27, 20, W - 88 - tx - 10, SANS, 'normal');
+  x.font = urlSize + 'px ' + SANS;
+  x.fillText(siteUrl, tx, 1310);
   x.fillStyle = lightA(0.7);
-  x.font = '28px ' + SANS;
-  x.fillText(appName + ' · ' + slogan + ' · ' + dateStr, cx, H - 100);
+  x.font = '22px ' + SANS;
+  x.fillText(slogan + ' · ' + dateStr, tx, 1346);
+  x.textAlign = 'center';
 
   var dataUrl = c.toDataURL('image/png');
   var filename = appName + '-' + (opts.tag || '结果') + '-' + dateStr + '.png';

@@ -513,6 +513,108 @@
     .btn:active { transform:none; }
     .tab-goo .tab-blob { transition:none !important; }
   }
+  /* ============ 塔罗占卜（v1.4.0）============ */
+  .taro-need-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:14px; }
+  .taro-need { background:var(--bg-card); border:1px solid var(--line); border-radius:16px; padding:18px 8px 14px; text-align:center; cursor:pointer; transition:transform .3s var(--spring),border-color .2s ease,background .2s ease; }
+  .taro-need:active { transform:scale(.96); }
+  .taro-need .tn-glyph { font-family:Georgia,'Songti SC',serif; font-size:26px; line-height:1; color:var(--gold); }
+  .taro-need .tn-name { font-size:15px; font-weight:600; color:var(--text); margin-top:8px; letter-spacing:2px; }
+  .taro-need .tn-desc { font-size:11px; color:var(--text-dim); margin-top:4px; line-height:1.5; }
+  .taro-daily-btn { margin-top:16px; }
+  .taro-note { background:#241a38; border:1px solid #4a3a6e; border-radius:14px; padding:16px 18px; font-size:14px; line-height:1.9; color:var(--text); margin:14px 0; }
+  .taro-note b { color:var(--gold-light); }
+  .taro-alt { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 4px; align-items:center; }
+  .taro-alt .ta-label { font-size:12px; color:var(--text-dim); }
+  .taro-alt .ta-btn { font-size:13px; color:var(--gold-light); background:var(--bg-card-2); border:1px solid var(--line); border-radius:999px; padding:7px 14px; cursor:pointer; }
+  .taro-alt .ta-btn:active { transform:scale(.95); }
+  .taro-repeat { background:#3a2a1a; border:1px solid var(--gold-edge); border-radius:14px; padding:16px 18px; font-size:13px; line-height:1.9; color:var(--text); margin:14px 0; }
+  /* 洗牌牌堆：一叠牌背，轻微浮动 */
+  .taro-deck { text-align:center; padding:26px 0 10px; cursor:pointer; }
+  .taro-deckstack { position:relative; width:96px; height:144px; margin:0 auto; animation:taroFloat 2.6s ease-in-out infinite; }
+  .taro-deckstack .taro-back { position:absolute; inset:0; border-radius:10px; }
+  .taro-deckstack .taro-back:nth-child(1) { transform:rotate(-7deg) translateX(-8px); opacity:.75; }
+  .taro-deckstack .taro-back:nth-child(2) { transform:rotate(6deg) translateX(8px); opacity:.85; }
+  .taro-deckstack .taro-back:nth-child(3) { transform:rotate(0deg); box-shadow:0 12px 30px rgba(0,0,0,.5); }
+  .taro-deckstack.shuffling { animation:taroShuffle .5s ease-in-out; }
+  @keyframes taroFloat { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-5px); } }
+  @keyframes taroShuffle { 0% { transform:rotate(0); } 25% { transform:rotate(-4deg) translateX(-4px); } 50% { transform:rotate(4deg) translateX(4px); } 75% { transform:rotate(-2deg); } 100% { transform:rotate(0); } }
+  /* 牌背：纯 CSS/SVG 花纹（同心圆 + 星芒 + 金色细线） */
+  .taro-back { background:#251b3e; border:1px solid var(--gold); border-radius:10px; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .taro-back::before { content:''; position:absolute; inset:5px; border:1px solid rgba(200,164,95,.45); border-radius:7px; pointer-events:none; }
+  .taro-back::after { content:'✦'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); font-size:22px; color:var(--gold); opacity:.9; }
+  .taro-back .tb-rings { position:absolute; inset:0; background:repeating-radial-gradient(circle at 50% 50%, rgba(200,164,95,.28) 0 1px, transparent 1px 9px); }
+  /* 牌堆扇形：12 张牌背弧形排开 */
+  .taro-fan { display:flex; justify-content:center; align-items:flex-end; padding:18px 4px 8px; min-height:118px; }
+  .taro-deckcard { width:60px; height:90px; flex:0 0 auto; margin-left:-34px; cursor:pointer; transition:transform .35s var(--spring),opacity .3s ease; position:relative; }
+  .taro-deckcard:first-child { margin-left:0; }
+  .taro-deckcard .taro-back { width:100%; height:100%; box-shadow:0 6px 16px rgba(0,0,0,.45); }
+  .taro-deckcard:active { transform:translateY(-10px) !important; }
+  .taro-deckcard.used { opacity:0; transform:translateY(-14px) scale(.8); pointer-events:none; }
+  .taro-deckcard.picked .taro-back { border-color:var(--gold-light); box-shadow:0 0 0 2px rgba(227,200,141,.55),0 10px 22px rgba(0,0,0,.5); }
+  /* 牌位格 */
+  .taro-slots { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; padding:16px 10px 6px; background:#241a38; border:1px solid #4a3a6e; border-radius:16px; margin-top:14px; position:relative; overflow:hidden; }
+  .taro-slots.sweep::after { content:''; position:absolute; inset:0; background:linear-gradient(105deg,transparent 30%,rgba(227,200,141,.28) 50%,transparent 70%); transform:translateX(-100%); animation:taroSweep .9s ease forwards; pointer-events:none; }
+  @keyframes taroSweep { to { transform:translateX(100%); } }
+  .taro-slot { width:76px; text-align:center; }
+  .taro-slot-label { font-size:11px; color:var(--text-dim); margin-top:6px; line-height:1.5; }
+  .taro-slot-label b { color:var(--gold-light); font-weight:600; }
+  .taro-flip { width:76px; height:120px; perspective:600px; margin:0 auto; }
+  .taro-flip-in { position:relative; width:100%; height:100%; transform-style:preserve-3d; transition:transform .6s ease; }
+  .taro-flip-in.flipped { transform:rotateY(180deg); }
+  .taro-side { position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden; }
+  .taro-side-front { transform:rotateY(180deg); }
+  .taro-side .taro-back { width:100%; height:100%; }
+  .taro-side .taro-face { width:100%; height:100%; }
+  /* 牌面：深紫底 + 金色双线框 + 衬线名 + 双语 + 关键词 */
+  .taro-face { background:#251b3e; border:1px solid var(--gold); border-radius:10px; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; text-align:center; padding:8px 5px 6px; box-shadow:0 8px 20px rgba(0,0,0,.45); }
+  .taro-face::before { content:''; position:absolute; inset:4px; border:1px solid rgba(200,164,95,.4); border-radius:7px; pointer-events:none; }
+  .taro-face::after { content:'✦'; position:absolute; right:5px; bottom:2px; font-size:9px; color:rgba(200,164,95,.6); }
+  .taro-face.rev { transform:rotate(180deg); }
+  .tf-top { font-size:11px; color:var(--gold); letter-spacing:1px; line-height:1.3; }
+  .tf-mark { font-family:Georgia,'Songti SC',serif; font-size:30px; line-height:1; color:rgba(200,164,95,.22); margin:2px 0; }
+  .tf-name { font-family:Georgia,'Songti SC','STSong',serif; font-size:16px; color:var(--gold-light); font-weight:600; line-height:1.3; }
+  .tf-en { font-size:8px; color:var(--text-dim); letter-spacing:1px; text-transform:uppercase; margin-top:2px; }
+  .tf-kws { font-size:10px; color:#cbb98f; line-height:1.6; margin-top:auto; }
+  .tf-ori { font-size:9px; color:var(--gold); border:1px solid rgba(200,164,95,.55); border-radius:999px; padding:1px 7px; margin-top:4px; }
+  /* 阅读版大牌面 */
+  .taro-face.big { width:118px; height:208px; padding:12px 8px 10px; flex:0 0 auto; }
+  .taro-face.big .tf-top { font-size:12px; }
+  .taro-face.big .tf-mark { font-size:44px; margin:4px 0; }
+  .taro-face.big .tf-name { font-size:20px; }
+  .taro-face.big .tf-en { font-size:9px; }
+  .taro-face.big .tf-kws { font-size:11px; }
+  /* 牌阵小览（解读顶部） */
+  .taro-minirow { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; padding:6px 0 2px; }
+  .taro-face.mini { width:56px; height:84px; padding:6px 3px 5px; }
+  .taro-face.mini .tf-top { display:none; }
+  .taro-face.mini .tf-mark { font-size:20px; margin:2px 0; }
+  .taro-face.mini .tf-name { font-size:11px; white-space:nowrap; }
+  .taro-face.mini .tf-en, .taro-face.mini .tf-kws { display:none; }
+  .taro-face.mini .tf-ori { font-size:8px; padding:0 5px; }
+  /* 进度星星 */
+  .taro-stars { text-align:center; font-size:17px; color:var(--gold); letter-spacing:4px; margin:10px 0 2px; }
+  .taro-stars .tst-off { color:var(--text-dim); opacity:.55; }
+  .taro-cr { display:flex; gap:14px; align-items:flex-start; }
+  .taro-cr-body { flex:1; font-size:13.5px; line-height:1.9; color:var(--text); }
+  .taro-revnote { color:var(--gold-light); font-size:12.5px; margin-top:6px; }
+  .taro-side .taro-face .tf-top { display:none; }
+  .taro-side .taro-face .tf-mark { font-size:20px; margin:1px 0; }
+  .taro-side .taro-face .tf-name { font-size:13px; white-space:nowrap; }
+  .taro-side .taro-face .tf-en { display:none; }
+  .taro-side .taro-face .tf-kws { font-size:9px; }
+  .taro-sum p { font-size:13.5px; line-height:1.95; color:var(--text); margin:8px 0; }
+  .taro-sum p b { color:var(--gold-light); }
+  .taro-advice { background:#241a38; border:1px solid #4a3a6e; border-radius:14px; padding:16px 18px; font-size:14px; line-height:1.9; color:var(--text); }
+  .taro-advice b { color:var(--gold-light); }
+  .taro-qecho { font-size:13px; color:var(--text-dim); text-align:center; line-height:1.8; margin:2px 0 4px; }
+  .taro-qecho b { color:var(--gold-light); font-weight:600; }
+  .taro-daily { text-align:center; padding:8px 0 2px; }
+  .taro-daily .taro-face.big { margin:10px auto 4px; }
+  @media (prefers-reduced-motion: reduce) {
+    .taro-deckstack, .taro-deckstack.shuffling, .taro-slots.sweep::after { animation:none !important; }
+    .taro-flip-in, .taro-deckcard, .taro-need { transition:none !important; }
+  }
+
 </style>
 <script>
 /* ============================================================
@@ -525,7 +627,7 @@ window.CONFIG = {
   GOLD_LIGHT: '#e3c88d',             // 主题金色（高亮浅色）
   CONTACT: '微信：wxid_4cs9ei0iftpw22',  // 联系方式（留空则不显示；例如 '微信：xxxx'）
   SHOW_FOOTER: true,                 // 是否显示首页底部的版权与免责信息
-  VERSION: 'v1.3.0',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
+  VERSION: 'v1.4.0',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
   UPDATED: '2026-11-14',              // 更新日期
   FEEDBACK_URL: 'https://wj.qq.com/s2/28674644/054w/',  // 反馈表单链接（腾讯问卷，用户 2026-11-13 自己建的免费表单；改成 '' 则恢复显示微信联系方式）
   SITE_URL: 'https://mmw123456.github.io/xuanji-ge/',  // 官网链接（结果卡片分享区二维码与文字用）
@@ -639,7 +741,12 @@ document.addEventListener('touchstart', function(){}, {passive:true});
     <h3 style="text-align:center">更新日志</h3>
     <div class="tip-note" style="text-align:center" id="clVersion"></div>
     <div style="font-size:13px;color:var(--text-dim);line-height:2">
-      <div style="color:var(--gold-light);font-weight:600">v1.3.0 · 2026-11-14</div>
+      <div style="color:var(--gold-light);font-weight:600">v1.4.0 · 2026-11-14</div>
+      <div>· 塔罗占卜上线：选需求自动配牌阵，亲手抽牌，78 张牌正逆位解读</div>
+      <div>· 牌阵按需求自动配：财运 / 爱情 / 事业 / 健康 / 学业 / 其他，牌数不用自己选</div>
+      <div>· 解读分三层：逐张按牌位、整体合成、可执行建议；支持保存卡片与历史还原</div>
+      <div>· 每日一牌：每天抽一张，同一天重开是同一张</div>
+      <div style="color:var(--gold-light);font-weight:600;margin-top:6px">v1.3.0 · 2026-11-14</div>
       <div>· 灵签不怕看错：第 N 签写清是签号（共 20 签），今天只抽 1 次</div>
       <div>· 八字能选“不清楚出生时间”：时柱显示未知，不再用默认时辰代替</div>
       <div>· 配对八字加了出生时间：双方都能填，四柱逐项对照，时柱未知时不编结论</div>
@@ -732,7 +839,13 @@ document.addEventListener('touchstart', function(){}, {passive:true});
         <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3 h14 v18 H5 Z"/><path d="M9 8 h6 M9 12 h6 M9 16 h3"/></svg></div>
         <div class="name">今日一签</div>
         <div class="desc">观音灵签 · 每日一抽</div>
+      </div>      <div class="entry-card" onclick="showPage('tarot');taroHome()">
+        <span class="tag">新</span>
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79 A9 9 0 1 1 11.21 3 A7 7 0 0 0 21 12.79 Z"/><path d="M17.5 3.5 l.6 1.5 1.5.6 -1.5.6 -.6 1.5 -.6-1.5 -1.5-.6 1.5-.6 Z"/></svg></div>
+        <div class="name">塔罗占卜</div>
+        <div class="desc">选需求 · 自动配牌阵 · 亲手抽牌</div>
       </div>
+
       <div class="entry-card" onclick="showPage('haoma')">
         <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M10 17 h4"/><path d="M10 7 h1"/></svg></div>
         <div class="name">号码吉凶</div>
@@ -1326,6 +1439,18 @@ document.addEventListener('touchstart', function(){}, {passive:true});
       <div class="spacer"></div>
     </div>
     <div id="lqResult"></div>
+  </div>
+</div>
+
+<!-- ================= 塔罗占卜 ================= -->
+<div class="page" id="page-tarot">
+  <div class="wrap">
+    <div class="topbar">
+      <a class="back" onclick="showPage('home')">‹</a>
+      <div class="title">塔罗占卜</div>
+      <div class="spacer"></div>
+    </div>
+    <div id="taroRoot"></div>
   </div>
 </div>
 
@@ -4486,6 +4611,11 @@ function histRestore(item) {
         showPage('lingqian');
         if (window.__xjgRestoreQian) window.__xjgRestoreQian(d.qian, d.date);
         break;
+      case '塔罗':
+        showPage('tarot');
+        if (window.__xjgRestoreTarot) window.__xjgRestoreTarot(d);
+        break;
+
       case '号码':
         showPage('haoma');
         setHmTab(d.hmType || 'phone');
@@ -4645,6 +4775,593 @@ window.zjReset = function() {
   document.getElementById('zjForm').style.display = '';
   document.getElementById('zjResult').innerHTML = '';
   window.scrollTo(0, 0);
+};
+
+// ============ 塔罗占卜（v1.4.0）============
+// 数据来源：~/workspace/your_files/玄机阁-塔罗研究.md
+// 牌义：Labyrinthos《Tarot Card Meanings List》实测全文（研究文档第三节）；牌名用国内主流译名，英文名为标准名；星币统一用「星币」，英文保留 Pentacles。
+// 牌阵：研究文档 2.1–2.6，位置含义均以实测页面为准；未核实的不采用（心之声 8 张位置未定，留第二批）。
+// 大阿卡纳元素对应未定：元素统计只算小阿卡纳四花色；大阿卡纳只计数量占比，不硬编元素。
+// yn：是非倾向，按牌的正位能量归纳（yes 肯定 / no 否定 / maybe 未定）；逆位时倾向弱化为「未定」，文案里说明理由。
+var TAROT_CARDS = [
+// ---- 大阿卡纳 22 张（韦特原版顺序：力量 VIII、正义 XI）----
+{id:'fool',arc:'major',suit:'',el:'',n:0,num:'0',zh:'愚者',en:'The Fool',up:['天真','新开始','自由精神'],upEn:['innocence','new beginnings','free spirit'],rev:['鲁莽','被人利用','欠考虑'],revEn:['recklessness','taken advantage of','inconsideration'],yn:'yes'},
+{id:'magician',arc:'major',suit:'',el:'',n:1,num:'I',zh:'魔术师',en:'The Magician',up:['意志力','渴望','创造','显化'],upEn:['willpower','desire','creation','manifestation'],rev:['欺骗','幻觉','脱离实际'],revEn:['deception','illusion','out of touch with reality'],yn:'yes'},
+{id:'priestess',arc:'major',suit:'',el:'',n:2,num:'II',zh:'女祭司',en:'The High Priestess',up:['直觉','潜意识','内在声音'],upEn:['intuition','subconscious','inner voice'],rev:['失去中心','听不见内心','压抑感受'],revEn:['losing center','ignoring inner voice','repressed feelings'],yn:'maybe'},
+{id:'empress',arc:'major',suit:'',el:'',n:3,num:'III',zh:'皇后',en:'The Empress',up:['母性','丰饶','自然'],upEn:['motherhood','fertility','nature'],rev:['依赖','窒息','空虚','管得太多'],revEn:['dependence','smothering','emptiness','overbearing'],yn:'yes'},
+{id:'emperor',arc:'major',suit:'',el:'',n:4,num:'IV',zh:'皇帝',en:'The Emperor',up:['权威','结构','控制','父亲'],upEn:['authority','structure','control','fatherhood'],rev:['暴政','僵化','冷漠'],revEn:['tyranny','rigidity','coldness'],yn:'yes'},
+{id:'hierophant',arc:'major',suit:'',el:'',n:5,num:'V',zh:'教皇',en:'The Hierophant',up:['传统','遵从','道德','伦理'],upEn:['tradition','conformity','morality','ethics'],rev:['反叛','颠覆','新方法'],revEn:['rebellion','subversion','new approaches'],yn:'maybe'},
+{id:'lovers',arc:'major',suit:'',el:'',n:6,num:'VI',zh:'恋人',en:'The Lovers',up:['伴侣关系','二元性','结合'],upEn:['partnership','duality','union'],rev:['失衡','单方面','不和谐'],revEn:['imbalance','one-sidedness','disharmony'],yn:'yes'},
+{id:'chariot',arc:'major',suit:'',el:'',n:7,num:'VII',zh:'战车',en:'The Chariot',up:['方向','控制','意志力'],upEn:['direction','control','willpower'],rev:['失控','迷失方向','攻击性'],revEn:['lack of control','lost direction','aggression'],yn:'yes'},
+{id:'strength',arc:'major',suit:'',el:'',n:8,num:'VIII',zh:'力量',en:'Strength',up:['内在力量','勇气','同情','专注'],upEn:['inner strength','courage','compassion','focus'],rev:['自我怀疑','软弱','不安全感'],revEn:['self-doubt','weakness','insecurity'],yn:'yes'},
+{id:'hermit',arc:'major',suit:'',el:'',n:9,num:'IX',zh:'隐者',en:'The Hermit',up:['沉思','追寻真理','内在指引'],upEn:['contemplation','search for truth','inner guidance'],rev:['孤独','孤立','迷失方向'],revEn:['loneliness','isolation','lost direction'],yn:'maybe'},
+{id:'wheel',arc:'major',suit:'',el:'',n:10,num:'X',zh:'命运之轮',en:'Wheel of Fortune',up:['变化','循环','命中注定'],upEn:['change','cycles','destiny'],rev:['失控','紧抓控制','坏运气'],revEn:['out of control','clinging to control','bad luck'],yn:'yes'},
+{id:'justice',arc:'major',suit:'',el:'',n:11,num:'XI',zh:'正义',en:'Justice',up:['因果','清晰','真相'],upEn:['cause and effect','clarity','truth'],rev:['不诚实','推卸责任','不公'],revEn:['dishonesty','avoiding responsibility','unfairness'],yn:'maybe'},
+{id:'hanged',arc:'major',suit:'',el:'',n:12,num:'XII',zh:'倒吊人',en:'The Hanged Man',up:['牺牲','放下','殉道'],upEn:['sacrifice','release','martyrdom'],rev:['拖延','无谓的牺牲','害怕牺牲'],revEn:['stalling','needless sacrifice','fear of sacrifice'],yn:'maybe'},
+{id:'death',arc:'major',suit:'',el:'',n:13,num:'XIII',zh:'死神',en:'Death',up:['周期结束','新开始','转变','蜕变'],upEn:['endings','new beginnings','transformation'],rev:['害怕改变','紧抓不放','停滞','衰败'],revEn:['fear of change','holding on','stagnation','decay'],yn:'maybe'},
+{id:'temperance',arc:'major',suit:'',el:'',n:14,num:'XIV',zh:'节制',en:'Temperance',up:['中道','耐心','找到意义'],upEn:['moderation','patience','finding meaning'],rev:['极端','过度','失衡'],revEn:['extremes','excess','imbalance'],yn:'yes'},
+{id:'devil',arc:'major',suit:'',el:'',n:15,num:'XV',zh:'恶魔',en:'The Devil',up:['成瘾','物质主义','玩乐'],upEn:['addiction','materialism','playfulness'],rev:['自由','解脱','重获控制'],revEn:['freedom','release','regaining control'],yn:'no'},
+{id:'tower',arc:'major',suit:'',el:'',n:16,num:'XVI',zh:'高塔',en:'The Tower',up:['突然剧变','破灭的骄傲','灾难'],upEn:['sudden upheaval','broken pride','disaster'],rev:['灾难得以避免','灾难延迟','害怕受苦'],revEn:['disaster averted','delayed disaster','fear of suffering'],yn:'no'},
+{id:'star',arc:'major',suit:'',el:'',n:17,num:'XVII',zh:'星星',en:'The Star',up:['希望','信念','复苏'],upEn:['hope','faith','rejuvenation'],rev:['失去信念','气馁','不安全感'],revEn:['loss of faith','discouragement','insecurity'],yn:'yes'},
+{id:'moon',arc:'major',suit:'',el:'',n:18,num:'XVIII',zh:'月亮',en:'The Moon',up:['潜意识','幻觉','直觉'],upEn:['subconscious','illusion','intuition'],rev:['困惑','恐惧','误解'],revEn:['confusion','fear','misunderstanding'],yn:'no'},
+{id:'sun',arc:'major',suit:'',el:'',n:19,num:'XIX',zh:'太阳',en:'The Sun',up:['快乐','成功','庆祝','积极'],upEn:['joy','success','celebration','positivity'],rev:['消极','抑郁','悲伤'],revEn:['negativity','depression','sadness'],yn:'yes'},
+{id:'judgement',arc:'major',suit:'',el:'',n:20,num:'XX',zh:'审判',en:'Judgement',up:['反思','清算','觉醒'],upEn:['reflection','reckoning','awakening'],rev:['缺乏自知','怀疑','自我厌恶'],revEn:['lack of self-awareness','doubt','self-loathing'],yn:'yes'},
+{id:'world',arc:'major',suit:'',el:'',n:21,num:'XXI',zh:'世界',en:'The World',up:['圆满','和谐','完成'],upEn:['fulfillment','harmony','completion'],rev:['未完成','没有了结'],revEn:['incompletion','lack of closure'],yn:'yes'},
+// ---- 权杖（火 · 行动、欲望、灵感）----
+{id:'w-ace',arc:'minor',suit:'wands',el:'fire',n:1,num:'A',zh:'权杖 A',en:'Ace of Wands',up:['创造','意志力','灵感','渴望'],upEn:['creativity','willpower','inspiration','desire'],rev:['缺乏能量','缺乏热情','无聊'],revEn:['lack of energy','lack of passion','boredom'],yn:'yes'},
+{id:'w-2',arc:'minor',suit:'wands',el:'fire',n:2,num:'二',zh:'权杖二',en:'Two of Wands',up:['规划','做决定','离开家'],upEn:['planning','making decisions','leaving home'],rev:['害怕改变','求稳','糟糕的规划'],revEn:['fear of change','playing it safe','bad planning'],yn:'maybe'},
+{id:'w-3',arc:'minor',suit:'wands',el:'fire',n:3,num:'三',zh:'权杖三',en:'Three of Wands',up:['展望未来','扩张','快速成长'],upEn:['looking ahead','expansion','rapid growth'],rev:['障碍','延迟','挫败'],revEn:['obstacles','delays','frustration'],yn:'yes'},
+{id:'w-4',arc:'minor',suit:'wands',el:'fire',n:4,num:'四',zh:'权杖四',en:'Four of Wands',up:['社群','家','庆祝'],upEn:['community','home','celebration'],rev:['缺乏支持','短暂','家庭冲突'],revEn:['lack of support','transient','conflict at home'],yn:'yes'},
+{id:'w-5',arc:'minor',suit:'wands',el:'fire',n:5,num:'五',zh:'权杖五',en:'Five of Wands',up:['竞争','对手','冲突'],upEn:['competition','rivals','conflict'],rev:['回避冲突','尊重差异'],revEn:['avoiding conflict','respecting differences'],yn:'no'},
+{id:'w-6',arc:'minor',suit:'wands',el:'fire',n:6,num:'六',zh:'权杖六',en:'Six of Wands',up:['胜利','成功','公开的奖赏'],upEn:['victory','success','public reward'],rev:['过度自傲','得不到认可','惩罚'],revEn:['excessive pride','lack of recognition','punishment'],yn:'yes'},
+{id:'w-7',arc:'minor',suit:'wands',el:'fire',n:7,num:'七',zh:'权杖七',en:'Seven of Wands',up:['坚持','防守','维持控制'],upEn:['perseverance','defensiveness','maintaining control'],rev:['放弃','信心被摧毁','不堪重负'],revEn:['giving up','crushed confidence','overwhelmed'],yn:'maybe'},
+{id:'w-8',arc:'minor',suit:'wands',el:'fire',n:8,num:'八',zh:'权杖八',en:'Eight of Wands',up:['快速行动','移动','快速决定'],upEn:['swift action','movement','quick decisions'],rev:['恐慌','等待','放缓'],revEn:['panic','waiting','slowing down'],yn:'yes'},
+{id:'w-9',arc:'minor',suit:'wands',el:'fire',n:9,num:'九',zh:'权杖九',en:'Nine of Wands',up:['韧性','毅力','最后一站'],upEn:['resilience','persistence','the last stretch'],rev:['筋疲力尽','疲惫','怀疑动机'],revEn:['exhaustion','fatigue','doubting motives'],yn:'maybe'},
+{id:'w-10',arc:'minor',suit:'wands',el:'fire',n:10,num:'十',zh:'权杖十',en:'Ten of Wands',up:['成就','责任','负担'],upEn:['accomplishment','responsibility','burden'],rev:['不会授权','压力过大','燃尽'],revEn:['inability to delegate','too much pressure','burnout'],yn:'no'},
+{id:'w-page',arc:'minor',suit:'wands',el:'fire',n:0,num:'侍从',ct:1,zh:'权杖侍从',en:'Page of Wands',up:['探索','兴奋','自由'],upEn:['exploration','excitement','freedom'],rev:['缺乏方向','拖延','制造冲突'],revEn:['lack of direction','delays','creating conflict'],yn:'maybe'},
+{id:'w-knight',arc:'minor',suit:'wands',el:'fire',n:0,num:'骑士',ct:1,zh:'权杖骑士',en:'Knight of Wands',up:['行动','冒险','无畏'],upEn:['action','adventure','fearlessness'],rev:['愤怒','冲动','鲁莽'],revEn:['anger','impulsiveness','recklessness'],yn:'yes'},
+{id:'w-queen',arc:'minor',suit:'wands',el:'fire',n:0,num:'王后',ct:1,zh:'权杖王后',en:'Queen of Wands',up:['勇气','决心','快乐'],upEn:['courage','determination','joy'],rev:['自私','嫉妒','不安全感'],revEn:['selfishness','jealousy','insecurity'],yn:'yes'},
+{id:'w-king',arc:'minor',suit:'wands',el:'fire',n:0,num:'国王',ct:1,zh:'权杖国王',en:'King of Wands',up:['大局','领导者','克服挑战'],upEn:['big picture','leadership','overcoming challenges'],rev:['冲动','专横','无法企及的期望'],revEn:['impulsiveness','being domineering','unreachable expectations'],yn:'yes'},
+// ---- 圣杯（水 · 情感、直觉、关系）----
+{id:'c-ace',arc:'minor',suit:'cups',el:'water',n:1,num:'A',zh:'圣杯 A',en:'Ace of Cups',up:['新的感受','灵性','直觉'],upEn:['new feelings','spirituality','intuition'],rev:['情感失落','创造力受阻','空虚'],revEn:['emotional loss','blocked creativity','emptiness'],yn:'yes'},
+{id:'c-2',arc:'minor',suit:'cups',el:'water',n:2,num:'二',zh:'圣杯二',en:'Two of Cups',up:['合一','伴侣关系','联结'],upEn:['unity','partnership','connection'],rev:['失衡','沟通破裂','紧张'],revEn:['imbalance','broken communication','tension'],yn:'yes'},
+{id:'c-3',arc:'minor',suit:'cups',el:'water',n:3,num:'三',zh:'圣杯三',en:'Three of Cups',up:['友谊','社群','快乐'],upEn:['friendship','community','joy'],rev:['过度放纵','流言','孤立'],revEn:['overindulgence','gossip','isolation'],yn:'yes'},
+{id:'c-4',arc:'minor',suit:'cups',el:'water',n:4,num:'四',zh:'圣杯四',en:'Four of Cups',up:['冷漠','沉思','疏离'],upEn:['apathy','contemplation','disconnection'],rev:['突然醒悟','选择快乐','接纳'],revEn:['sudden awareness','choosing happiness','acceptance'],yn:'maybe'},
+{id:'c-5',arc:'minor',suit:'cups',el:'water',n:5,num:'五',zh:'圣杯五',en:'Five of Cups',up:['失落','悲伤','自怜'],upEn:['loss','grief','self-pity'],rev:['接纳','向前看','找到平静'],revEn:['acceptance','moving on','finding peace'],yn:'no'},
+{id:'c-6',arc:'minor',suit:'cups',el:'water',n:6,num:'六',zh:'圣杯六',en:'Six of Cups',up:['熟悉','快乐回忆','疗愈'],upEn:['familiarity','happy memories','healing'],rev:['向前走','离开家','独立'],revEn:['moving forward','leaving home','independence'],yn:'yes'},
+{id:'c-7',arc:'minor',suit:'cups',el:'water',n:7,num:'七',zh:'圣杯七',en:'Seven of Cups',up:['寻找目标','选择','白日梦'],upEn:['searching for purpose','choices','daydreaming'],rev:['缺乏目标','分心','困惑'],revEn:['lack of purpose','distraction','confusion'],yn:'maybe'},
+{id:'c-8',arc:'minor',suit:'cups',el:'water',n:8,num:'八',zh:'圣杯八',en:'Eight of Cups',up:['离开','幻灭','放下'],upEn:['leaving','disillusionment','letting go'],rev:['逃避','害怕改变','害怕失去'],revEn:['avoidance','fear of change','fear of loss'],yn:'no'},
+{id:'c-9',arc:'minor',suit:'cups',el:'water',n:9,num:'九',zh:'圣杯九',en:'Nine of Cups',up:['满足','情绪稳定','奢华'],upEn:['satisfaction','emotional stability','luxury'],rev:['缺乏内在喜悦','自满','不满'],revEn:['lack of inner joy','smugness','dissatisfaction'],yn:'yes'},
+{id:'c-10',arc:'minor',suit:'cups',el:'water',n:10,num:'十',zh:'圣杯十',en:'Ten of Cups',up:['内在幸福','圆满','梦想成真'],upEn:['inner happiness','fulfillment','dreams coming true'],rev:['破碎的梦想','破裂的家庭','家庭不和'],revEn:['broken dreams','broken family','family discord'],yn:'yes'},
+{id:'c-page',arc:'minor',suit:'cups',el:'water',n:0,num:'侍从',ct:1,zh:'圣杯侍从',en:'Page of Cups',up:['惊喜','梦想者','敏感'],upEn:['happy surprise','dreamer','sensitivity'],rev:['情绪不成熟','不安全感','失望'],revEn:['emotional immaturity','insecurity','disappointment'],yn:'maybe'},
+{id:'c-knight',arc:'minor',suit:'cups',el:'water',n:0,num:'骑士',ct:1,zh:'圣杯骑士',en:'Knight of Cups',up:['追随内心','理想主义','浪漫'],upEn:['following the heart','idealism','romance'],rev:['情绪化','失望'],revEn:['moodiness','disappointment'],yn:'maybe'},
+{id:'c-queen',arc:'minor',suit:'cups',el:'water',n:0,num:'王后',ct:1,zh:'圣杯王后',en:'Queen of Cups',up:['同情','平静','安慰'],upEn:['compassion','calm','comfort'],rev:['殉道','不安全感','依赖'],revEn:['martyrdom','insecurity','dependence'],yn:'yes'},
+{id:'c-king',arc:'minor',suit:'cups',el:'water',n:0,num:'国王',ct:1,zh:'圣杯国王',en:'King of Cups',up:['同情','控制','平衡'],upEn:['compassion','control','balance'],rev:['冷漠','情绪化','糟糕的建议'],revEn:['coldness','moodiness','bad advice'],yn:'yes'},
+// ---- 宝剑（风 · 思维、沟通、冲突、真相）----
+{id:'s-ace',arc:'minor',suit:'swords',el:'air',n:1,num:'A',zh:'宝剑 A',en:'Ace of Swords',up:['突破','清晰','敏锐的头脑'],upEn:['breakthrough','clarity','sharp mind'],rev:['困惑','残酷','混乱'],revEn:['confusion','cruelty','chaos'],yn:'yes'},
+{id:'s-2',arc:'minor',suit:'swords',el:'air',n:2,num:'二',zh:'宝剑二',en:'Two of Swords',up:['艰难抉择','犹豫不决','僵局'],upEn:['difficult choices','indecision','stalemate'],rev:['两害相权取其轻','没有正确选择','困惑'],revEn:['lesser of two evils','no right choice','confusion'],yn:'maybe'},
+{id:'s-3',arc:'minor',suit:'swords',el:'air',n:3,num:'三',zh:'宝剑三',en:'Three of Swords',up:['心碎','痛苦','悲伤'],upEn:['heartbreak','pain','grief'],rev:['康复','原谅','向前看'],revEn:['recovery','forgiveness','moving on'],yn:'no'},
+{id:'s-4',arc:'minor',suit:'swords',el:'air',n:4,num:'四',zh:'宝剑四',en:'Four of Swords',up:['休息','恢复','沉思'],upEn:['rest','recovery','contemplation'],rev:['焦躁','燃尽','压力'],revEn:['restlessness','burnout','stress'],yn:'maybe'},
+{id:'s-5',arc:'minor',suit:'swords',el:'air',n:5,num:'五',zh:'宝剑五',en:'Five of Swords',up:['不顾一切的野心','不择手段','狡黠'],upEn:['unchecked ambition','winning at all costs','sneakiness'],rev:['残留的怨恨','渴望和解','原谅'],revEn:['lingering resentment','desire for reconciliation','forgiveness'],yn:'no'},
+{id:'s-6',arc:'minor',suit:'swords',el:'air',n:6,num:'六',zh:'宝剑六',en:'Six of Swords',up:['过渡','放下','向前走'],upEn:['transition','letting go','moving on'],rev:['情绪包袱','未解决的问题','抗拒过渡'],revEn:['emotional baggage','unresolved issues','resisting transition'],yn:'yes'},
+{id:'s-7',arc:'minor',suit:'swords',el:'air',n:7,num:'七',zh:'宝剑七',en:'Seven of Swords',up:['欺骗','诡计','策略'],upEn:['deception','trickery','strategy'],rev:['坦白','重新思考方法','欺骗被揭穿'],revEn:['confession','rethinking the approach','deception exposed'],yn:'no'},
+{id:'s-8',arc:'minor',suit:'swords',el:'air',n:8,num:'八',zh:'宝剑八',en:'Eight of Swords',up:['囚禁','受困','自我受害'],upEn:['imprisonment','feeling trapped','self-victimization'],rev:['自我接纳','新视角','自由'],revEn:['self-acceptance','new perspective','freedom'],yn:'no'},
+{id:'s-9',arc:'minor',suit:'swords',el:'air',n:9,num:'九',zh:'宝剑九',en:'Nine of Swords',up:['焦虑','绝望','创伤'],upEn:['anxiety','despair','trauma'],rev:['希望','求助','走出绝望'],revEn:['hope','reaching out','coming out of despair'],yn:'no'},
+{id:'s-10',arc:'minor',suit:'swords',el:'air',n:10,num:'十',zh:'宝剑十',en:'Ten of Swords',up:['失败','崩溃','败局'],upEn:['failure','collapse','defeat'],rev:['不会更糟了','只会向上','必然的终结'],revEn:["it can't get worse",'only up from here','inevitable ending'],yn:'no'},
+{id:'s-page',arc:'minor',suit:'swords',el:'air',n:0,num:'侍从',ct:1,zh:'宝剑侍从',en:'Page of Swords',up:['好奇','焦躁','脑力'],upEn:['curiosity','restlessness','mental energy'],rev:['欺骗','操纵','光说不做'],revEn:['deception','manipulation','all talk, no action'],yn:'maybe'},
+{id:'s-knight',arc:'minor',suit:'swords',el:'air',n:0,num:'骑士',ct:1,zh:'宝剑骑士',en:'Knight of Swords',up:['行动','冲动','捍卫信念'],upEn:['action','impulsiveness','defending beliefs'],rev:['没有方向','不顾后果','不可预测'],revEn:['no direction','no regard for consequences','unpredictability'],yn:'maybe'},
+{id:'s-queen',arc:'minor',suit:'swords',el:'air',n:0,num:'王后',ct:1,zh:'宝剑王后',en:'Queen of Swords',up:['复杂','敏锐','头脑清晰'],upEn:['complexity','perceptiveness','clear mind'],rev:['冷酷','残忍','苦涩'],revEn:['cold-heartedness','cruelty','bitterness'],yn:'maybe'},
+{id:'s-king',arc:'minor',suit:'swords',el:'air',n:0,num:'国王',ct:1,zh:'宝剑国王',en:'King of Swords',up:['理性胜过情感','自律','真相'],upEn:['reason over emotion','discipline','truth'],rev:['操纵','残酷','软弱'],revEn:['manipulation','cruelty','weakness'],yn:'yes'},
+// ---- 星币（土 · 物质、金钱、工作、健康）----
+{id:'p-ace',arc:'minor',suit:'pentacles',el:'earth',n:1,num:'A',zh:'星币 A',en:'Ace of Pentacles',up:['机会','繁荣','新事业'],upEn:['opportunity','prosperity','new venture'],rev:['错失机会','错过时机','糟糕的投资'],revEn:['missed opportunity','bad timing','bad investment'],yn:'yes'},
+{id:'p-2',arc:'minor',suit:'pentacles',el:'earth',n:2,num:'二',zh:'星币二',en:'Two of Pentacles',up:['平衡决定','优先级','适应变化'],upEn:['balancing decisions','priorities','adapting to change'],rev:['失去平衡','混乱','不堪重负'],revEn:['loss of balance','chaos','feeling overwhelmed'],yn:'maybe'},
+{id:'p-3',arc:'minor',suit:'pentacles',el:'earth',n:3,num:'三',zh:'星币三',en:'Three of Pentacles',up:['团队合作','协作','建设'],upEn:['teamwork','collaboration','building'],rev:['缺乏合作','混乱','团队冲突'],revEn:['lack of teamwork','disorganization','team conflict'],yn:'yes'},
+{id:'p-4',arc:'minor',suit:'pentacles',el:'earth',n:4,num:'四',zh:'星币四',en:'Four of Pentacles',up:['保守','节俭','安全感'],upEn:['conservation','frugality','security'],rev:['贪婪','吝啬','占有欲'],revEn:['greed','materialism','possessiveness'],yn:'maybe'},
+{id:'p-5',arc:'minor',suit:'pentacles',el:'earth',n:5,num:'五',zh:'星币五',en:'Five of Pentacles',up:['匮乏','贫穷','不安全感'],upEn:['neediness','poverty','insecurity'],rev:['恢复','慈善','改善'],revEn:['recovery','charity','improvement'],yn:'no'},
+{id:'p-6',arc:'minor',suit:'pentacles',el:'earth',n:6,num:'六',zh:'星币六',en:'Six of Pentacles',up:['慈善','慷慨','分享'],upEn:['charity','generosity','sharing'],rev:['附带条件','吝啬','权力与支配'],revEn:['strings attached','stinginess','power and domination'],yn:'yes'},
+{id:'p-7',arc:'minor',suit:'pentacles',el:'earth',n:7,num:'七',zh:'星币七',en:'Seven of Pentacles',up:['努力','毅力','勤奋'],upEn:['hard work','perseverance','diligence'],rev:['劳而无获','分心','没有回报'],revEn:['work without reward','distraction','no payoff'],yn:'maybe'},
+{id:'p-8',arc:'minor',suit:'pentacles',el:'earth',n:8,num:'八',zh:'星币八',en:'Eight of Pentacles',up:['学徒','热情','高标准'],upEn:['apprenticeship','passion','high standards'],rev:['缺乏热情','没有灵感','没有动力'],revEn:['lack of passion','uninspired','no motivation'],yn:'yes'},
+{id:'p-9',arc:'minor',suit:'pentacles',el:'earth',n:9,num:'九',zh:'星币九',en:'Nine of Pentacles',up:['劳动果实','回报','奢华'],upEn:['fruits of labor','rewards','luxury'],rev:['鲁莽消费','入不敷出','虚假成功'],revEn:['reckless spending','living beyond means','false success'],yn:'yes'},
+{id:'p-10',arc:'minor',suit:'pentacles',el:'earth',n:10,num:'十',zh:'星币十',en:'Ten of Pentacles',up:['传承','圆满','继承'],upEn:['legacy','fulfillment','inheritance'],rev:['短暂成功','缺乏稳定','缺乏资源'],revEn:['fleeting success','lack of stability','lack of resources'],yn:'yes'},
+{id:'p-page',arc:'minor',suit:'pentacles',el:'earth',n:0,num:'侍从',ct:1,zh:'星币侍从',en:'Page of Pentacles',up:['雄心','渴望','勤奋'],upEn:['ambition','desire','diligence'],rev:['缺乏承诺','贪婪','懒惰'],revEn:['lack of commitment','greed','laziness'],yn:'maybe'},
+{id:'p-knight',arc:'minor',suit:'pentacles',el:'earth',n:0,num:'骑士',ct:1,zh:'星币骑士',en:'Knight of Pentacles',up:['效率','努力','责任'],upEn:['efficiency','hard work','responsibility'],rev:['懒惰','偏执','劳而无获'],revEn:['laziness','obsessiveness','work without reward'],yn:'yes'},
+{id:'p-queen',arc:'minor',suit:'pentacles',el:'earth',n:0,num:'王后',ct:1,zh:'星币王后',en:'Queen of Pentacles',up:['务实','生活舒适','财务安全'],upEn:['practicality','creature comforts','financial security'],rev:['自我中心','嫉妒','窒息'],revEn:['self-centeredness','jealousy','smothering'],yn:'yes'},
+{id:'p-king',arc:'minor',suit:'pentacles',el:'earth',n:0,num:'国王',ct:1,zh:'星币国王',en:'King of Pentacles',up:['富足','繁荣','安全感'],upEn:['abundance','prosperity','security'],rev:['贪婪','放纵','纵欲'],revEn:['greed','indulgence','overindulgence'],yn:'yes'}
+];
+var TAROT_BY_ID = {};
+TAROT_CARDS.forEach(function(c){ TAROT_BY_ID[c.id] = c; });
+
+// 牌位读法（每类位置一句话“这张牌怎么读”；解读只引用牌义库字段，不自由发挥）
+var TARO_FRAMES = {
+  current:'这张牌说的是现在的局面——',
+  past:'这张牌说的是事情的来处——',
+  future:'这张牌指向事情的走向——',
+  challenge:'挡在你面前的，是这张牌带来的阻力——',
+  advice:'这张牌给你的做法是——',
+  foundation:'这张牌说的是事情的根基——',
+  self:'这张牌说的是你现在的状态——',
+  other:'这张牌呈现的是对方现在的状态，不是读心——',
+  connection:'这张牌说的是你们之间的连接——',
+  hopes:'这张牌说的是你心里真正牵挂的东西——',
+  hidden:'这张牌说的是还没浮出水面的因素——',
+  goal:'这张牌说的是你心里真正想要的——',
+  undercurrent:'这张牌说的是两人都没有说出口的东西——',
+  potential:'这张牌说的是这件事可能长成的样子——',
+  body:'这张牌说的是身体现在的状态——',
+  mind:'这张牌说的是你现在的想法——',
+  spirit:'这张牌说的是内在成长的方向——',
+  timing:'这张牌说的是时机成熟的征兆，不是具体日期——',
+  resource:'这张牌说的是你能动用的资源——'
+};
+var TARO_EL = { fire:{zh:'火',suit:'权杖',desc:'行动与欲望在推着这件事走',miss:'行动'}, water:{zh:'水',suit:'圣杯',desc:'情绪与直觉浓度很高',miss:'感受'}, air:{zh:'风',suit:'宝剑',desc:'想得多、谈得多，信息在流动',miss:'沟通与思考'}, earth:{zh:'土',suit:'星币',desc:'落到实处的东西在主导',miss:'落地执行'} };
+var TARO_NUM_THEME = { 1:'新开始', 2:'合作与平衡', 3:'创造与成长', 4:'稳定与结构', 5:'冲突与变化', 6:'和谐与回报', 7:'坚持与反思', 8:'力量与行动', 9:'接近完成', 10:'一个周期正在收尾' };
+// 可执行建议：按建议位那张牌的花色/大阿卡纳给一步 30 天内能做的具体事（结合该牌关键词，不编新牌义）
+var TARO_SUIT_ACTION = {
+  wands:'先动起来：把第一步约进日程，七天内做一次',
+  cups:'先和相关的人认真谈一次，把感受说清楚',
+  swords:'先把事实、担心和想要的结果分三栏写下来，再作决定',
+  pentacles:'先落到实处：算一笔账，或把手头的一件小事做完',
+  major:'先做一个决定并写下来——大阿卡纳出现在这里，意味着这一步值得认真对待'
+};
+// 牌阵（研究文档 2.1–2.6；心之声 8 张完整位置未核实，留第二批，不做）
+// positions: zh 位置名 / en / cat 牌位读法类别 / q 这个位置问什么；adviceIdx：合成句与可执行建议取哪张牌
+var TAROT_SPREADS = {
+  single:{zh:'单张牌',en:'Single Card',cards:1,adviceIdx:0,positions:[{zh:'今日讯息',en:"Today's Message",cat:'future',q:'今天最值得留意的是什么'}]},
+  yesno:{zh:'是非牌',en:'Yes / No',cards:1,adviceIdx:0,positions:[{zh:'答案',en:'The Answer',cat:'current',q:'这件事的答案倾向是什么'}]},
+  ppf:{zh:'过去 · 现在 · 未来',en:'Past–Present–Future',cards:3,adviceIdx:2,positions:[{zh:'过去',en:'Past',cat:'past',q:'事情是从哪里来的'},{zh:'现在',en:'Present',cat:'current',q:'现在到底是什么情况'},{zh:'未来',en:'Future',cat:'future',q:'照这样下去会走到哪里'}]},
+  sca:{zh:'情境 · 挑战 · 建议',en:'Situation–Challenge–Advice',cards:3,adviceIdx:2,positions:[{zh:'情境',en:'Situation',cat:'current',q:'现在发生了什么'},{zh:'挑战',en:'Challenge',cat:'challenge',q:'什么在挡着你'},{zh:'建议',en:'Advice',cat:'advice',q:'可以落地的行动是什么'}]},
+  mbs:{zh:'身心灵',en:'Mind–Body–Spirit',cards:3,adviceIdx:2,positions:[{zh:'心智',en:'Mind',cat:'mind',q:'你现在的想法是什么'},{zh:'身体',en:'Body',cat:'body',q:'身体现在的能量与状态如何'},{zh:'灵性',en:'Spirit',cat:'spirit',q:'内在成长的方向是什么'}]},
+  triangle:{zh:'圣三角',en:'The Sacred Triangle',cards:3,adviceIdx:2,positions:[{zh:'过去的原因',en:'Cause',cat:'past',q:'事情为什么会变成这样'},{zh:'问题的现状',en:'Present State',cat:'current',q:'现在到底是什么情况'},{zh:'将来的结果',en:'Outcome',cat:'future',q:'照这样下去会怎样'}]},
+  core:{zh:'直指核心',en:'The Core',cards:4,adviceIdx:2,positions:[{zh:'问题的核心',en:'The Core Issue',cat:'foundation',q:'真正的问题是什么'},{zh:'障碍或短处',en:'Obstacle',cat:'challenge',q:'什么在拖后腿'},{zh:'对策',en:'Strategy',cat:'advice',q:'最该做的对策是什么'},{zh:'资源或长处',en:'Resource',cat:'resource',q:'你手里有什么可以用的'}]},
+  develop:{zh:'发展牌阵',en:'Development',cards:5,adviceIdx:4,positions:[{zh:'当前状态',en:'Current State',cat:'current',q:'现在处在什么状态'},{zh:'未来发展',en:'Development',cat:'future',q:'接下来会怎么发展'},{zh:'障碍',en:'Obstacle',cat:'challenge',q:'什么在挡路'},{zh:'最后结果',en:'Outcome',cat:'future',q:'最后会走到哪里'},{zh:'建议',en:'Advice',cat:'advice',q:'最值得听的一句建议'}]},
+  money5:{zh:'财运五张牌阵',en:'Five-Card Money Spread',cards:5,adviceIdx:4,positions:[{zh:'我对金钱的真实态度',en:'Attitude to Money',cat:'self',q:'你对金钱真实的态度是什么'},{zh:'收入根基',en:'Income Foundation',cat:'foundation',q:'钱靠什么成立'},{zh:'漏财点',en:'Where Money Leaks',cat:'challenge',q:'钱从哪个口子流走'},{zh:'可增长空间',en:'Room to Grow',cat:'potential',q:'哪一块动了就有增量'},{zh:'本月行动建议',en:'Action This Month',cat:'advice',q:'30 天内做一件什么事'}]},
+  tree:{zh:'财富之树',en:'Tree of Wealth',cards:5,adviceIdx:4,positions:[{zh:'生长的根基',en:'Roots',cat:'foundation',q:'这件事靠什么根基在生长'},{zh:'依赖的能量',en:'Energy It Relies On',cat:'foundation',q:'它依赖什么样的能量'},{zh:'遇到的阻碍',en:'Obstacle',cat:'challenge',q:'生长中遇到了什么阻碍'},{zh:'潜在的危险',en:'Hidden Danger',cat:'hidden',q:'暗处有什么危险'},{zh:'最终的高度',en:'Final Height',cat:'future',q:'最后能长到多高'}]},
+  lovers:{zh:'恋人十字',en:"Lovers' Cross",cards:6,adviceIdx:4,positions:[{zh:'你',en:'You',cat:'self',q:'你在关系中的能量'},{zh:'伴侣',en:'Partner',cat:'other',q:'对方呈现出的能量'},{zh:'连接',en:'Connection',cat:'connection',q:'你们之间现在是什么连接'},{zh:'暗流',en:'Undercurrent',cat:'undercurrent',q:'两人都没有说出口的东西'},{zh:'建议',en:'Advice',cat:'advice',q:'眼下最该做的一步'},{zh:'潜力',en:'Potential',cat:'potential',q:'这段关系可能长成的样子'}]},
+  destined:{zh:'真命天子',en:'The One',cards:5,adviceIdx:3,positions:[{zh:'适合你的伴侣类型',en:'Your Match',cat:'goal',q:'适合你的伴侣是什么样'},{zh:'ta 是否已出现',en:'Have They Appeared',cat:'timing',q:'那个人离你有多远'},{zh:'会有困难吗',en:'Difficulty',cat:'challenge',q:'会遇到什么困难'},{zh:'需要什么改变',en:'What to Change',cat:'advice',q:'需要改变的是什么'},{zh:'该相信什么',en:'What to Trust',cat:'goal',q:'最值得相信的是什么'}]},
+  crush:{zh:'暗恋之牌',en:'Secret Crush',cards:5,adviceIdx:4,positions:[{zh:'对方的感受',en:'Their Feelings',cat:'other',q:'对方呈现出的感受'},{zh:'是否追求',en:'Pursue or Not',cat:'advice',q:'追还是不追，牌给的方向'},{zh:'未来潜力',en:'Potential',cat:'potential',q:'这件事可能长成的样子'},{zh:'其他人',en:'Someone Else',cat:'hidden',q:'还有谁在影响这件事'},{zh:'指引',en:'Guidance',cat:'advice',q:'最值得听的一句指引'}]},
+  career:{zh:'事业十字',en:'Career Cross',cards:5,adviceIdx:3,positions:[{zh:'当前职位 / 处境',en:'Current Position',cat:'current',q:'现在处在什么位置'},{zh:'障碍',en:'Obstacle',cat:'challenge',q:'什么在挡着你'},{zh:'优势',en:'Strength',cat:'resource',q:'你的优势在哪里'},{zh:'行动',en:'Action',cat:'advice',q:'接下来最该做的一步'},{zh:'结果',en:'Outcome',cat:'future',q:'照这样下去会走到哪里'}]},
+  interview:{zh:'面试求职',en:'Interview',cards:5,adviceIdx:1,positions:[{zh:'自己的心态及想法',en:'Your Mindset',cat:'self',q:'你现在的心态和想法'},{zh:'面试前要注意的情况',en:'Before the Interview',cat:'hidden',q:'面试前要注意什么'},{zh:'面试时将要发生的状况',en:'During the Interview',cat:'future',q:'面试现场会是什么状况'},{zh:'对方的要求或问题',en:'What They Want',cat:'other',q:'对方最看重什么'},{zh:'最后的结果',en:'Outcome',cat:'future',q:'最后会走到哪里'}]},
+  jobseek:{zh:'求职牌阵',en:'Job Search',cards:6,adviceIdx:3,positions:[{zh:'目前求职处境',en:'Current Situation',cat:'current',q:'现在求职处在什么境况'},{zh:'雇主眼中的你',en:'In Their Eyes',cat:'other',q:'雇主眼中你是什么样'},{zh:'卡住的原因',en:'What Blocks You',cat:'challenge',q:'卡住的原因是什么'},{zh:'机会从哪来',en:'Where Opportunity Comes From',cat:'potential',q:'机会会从哪里来'},{zh:'会是什么样的工作',en:'What Kind of Job',cat:'future',q:'会是一份什么样的工作'},{zh:'什么时候',en:'Timing',cat:'timing',q:'时机成熟的征兆'}]},
+  birthday:{zh:'生日牌阵',en:'Birthday Spread',cards:7,adviceIdx:6,positions:[{zh:'年主题',en:'Theme of the Year',cat:'goal',q:'这一年的主题是什么'},{zh:'爱情',en:'Love',cat:'connection',q:'感情今年的走向'},{zh:'事业',en:'Career',cat:'future',q:'事业今年的走向'},{zh:'健康',en:'Health',cat:'body',q:'身体这一年的状态'},{zh:'成长',en:'Growth',cat:'spirit',q:'内在成长的方向'},{zh:'挑战',en:'Challenge',cat:'challenge',q:'今年要面对的挑战'},{zh:'礼物',en:'Gift',cat:'potential',q:'今年会收到什么样的礼物'}]},
+  celtic:{zh:'凯尔特十字',en:'Celtic Cross',cards:10,adviceIdx:9,positions:[{zh:'现状',en:'Present',cat:'current',q:'现在到底是什么情况'},{zh:'阻碍',en:'Obstacle',cat:'challenge',q:'什么在横着挡路'},{zh:'根基 / 原因',en:'Foundation',cat:'foundation',q:'事情的根基与原因'},{zh:'近期过去',en:'Recent Past',cat:'past',q:'最近过去发生了什么'},{zh:'理想 / 目标',en:'Goal',cat:'goal',q:'你真正想要的是什么'},{zh:'近期未来',en:'Near Future',cat:'future',q:'近期会发生什么'},{zh:'你自己',en:'Yourself',cat:'self',q:'你现在处在什么状态'},{zh:'周边环境',en:'Environment',cat:'other',q:'身边的人和环境呈现出的能量'},{zh:'希望与恐惧',en:'Hopes and Fears',cat:'hopes',q:'你心里真正牵挂的是什么'},{zh:'最终结果',en:'Final Outcome',cat:'future',q:'最后会走到哪里'}]},
+  choice:{zh:'二选一',en:'Two Paths',cards:5,adviceIdx:0,positions:[{zh:'现状',en:'Present',cat:'current',q:'现在到底是什么情况'},{zh:'选择 A 的短期影响',en:'A: Short Term',cat:'future',q:'选 A 短期会怎样'},{zh:'选择 A 的长期影响',en:'A: Long Term',cat:'future',q:'选 A 长期会怎样'},{zh:'选择 B 的短期影响',en:'B: Short Term',cat:'future',q:'选 B 短期会怎样'},{zh:'选择 B 的长期影响',en:'B: Long Term',cat:'future',q:'选 B 长期会怎样'}]},
+  should:{zh:'该不该',en:'Should I?',cards:6,adviceIdx:5,positions:[{zh:'真实状况',en:'True Situation',cat:'current',q:'现在真实的状况是什么'},{zh:'没考虑到的因素',en:'Overlooked Factor',cat:'hidden',q:'有什么一直没考虑到的因素'},{zh:'做的话先遇到什么',en:'If You Do: First',cat:'future',q:'做了先遇到什么'},{zh:'做的话最后走向',en:'If You Do: Outcome',cat:'future',q:'做了最后会走到哪里'},{zh:'不做的话最后走向',en:'If You Don’t: Outcome',cat:'future',q:'不做最后会走到哪里'},{zh:'关键所在',en:'The Key',cat:'foundation',q:'关键到底在哪里'}]}
+};
+// 需求 → 默认牌阵 + 备选（研究文档 2.6）
+var TARO_NEEDS = {
+  money:{zh:'财运',en:'Money',glyph:'金',desc:'钱的来去与增量',spread:'money5',alt:['tree','ppf'],reason:'财运问题要拆开看：态度、根基、漏财点、增量、行动，所以用财运五张牌阵 · 5 张牌'},
+  love:{zh:'爱情',en:'Love',glyph:'♥',desc:'关系与心意',spread:'lovers',alt:['destined','crush'],reason:'感情要看清双方与暗流，所以用恋人十字 · 6 张牌'},
+  career:{zh:'事业',en:'Career',glyph:'仕',desc:'工作与前程',spread:'career',alt:['interview','jobseek'],reason:'事业要看清处境、障碍、优势、行动与结果，所以用事业十字 · 5 张牌'},
+  health:{zh:'健康',en:'Health',glyph:'康',desc:'身心状态',spread:'mbs',alt:['birthday'],reason:'健康要从心智、身体、灵性三面看，所以用身心灵 · 3 张牌'},
+  study:{zh:'学业',en:'Study',glyph:'学',desc:'考试与学习',spread:'sca',alt:['triangle','ppf'],reason:'学业问题先分清情境、挑战与建议，所以用情境 · 挑战 · 建议 · 3 张牌'},
+  custom:{zh:'其他',en:'Other',glyph:'？',desc:'写下你的具体事',spread:'auto',alt:['develop','celtic','yesno'],reason:''}
+};
+var TARO_Q_EXAMPLES = {
+  money:'如：这个月总存不下钱，问题出在哪',
+  love:'如：和男朋友冷战三天了',
+  career:'如：下个月要面试一家新公司',
+  health:'如：最近总睡不好，想知道身体在提醒什么',
+  study:'如：下周要考高数，心里没底',
+  custom:'如：该不该换个城市生活'
+};
+
+
+// ---- 工具 ----
+function taroEsc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function taroCard(id){ return TAROT_BY_ID[id]; }
+function taroShuffle78(){
+  var ids = TAROT_CARDS.map(function(c){ return c.id; });
+  for (var i = ids.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = ids[i]; ids[i] = ids[j]; ids[j] = t;
+  }
+  return ids;
+}
+function taroBackHtml(){ return '<div class="taro-back"><div class="tb-rings"></div></div>'; }
+// 牌面（CSS 牌面，精致版）：顶部序号/花色、中央水印字、衬线中英名、底部 3 个关键词；逆位整张旋转 180°
+function taroFaceHtml(card, rev, cls){
+  var kws = (rev ? card.rev : card.up).slice(0, 3);
+  var suitZh = {wands:'权杖',cups:'圣杯',swords:'宝剑',pentacles:'星币'}[card.suit] || '';
+  var top = card.arc === 'major' ? card.num : suitZh + ' · ' + card.num;
+  var mark = card.arc === 'major' ? '✦' : ({wands:'火',cups:'水',swords:'风',pentacles:'土'})[card.suit];
+  return '<div class="taro-face' + (cls ? ' ' + cls : '') + (rev ? ' rev' : '') + '">' +
+    '<div class="tf-top">' + top + '</div>' +
+    '<div class="tf-mark">' + mark + '</div>' +
+    '<div class="tf-name">' + card.zh + '</div>' +
+    '<div class="tf-en">' + card.en + '</div>' +
+    '<div class="tf-kws">' + kws.join(' · ') + '</div>' +
+    '<div class="tf-ori">' + (rev ? '逆位' : '正位') + '</div></div>';
+}
+
+// ---- 状态（只在内存里；抽牌中途退出可从首页回来继续）----
+var __taro = { stage:'need', need:null, q:'', spreadId:null, spread:null, reason:'', deck:[], fan:[], drawn:[], shuffle:0, busy:false, last:null };
+window.__taroState = __taro; // 供验证脚本读取状态（不改逻辑）
+
+// ---- 第 1 步：选需求 ----
+window.taroHome = function(){
+  __taro.stage = 'need';
+  var resume = '';
+  if (__taro.spread && __taro.drawn.length > 0 && __taro.drawn.length < __taro.spread.cards) {
+    resume = '<div class="taro-repeat">上次的牌阵还没抽完（已抽 ' + __taro.drawn.length + ' / ' + __taro.spread.cards + ' 张），可以继续，也可以放弃重开。' +
+      '<div style="margin-top:10px"><button class="btn" onclick="taroResume()">继续抽牌</button> <button class="btn ghost" onclick="taroAbandon()">放弃重开</button></div></div>';
+  }
+  var needs = Object.keys(TARO_NEEDS).map(function(k){
+    var nd = TARO_NEEDS[k];
+    return '<div class="taro-need" onclick="taroPickNeed(\'' + k + '\')"><div class="tn-glyph">' + nd.glyph + '</div><div class="tn-name">' + nd.zh + '</div><div class="tn-desc">' + nd.desc + '</div></div>';
+  }).join('');
+  document.getElementById('taroRoot').innerHTML =
+    '<div class="subtitle" style="margin-top:6px">先选一个你想问的方面</div>' +
+    '<div class="taro-need-grid">' + needs + '</div>' + resume +
+    '<button class="btn taro-daily-btn" onclick="taroDaily()">每日一牌 · 今天抽一张</button>' +
+    '<div class="hint" style="text-align:center;margin-top:10px">牌数按你的需求自动配，不用自己选抽几张；解读只引用牌义库，不编造</div>' +
+    '<div class="disclaim">塔罗揭示的是趋势、能量与可能性，是自我反思的镜子，不是定论；不作医疗、法律、财务建议。</div>' +
+    '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
+  window.scrollTo(0, 0);
+};
+window.taroResume = function(){
+  if (__taro.stage === 'draw' || (__taro.fan && __taro.fan.length)) { __taro.stage = 'draw'; taroRenderDraw(); }
+  else { taroGoDraw(); }
+};
+window.taroAbandon = function(){ __taro.drawn = []; __taro.fan = []; __taro.spread = null; __taro.spreadId = null; taroHome(); };
+
+// ---- 第 2 步：写具体事 ----
+window.taroPickNeed = function(need){
+  __taro.need = need; __taro.q = '';
+  var nd = TARO_NEEDS[need];
+  document.getElementById('taroRoot').innerHTML =
+    '<div class="form-card"><div class="field"><label>你想问的是「' + nd.zh + '」</label>' +
+    '<input type="text" id="taroQ" maxlength="60" placeholder="一句话写下具体是什么事（可选）">' +
+    '<div class="hint" style="margin-top:8px">' + TARO_Q_EXAMPLES[need] + '。写得越具体，解读越准；不写也能继续。</div></div>' +
+    '<div class="hint" style="text-align:center;margin-top:6px">一次只聚焦一件事；不问确切时间，不问别人的私密想法</div>' +
+    '<button class="btn" onclick="taroAssign()">配牌阵</button>' +
+    '<button class="btn ghost" onclick="taroHome()">换个需求</button></div>';
+  var inp = document.getElementById('taroQ'); if (inp) inp.focus();
+  window.scrollTo(0, 0);
+};
+
+// ---- 第 3 步：自动配牌阵并明示理由 ----
+function taroAutoSpread(q){
+  var s = (q || '').trim();
+  if (/选|决定|还是|去还是不去|A还是B/.test(s)) return {id:'choice', reason:'这个问题要比较两条路，所以用二选一 · 5 张牌'};
+  if (/该不该|要不要/.test(s)) return {id:'should', reason:'这个问题要判断做还是不做，所以用该不该 · 6 张牌'};
+  if (/为什么|原因|怎么回事/.test(s)) return {id:'core', reason:'这个问题要挖真正的原因，所以用直指核心 · 4 张牌'};
+  if (s.length > 40 || /重大|人生|未来几年/.test(s)) return {id:'celtic', reason:'这个问题比较大、因素多，所以用凯尔特十字 · 10 张牌'};
+  return {id:'sca', reason:'先分清情境、挑战与建议，所以用情境 · 挑战 · 建议 · 3 张牌'};
+}
+function taroFindRepeat(q){
+  if (!q) return null;
+  var list = store.get('xjg_history') || [];
+  var now = Date.now();
+  for (var i = 0; i < list.length; i++) {
+    var it = list[i];
+    if (it.type === '塔罗' && it.data && it.data.q === q && (now - it.time) < 24 * 3600 * 1000) return {idx:i, item:it};
+  }
+  return null;
+}
+window.taroAssign = function(){
+  var q = ((document.getElementById('taroQ') || {}).value || '').trim();
+  __taro.q = q;
+  var nd = TARO_NEEDS[__taro.need];
+  var pick = (__taro.need === 'custom') ? taroAutoSpread(q) : {id: nd.spread, reason: nd.reason};
+  __taro.spreadId = pick.id;
+  __taro.spread = TAROT_SPREADS[pick.id];
+  __taro.reason = pick.reason;
+  taroRenderAssign();
+};
+function taroRenderAssign(){
+  var nd = TARO_NEEDS[__taro.need];
+  var sp = __taro.spread;
+  var rep = taroFindRepeat(__taro.q);
+  var repHtml = '';
+  if (rep) {
+    repHtml = '<div class="taro-repeat">这个问题在 24 小时内已经抽过一次了。等事情有了新变化再抽，启发会更大；不喜欢答案就重抽，是最快失去信任的方式。' +
+      '<div style="margin-top:10px"><button class="btn" onclick="taroViewRepeat(' + rep.idx + ')">查看上次结果</button></div></div>';
+  }
+  var alts = nd.alt.map(function(id){
+    var s2 = TAROT_SPREADS[id];
+    return '<span class="ta-btn" onclick="taroSwap(\'' + id + '\')">' + s2.zh + ' · ' + s2.cards + ' 张</span>';
+  }).join('');
+  document.getElementById('taroRoot').innerHTML =
+    '<div class="taro-note">为你选了「<b>' + sp.zh + ' · ' + sp.cards + ' 张牌</b>」——' + __taro.reason + '</div>' +
+    '<div class="hint" style="text-align:center">牌数是按你的需求自动配的，不用自己选抽几张</div>' +
+    repHtml +
+    '<div class="taro-alt"><span class="ta-label">换一个牌阵：</span>' + alts + '</div>' +
+    '<button class="btn" style="margin-top:14px" onclick="taroGoDraw()">开始洗牌抽牌</button>' +
+    '<button class="btn ghost" onclick="taroPickNeed(\'' + __taro.need + '\')">改一下问题</button>';
+  window.scrollTo(0, 0);
+}
+window.taroViewRepeat = function(idx){
+  var list = store.get('xjg_history') || [];
+  var it = list[idx];
+  if (it && it.data) window.__xjgRestoreTarot(it.data);
+};
+window.taroSwap = function(id){
+  __taro.spreadId = id;
+  __taro.spread = TAROT_SPREADS[id];
+  __taro.reason = '你换成了「' + TAROT_SPREADS[id].zh + ' · ' + TAROT_SPREADS[id].cards + ' 张牌」';
+  taroRenderAssign();
+};
+
+// ---- 第 4 步：洗牌 → 抽牌 ----
+window.taroGoDraw = function(){
+  __taro.deck = taroShuffle78();
+  __taro.fan = [];
+  __taro.drawn = [];
+  __taro.shuffle = 0;
+  __taro.stage = 'shuffle';
+  document.getElementById('taroRoot').innerHTML =
+    '<div class="subtitle" style="margin-top:6px">先洗牌</div>' +
+    '<div class="taro-deck" onclick="taroShuffleTap()"><div class="taro-deckstack" id="taroStack">' + taroBackHtml() + taroBackHtml() + taroBackHtml() + '</div></div>' +
+    '<div class="taro-stars" id="taroShuffleDots">○ ○ ○</div>' +
+    '<div class="hint" style="text-align:center">想着你的问题，点三下牌堆洗牌</div>' +
+    '<div style="text-align:center;margin-top:10px"><span class="tip-link" onclick="taroOpenFan()">跳过洗牌，直接抽牌</span></div>';
+  window.scrollTo(0, 0);
+};
+window.taroShuffleTap = function(){
+  __taro.shuffle++;
+  var st = document.getElementById('taroStack');
+  if (st) { st.classList.remove('shuffling'); void st.offsetWidth; st.classList.add('shuffling'); }
+  __taro.deck = taroShuffle78(); // 每点一下真的重新洗一次
+  var dots = document.getElementById('taroShuffleDots');
+  if (dots) {
+    var s = '';
+    for (var i = 0; i < 3; i++) s += (i < __taro.shuffle ? '● ' : '○ ');
+    dots.textContent = s.trim();
+  }
+  if (__taro.shuffle >= 3) setTimeout(taroOpenFan, 350);
+};
+window.taroOpenFan = function(){
+  __taro.stage = 'draw';
+  __taro.fan = __taro.deck.slice(0, 12).map(function(id){ return {id:id, used:false}; });
+  taroRenderDraw();
+};
+function taroRenderDraw(){
+  var sp = __taro.spread;
+  var slots = sp.positions.map(function(p, i){
+    var d = __taro.drawn[i];
+    var front = d ? taroFaceHtml(taroCard(d.id), d.rev, '') : '';
+    return '<div class="taro-slot"><div class="taro-flip"><div class="taro-flip-in' + (d ? ' flipped' : '') + '">' +
+      '<div class="taro-side taro-side-back">' + taroBackHtml() + '</div>' +
+      '<div class="taro-side taro-side-front">' + front + '</div>' +
+      '</div></div><div class="taro-slot-label"><b>' + (i + 1) + '</b> · ' + p.zh + '</div></div>';
+  }).join('');
+  var fan = __taro.fan.map(function(f, i){
+    var n = __taro.fan.length;
+    var rot = (i - (n - 1) / 2) * 2.4;
+    var lift = Math.abs(i - (n - 1) / 2) * 2.5;
+    return '<div class="taro-deckcard' + (f.used ? ' used' : '') + '" style="transform:rotate(' + rot + 'deg) translateY(' + lift + 'px)" onclick="taroPickFan(' + i + ', this, event)">' + taroBackHtml() + '</div>';
+  }).join('');
+  var total = sp.cards, done = __taro.drawn.length;
+  var stars = '';
+  for (var s = 0; s < total; s++) stars += '<span class="' + (s < done ? '' : 'tst-off') + '">★</span>';
+  document.getElementById('taroRoot').innerHTML =
+    '<div class="subtitle" style="margin-top:6px">' + sp.zh + ' · 凭直觉点一张牌</div>' +
+    '<div class="taro-fan" id="taroFan">' + fan + '</div>' +
+    '<div class="taro-stars">' + stars + '</div>' +
+    '<div class="hint" id="taroProg" style="text-align:center">第 ' + done + ' / ' + total + ' 张</div>' +
+    '<div class="taro-slots" id="taroSlots">' + slots + '</div>' +
+    '<div style="text-align:center;margin-top:12px"><span class="tip-link" onclick="taroHome()">这次不抽了，回去</span></div>';
+  window.scrollTo(0, 0);
+}
+window.taroPickFan = function(i, el, ev){
+  if (__taro.busy) return;
+  var f = __taro.fan[i];
+  if (!f || f.used) return;
+  var sp = __taro.spread;
+  if (__taro.drawn.length >= sp.cards) return;
+  __taro.busy = true;
+  f.used = true;
+  if (el) el.classList.add('picked');
+  // 轻震动只在真实手指点按时触发（isTrusted），且同步调用以保留用户手势；
+  // 程序化 click（测试）不触发，避免 Chrome 报 intervention 错误污染控制台
+  if (ev && ev.isTrusted) { try { if (navigator.vibrate) navigator.vibrate(10); } catch (e) {} }
+  var rev = Math.random() < 0.3;
+  var card = taroCard(f.id);
+  var idx = __taro.drawn.length;
+  __taro.drawn.push({id: f.id, rev: rev});
+  setTimeout(function(){
+    if (el) el.classList.add('used');
+    var slot = document.querySelectorAll('#taroSlots .taro-slot')[idx];
+    if (slot) {
+      var front = slot.querySelector('.taro-side-front');
+      var flip = slot.querySelector('.taro-flip-in');
+      if (front) front.innerHTML = taroFaceHtml(card, rev, '');
+      if (flip) flip.classList.add('flipped');
+    }
+    var total = sp.cards, done = __taro.drawn.length;
+    var starsEl = document.querySelector('#taroRoot .taro-stars');
+    if (starsEl) {
+      var st = '';
+      for (var s = 0; s < total; s++) st += '<span class="' + (s < done ? '' : 'tst-off') + '">★</span>';
+      starsEl.innerHTML = st;
+    }
+    var prog = document.getElementById('taroProg');
+    if (prog) prog.textContent = '第 ' + done + ' / ' + total + ' 张';
+    __taro.busy = false;
+    if (done >= total) {
+      var slotsEl = document.getElementById('taroSlots');
+      if (slotsEl) slotsEl.classList.add('sweep');
+      setTimeout(function(){
+        taroShowReading({need: __taro.need, q: __taro.q, spreadId: __taro.spreadId, draws: __taro.drawn.slice(), date: todayKey(), isDaily:false}, false);
+      }, 950);
+    }
+  }, 320);
+};
+
+// ---- 第 5 步：解读（逐张按牌位 + 整体合成 + 可执行建议）----
+function taroCardsHtml(data){
+  var sp = TAROT_SPREADS[data.spreadId];
+  var html = '';
+  data.draws.forEach(function(d, i){
+    var card = taroCard(d.id);
+    var pos = sp.positions[i];
+    var kws = (d.rev ? card.rev : card.up).slice(0, 2);
+    html += '<div class="r-section"><h3>' + (i + 1) + ' · ' + pos.zh + ' · 「' + card.zh + '」' + (d.rev ? '逆位' : '正位') + '</h3>' +
+      '<div class="taro-cr">' + taroFaceHtml(card, d.rev, 'big') +
+      '<div class="taro-cr-body"><p>「' + pos.zh + '」问的是：' + pos.q + '。抽到「' + card.zh + '」（' + (d.rev ? '逆位' : '正位') + '），' + (TARO_FRAMES[pos.cat] || '') + kws.join('、') + '。</p>' +
+      (d.rev ? '<p class="taro-revnote">逆位提示：这不是正位的简单反义词。逆位讲的是同一主题的另一面——阻塞、延迟、内化，或正在松绑。</p>' : '') +
+      '</div></div></div>';
+  });
+  return html;
+}
+function taroSynthesisHtml(data){
+  var sp = TAROT_SPREADS[data.spreadId];
+  var draws = data.draws;
+  var q = (data.q || '').trim();
+  var qShort = q || (TARO_NEEDS[data.need] ? TARO_NEEDS[data.need].zh : '塔罗') + '这件事';
+  var parts = [];
+  // 元素分布：只算小阿卡纳（大阿卡纳元素对应未定，不硬编）
+  var els = {fire:0, water:0, air:0, earth:0}, minors = 0;
+  draws.forEach(function(d){ var c = taroCard(d.id); if (c.arc === 'minor') { els[c.el]++; minors++; } });
+  if (minors >= 2) {
+    var list = ['fire','water','air','earth'].filter(function(k){ return els[k] > 0; }).map(function(k){ return TARO_EL[k].zh + '（' + TARO_EL[k].suit + '）×' + els[k]; }).join('、');
+    var dom = ['fire','water','air','earth'].sort(function(a,b){ return els[b] - els[a]; })[0];
+    var miss = ['fire','water','air','earth'].filter(function(k){ return els[k] === 0; });
+    var s = '元素分布：' + list + '。主导能量是' + TARO_EL[dom].zh + '——' + TARO_EL[dom].desc + '。';
+    if (miss.length) s += TARO_EL[miss[0]].zh + '一次都没出现，' + TARO_EL[miss[0]].miss + '是缺的那块。';
+    parts.push(s);
+  }
+  // 大/小阿卡纳比
+  var majors = draws.filter(function(d){ return taroCard(d.id).arc === 'major'; }).length;
+  parts.push('大阿卡纳出现了 ' + majors + ' / ' + draws.length + ' 张' + (draws.length > 1 && majors * 2 >= draws.length ? '——这是人生大主题、转折点，不是一件小事。' : '——牌面以小阿卡纳为主，这件事在日常层面，可操作、能动性强。'));
+  // 重复数字（只算小阿卡纳 1–10）
+  var nums = {};
+  draws.forEach(function(d){ var c = taroCard(d.id); if (c.arc === 'minor' && c.n >= 1 && c.n <= 10) nums[c.n] = (nums[c.n] || 0) + 1; });
+  Object.keys(nums).forEach(function(n){
+    if (nums[n] >= 2) parts.push('数字 ' + '一二三四五六七八九十'[n - 1] + ' 出现了 ' + nums[n] + ' 次，' + TARO_NUM_THEME[n] + '的主题被强调了。');
+  });
+  // 宫廷牌
+  var courts = draws.map(function(d){ return taroCard(d.id); }).filter(function(c){ return c.ct; });
+  if (courts.length) parts.push('宫廷牌出现了：「' + courts.map(function(c){ return c.zh; }).join('」「') + '」。宫廷牌常代表具体的人，或同一种处事姿态的不同面——对照着看，常是两个人。');
+  // 元素相性（只算相邻两张都是小阿卡纳的情形；火+土、风+土有争议，不用）
+  var dig = 0;
+  for (var i = 0; i + 1 < draws.length && dig < 2; i++) {
+    var a = taroCard(draws[i].id), b = taroCard(draws[i + 1].id);
+    if (a.arc !== 'minor' || b.arc !== 'minor') continue;
+    var ea = a.el, eb = b.el, line = '';
+    if (ea === eb) line = '「' + a.zh + '」与「' + b.zh + '」同属' + TARO_EL[ea].zh + '，互相加强——好的更好，坏的也更明显。';
+    else if ((ea === 'fire' && eb === 'air') || (ea === 'air' && eb === 'fire') || (ea === 'earth' && eb === 'water') || (ea === 'water' && eb === 'earth')) line = '「' + a.zh + '」（' + TARO_EL[ea].zh + '）与「' + b.zh + '」（' + TARO_EL[eb].zh + '）互相支持，读作顺风。';
+    else if ((ea === 'fire' && eb === 'water') || (ea === 'water' && eb === 'fire') || (ea === 'air' && eb === 'water') || (ea === 'water' && eb === 'air')) line = '「' + a.zh + '」（' + TARO_EL[ea].zh + '）与「' + b.zh + '」（' + TARO_EL[eb].zh + '）互相削弱——读作还没定论的张力，而不是各说各的。';
+    else continue;
+    parts.push(line); dig++;
+  }
+  // 合成一句话 + 可执行建议（取牌阵的建议位那张牌）
+  var ai = Math.min(sp.adviceIdx, draws.length - 1);
+  var adv = draws[ai];
+  var advCard = taroCard(adv.id);
+  var advKw = (adv.rev ? advCard.rev : advCard.up)[0];
+  var act = TARO_SUIT_ACTION[advCard.arc === 'major' ? 'major' : advCard.suit];
+  var syn;
+  if (draws.length === 1) {
+    syn = '你问的「' + taroEsc(qShort) + '」：这张「' + advCard.zh + '」（' + (adv.rev ? '逆位' : '正位') + '）带来的讯息是' + (adv.rev ? advCard.rev : advCard.up).slice(0, 2).join('、') + '。';
+  } else {
+    var d0 = draws[0], d1 = draws[1];
+    var c1 = taroCard(d0.id), c2 = taroCard(d1.id);
+    var k1 = (d0.rev ? c1.rev : c1.up)[0], k2 = (d1.rev ? c2.rev : c2.up)[0];
+    syn = '你问的「' + taroEsc(qShort) + '」：' + sp.positions[0].zh + '的「' + c1.zh + '」说的是' + k1 + '，对照' + sp.positions[1].zh + '的「' + c2.zh + '」的' + k2 + '，' + sp.positions[ai].zh + '的「' + advCard.zh + '」给出的方向是' + advKw + '。';
+  }
+  var advice = '接下来 30 天内做一件具体事：' + act + '（「' + advCard.zh + '」的「' + advKw + '」指向这个方向。）';
+  return '<div class="r-section taro-sum"><h3>整体合成</h3>' +
+    parts.map(function(p){ return '<p>' + p + '</p>'; }).join('') +
+    '<p><b>一句话：</b>' + syn + '</p></div>' +
+    '<div class="taro-advice"><b>接下来的一步：</b>' + advice + '</div>';
+}
+function taroYesNoHtml(data){
+  var d = data.draws[0];
+  var card = taroCard(d.id);
+  var q = (data.q || '').trim();
+  var qFor = q ? '就「' + taroEsc(q) + '」来说' : '就这件事来说';
+  var t = d.rev ? '未定' : (card.yn === 'yes' ? '是' : card.yn === 'no' ? '否' : '未定');
+  var kws = (d.rev ? card.rev : card.up).slice(0, 2);
+  var why;
+  if (t === '是') why = '这张牌偏向肯定——' + kws[0] + '在场，事情往成的方向走；但前提是先把' + (kws[1] || kws[0]) + '这一步做到位。';
+  else if (t === '否') why = '这张牌偏向否定——' + kws[0] + '是现在的阻力，先处理它，再重新问。';
+  else why = '这张牌没有给确定的答案——' + kws.join('、') + '同时存在，关键看你下一步怎么做。';
+  if (d.rev) why += '（逆位：' + card.rev.slice(0, 2).join('、') + '，能量被阻塞或延迟，倾向比正位弱一档。）';
+  return '<div class="r-section"><h3>答案倾向：' + t + '</h3><p>' + qFor + '，「' + card.zh + '」（' + (d.rev ? '逆位' : '正位') + '）的能量是' + kws.join('、') + '。' + why + '</p></div>' +
+    '<div class="r-section"><h3>这张牌在说什么</h3><p>「答案」位问的是：这件事的答案倾向是什么。抽到「' + card.zh + '」（' + (d.rev ? '逆位' : '正位') + '），' + kws.join('、') + '。</p>' +
+    (d.rev ? '<p class="taro-revnote">逆位提示：这不是正位的简单反义词。逆位讲的是同一主题的另一面——阻塞、延迟、内化，或正在松绑。</p>' : '') + '</div>' +
+    '<div class="taro-advice"><b>接下来的一步：</b>接下来 30 天内做一件具体事：' + TARO_SUIT_ACTION[card.arc === 'major' ? 'major' : card.suit] + '（「' + card.zh + '」的「' + kws[0] + '」指向这个方向。）</div>';
+}
+function taroBuildReading(data){
+  var sp = TAROT_SPREADS[data.spreadId];
+  var nd = TARO_NEEDS[data.need] || TARO_NEEDS.custom;
+  var q = (data.q || '').trim();
+  var qEcho = q ? '你问的是「<b>' + taroEsc(q) + '</b>」' : '你问的是「<b>' + nd.zh + '</b>」';
+  var body = '';
+  if (data.isDaily) {
+    var dc = taroCard(data.draws[0].id);
+    body += '<div class="taro-daily"><div class="subtitle" style="margin-top:4px">今日一牌</div>' + taroFaceHtml(dc, data.draws[0].rev, 'big') + '</div>';
+  }
+  var mini = data.draws.map(function(d){ return taroFaceHtml(taroCard(d.id), d.rev, 'mini'); }).join('');
+  body += '<div class="taro-qecho">' + qEcho + '</div>' +
+    '<div class="taro-minirow">' + mini + '</div>';
+  if (data.need === 'health') body += '<div class="hint" style="text-align:center;margin:8px 0">仅供参考，不能代替医疗建议；身体不适请及时就医。</div>';
+  if (data.spreadId === 'yesno') {
+    body += taroYesNoHtml(data);
+  } else {
+    body += taroCardsHtml(data) + taroSynthesisHtml(data);
+  }
+  body += '<div class="disclaim">塔罗揭示的是趋势、能量与可能性，是自我反思的镜子，不是定论；不作医疗、法律、财务建议。不预测具体事件、金额与日期。</div>' +
+    '<span class="tip-link" onclick="showTip()">觉得有用？打赏支持一下</span><span class="tip-link" onclick="showFeedback()">有问题？点这里反馈</span>' +
+    '<button class="btn" onclick="taroSaveCard()">保存结果卡片</button>' +
+    '<button class="btn ghost" onclick="taroHome()">换个问题再抽</button>' +
+    '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
+  return body;
+}
+function taroShowReading(data, fromRestore){
+  __taro.stage = 'reading';
+  __taro.last = data;
+  document.getElementById('taroRoot').innerHTML = taroBuildReading(data);
+  if (!fromRestore) {
+    var first = data.draws[0];
+    var fc = taroCard(first.id);
+    var needZh = data.isDaily ? '每日一牌' : (TARO_NEEDS[data.need] ? TARO_NEEDS[data.need].zh : '塔罗');
+    addHistory({type:'塔罗', time:Date.now(), page:'tarot',
+      summary: needZh + (data.isDaily ? '' : ' · ' + TAROT_SPREADS[data.spreadId].zh) + ' · 「' + fc.zh + '」' + (first.rev ? '逆位' : '正位'),
+      data: data});
+  }
+  window.scrollTo(0, 0);
+}
+// 历史还原：用存下的牌阵、问题、抽到的牌与正逆位重算重渲染（不重复记历史）
+window.__xjgRestoreTarot = function(d){
+  taroShowReading(d, true);
+};
+
+// ---- 每日一牌（同一天重开显示同一张，仿今日一签）----
+window.taroDaily = function(){
+  var key = todayKey();
+  var saved = store.get('xjg_tarot_daily');
+  if (saved && saved.date === key && saved.data) {
+    taroShowReading(saved.data, true);
+    return;
+  }
+  var deck = taroShuffle78();
+  var rev = Math.random() < 0.3;
+  var data = {need:'daily', q:'每日一牌', spreadId:'single', draws:[{id: deck[0], rev: rev}], date:key, isDaily:true};
+  store.set('xjg_tarot_daily', {date:key, data:data});
+  taroShowReading(data, false);
+};
+
+// ---- 保存结果卡片（复用 saveResultCard，底部带分享二维码）----
+window.taroSaveCard = function(){
+  var data = __taro.last;
+  if (!data) return;
+  var sp = TAROT_SPREADS[data.spreadId];
+  var rows = [];
+  var idxs = [0, 1, 2, sp.adviceIdx].filter(function(v, i, a){ return v < data.draws.length && a.indexOf(v) === i; }).slice(0, 4);
+  idxs.forEach(function(i){
+    var d = data.draws[i];
+    var c = taroCard(d.id);
+    rows.push({k: sp.positions[i].zh, v: c.zh + '（' + (d.rev ? '逆位' : '正位') + '）'});
+  });
+  var qForCard = (data.q || '') || (data.isDaily ? '每日一牌' : (TARO_NEEDS[data.need] ? TARO_NEEDS[data.need].zh : '塔罗'));
+  saveResultCard({
+    tag: '塔罗占卜 · ' + sp.zh,
+    big: sp.zh,
+    bigSub: '「' + qForCard.slice(0, 24) + '」',
+    rows: rows
+  });
 };
 
 // ============ 今日一签（观音灵签）============

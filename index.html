@@ -525,7 +525,7 @@ window.CONFIG = {
   GOLD_LIGHT: '#e3c88d',             // 主题金色（高亮浅色）
   CONTACT: '微信：wxid_4cs9ei0iftpw22',  // 联系方式（留空则不显示；例如 '微信：xxxx'）
   SHOW_FOOTER: true,                 // 是否显示首页底部的版权与免责信息
-  VERSION: 'v1.2.2',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
+  VERSION: 'v1.3.0',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
   UPDATED: '2026-11-14',              // 更新日期
   FEEDBACK_URL: 'https://wj.qq.com/s2/28674644/054w/',  // 反馈表单链接（腾讯问卷，用户 2026-11-13 自己建的免费表单；改成 '' 则恢复显示微信联系方式）
   SITE_URL: 'https://mmw123456.github.io/xuanji-ge/',  // 官网链接（结果卡片分享区二维码与文字用）
@@ -557,6 +557,56 @@ window.addEventListener('unhandledrejection', function(ev) {
 });
 /* iOS 兼容：让 :active 按压态在 iPhone Safari 上可靠触发（否则按钮/卡片的按压下沉效果可能不出现） */
 document.addEventListener('touchstart', function(){}, {passive:true});
+/* 微信 X5 兼容：微信内置浏览器（X5/TBS 内核）对 <div>/<span> 的 click 派发不可靠——
+   手指按下时 :active 会压下去（看得到动效），松开后 click 常常不到达，功能就打不开。
+   补一个 touchend 轻触兜底：手指落下又在原地抬起（位移 <12px、800ms 内）就直接执行
+   该元素的 onclick。tap 触发导航切页后，浏览器随后补发的合成 click 会落在新页面
+   同一坐标的元素上（幽灵点击），所以不用“按元素匹配”拦截，改用全局时间门：
+   touchSeq 每次 touchstart 递增；兜底触发后记 lastTapAt、tapSeq；捕获阶段的 click
+   只有同时满足（距上次轻触 <600ms 且自那次轻触后没有新的触摸序列开始）才拦截——
+   这样第二下真实点按（如原生按钮）不会被误拦。原生 <button>/<a>/<input> 不走兜底。*/
+(function(){
+  function clickable(el){
+    var t = el;
+    while (t && t !== document.body) {
+      if (t.hasAttribute && t.hasAttribute('onclick') && !/^(BUTTON|A|INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return t;
+      t = t.parentElement;
+    }
+    return null;
+  }
+  var sx = 0, sy = 0, st = 0, target = null;
+  var touchSeq = 0, lastTapAt = 0, tapSeq = 0;
+  document.addEventListener('touchstart', function(e){
+    touchSeq++;
+    var c = e.target ? clickable(e.target) : null;
+    if (c && e.touches && e.touches.length === 1) {
+      target = c; sx = e.touches[0].clientX; sy = e.touches[0].clientY; st = Date.now();
+    } else { target = null; }
+  }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if (!target) return;
+    var t = (e.changedTouches && e.changedTouches[0]) || null;
+    var el = target; target = null;
+    if (!t) return;
+    if (Math.abs(t.clientX - sx) < 12 && Math.abs(t.clientY - sy) < 12 && Date.now() - st < 800) {
+      lastTapAt = Date.now(); tapSeq = touchSeq;
+      try { if (typeof el.onclick === 'function') el.onclick.call(el, e); } catch (err) {}
+    }
+  }, {passive:true});
+  document.addEventListener('click', function(e){
+    if (Date.now() - lastTapAt < 600 && touchSeq === tapSeq) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+  /* 给静态可点元素补 role="button"，让 WebKit 内核认出它们是可交互元素 */
+  document.addEventListener('DOMContentLoaded', function(){
+    var els = document.querySelectorAll('[onclick]');
+    for (var i = 0; i < els.length; i++) {
+      var el = els[i];
+      if (!/^(BUTTON|A|INPUT|TEXTAREA|SELECT)$/.test(el.tagName) && !el.getAttribute('role')) el.setAttribute('role', 'button');
+    }
+  });
+})();
 </script>
 </head>
 <body>
@@ -589,7 +639,14 @@ document.addEventListener('touchstart', function(){}, {passive:true});
     <h3 style="text-align:center">更新日志</h3>
     <div class="tip-note" style="text-align:center" id="clVersion"></div>
     <div style="font-size:13px;color:var(--text-dim);line-height:2">
-      <div style="color:var(--gold-light);font-weight:600">v1.2.2 · 2026-11-14</div>
+      <div style="color:var(--gold-light);font-weight:600">v1.3.0 · 2026-11-14</div>
+      <div>· 灵签不怕看错：第 N 签写清是签号（共 20 签），今天只抽 1 次</div>
+      <div>· 八字能选“不清楚出生时间”：时柱显示未知，不再用默认时辰代替</div>
+      <div>· 配对八字加了出生时间：双方都能填，四柱逐项对照，时柱未知时不编结论</div>
+      <div>· 微信点按更稳：修了触摸后浏览器补发点击导致连跳两页的问题</div>
+      <div style="color:var(--gold-light);font-weight:600;margin-top:6px">v1.2.3 · 2026-11-14</div>
+      <div>· 微信里按钮能点了：修了微信内置浏览器点功能卡片没反应的问题，点按直接进功能</div>
+      <div style="color:var(--gold-light);font-weight:600;margin-top:6px">v1.2.2 · 2026-11-14</div>
       <div>· 结果卡片带分享入口：底部加二维码 + 链接，扫码就能打开玄机阁</div>
       <div style="color:var(--gold-light);font-weight:600;margin-top:6px">v1.2 · 2026-11-13</div>
       <div>· 反馈改走表单链接：点“反馈”直接打开问卷表，不用再加微信发</div>
@@ -848,7 +905,8 @@ document.addEventListener('touchstart', function(){}, {passive:true});
             <option value="22:00">22:00 亥时</option>
             <option value="23:00">23:00 子时</option>
           </select>
-          <div class="hint">如不确定具体时间可留空，将按午时排盘；时辰影响时柱，建议尽量准确</div>
+          <div class="hint">不知道出生时间？勾选下方“我不清楚出生时间”，时柱将显示为未知，不会用默认时辰代替；时辰影响时柱，建议尽量准确</div>
+          <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="baziTimeUnknown" onchange="bzTimeUnknownToggle()" style="width:18px;height:18px;accent-color:#c8a45f"> 我不清楚出生时间</label>
         </div>
         <button class="btn" onclick="calculate()">开始排盘</button>
       </div>
@@ -1354,12 +1412,16 @@ document.addEventListener('touchstart', function(){}, {passive:true});
         <div class="couple-head">你的信息</div>
         <div class="field-row">
           <div class="field"><label>出生日期</label><input type="date" id="pdBzDateA" placeholder="请选择"></div>
+          <div class="field"><label>出生时间</label><select id="pdBzTimeA"></select></div>
         </div>
+        <label style="display:flex;align-items:center;gap:8px;margin:2px 0 14px;font-size:13px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="pdBzTimeUnknownA" onchange="pdTimeUnknownToggle('A')" style="width:17px;height:17px;accent-color:#c8a45f"> 我不清楚出生时间</label>
         <div class="couple-head">TA 的信息</div>
         <div class="field-row">
           <div class="field"><label>出生日期</label><input type="date" id="pdBzDateB" placeholder="请选择"></div>
+          <div class="field"><label>出生时间</label><select id="pdBzTimeB"></select></div>
         </div>
-        <div class="hint" style="text-align:center">按双方日柱五行生克，测合婚缘分</div>
+        <label style="display:flex;align-items:center;gap:8px;margin:2px 0 14px;font-size:13px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="pdBzTimeUnknownB" onchange="pdTimeUnknownToggle('B')" style="width:17px;height:17px;accent-color:#c8a45f"> 我不清楚出生时间</label>
+        <div class="hint" style="text-align:center">按双方日柱五行生克，测合婚缘分；不填时间或勾选不清楚，时柱按未知处理</div>
         <button class="btn" onclick="pdBzCalc()">开始配对</button>
       </div>
     </div>
@@ -2928,12 +2990,21 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     return list;
   }
 
+  window.bzTimeUnknownToggle = function() {
+    var cb = document.getElementById('baziTimeUnknown');
+    var sel = document.getElementById('baziBirthtime');
+    if (!cb || !sel) return;
+    sel.disabled = cb.checked;
+    if (cb.checked) sel.value = '';
+  };
+
   window.calculate = function() {
     var birthdate = document.getElementById('baziBirthdate').value;
     if (!birthdate) { alert('请选择出生日期'); return; }
+    var timeUnknown = !!document.getElementById('baziTimeUnknown').checked;
     var time = document.getElementById('baziBirthtime').value;
-    var timeUnknown = !time;
-    if (timeUnknown) time = '12:00';
+    if (!timeUnknown && !time) { alert('请选择出生时间，或勾选“我不清楚出生时间”'); return; }
+    if (timeUnknown) time = '12:00'; // 仅用于换算年月日三柱（取正午可避开子时换日），时柱不取用
     var name = document.getElementById('baziName').value || '';
     var gender = document.getElementById('baziGender').value;
     var d = lunisolar(birthdate + ' ' + time);
@@ -2944,21 +3015,29 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       { title:'年柱', gan:year.stem.toString(), zhi:year.branch.toString() },
       { title:'月柱', gan:month.stem.toString(), zhi:month.branch.toString() },
       { title:'日柱', gan:dayStem, zhi:day.branch.toString() },
-      { title:'时柱', gan:hour.stem.toString(), zhi:hour.branch.toString() },
+      timeUnknown ? { title:'时柱', gan:'—', zhi:'未知', unknown:true }
+                  : { title:'时柱', gan:hour.stem.toString(), zhi:hour.branch.toString() },
     ];
     var wxCount = { '木':0,'火':0,'土':0,'金':0,'水':0 };
-    pillars.forEach(function(p) { wxCount[STEM_WX[p.gan]]++; wxCount[BRANCH_WX[p.zhi]]++; });
+    pillars.forEach(function(p) { if (p.unknown) return; wxCount[STEM_WX[p.gan]]++; wxCount[BRANCH_WX[p.zhi]]++; });
     var dayMaster = STEM_WX[dayStem];
     var lunarStr = d.format('lY年lM月lD日');
     var zodiac = '属' + ZODIAC_MAP[year.branch.toString()];
     lastBazi = {
-      ganzhi: pillars.map(function(p){ return p.gan + p.zhi; }).join(' '),
+      ganzhi: pillars.map(function(p){ return p.unknown ? '时柱未知' : p.gan + p.zhi; }).join(' '),
       pillars: pillars, lunarStr: lunarStr, zodiac: zodiac, naYin: getNaYin(year.stem.toString(), year.branch.toString())
     };
-    addHistory({ type:'八字', time:Date.now(), page:'bazi', summary: lastBazi.ganzhi, data:{ birthdate: birthdate, time: (document.getElementById('baziBirthtime').value || ''), name: name, gender: gender } });
+    addHistory({ type:'八字', time:Date.now(), page:'bazi', summary: lastBazi.ganzhi, data:{ birthdate: birthdate, time: (timeUnknown ? '' : time), timeUnknown: timeUnknown, name: name, gender: gender } });
 
     // 四柱 + 十神
     var pillarsHtml = pillars.map(function(p) {
+      if (p.unknown) {
+        return '<div class="pillar"><div class="p-title">' + p.title + '</div>' +
+          '<div class="p-gan">—</div>' +
+          '<div class="p-zhi">未知</div>' +
+          '<div class="p-wx">未排</div>' +
+          '<div class="p-ss">—</div></div>';
+      }
       var gwx = STEM_WX[p.gan], zwx = BRANCH_WX[p.zhi];
       var ganSS = shishen(dayStem, p.gan);
       var zhiSS = shishen(dayStem, BRANCH_ZC[p.zhi]);
@@ -2980,8 +3059,14 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     // 十神明细表
     var shishenTable = '<table class="shishen-table"><tr><th></th>' +
       pillars.map(function(p){ return '<th>' + p.title + '</th>'; }).join('') + '</tr>' +
-      '<tr><td>天干</td>' + pillars.map(function(p){ return '<td>' + p.gan + '<br><span style="color:var(--gold);font-size:11px">' + shishen(dayStem, p.gan) + '</span></td>'; }).join('') + '</tr>' +
-      '<tr><td>地支</td>' + pillars.map(function(p){ return '<td>' + p.zhi + '<br><span style="color:var(--gold);font-size:11px">' + shishen(dayStem, BRANCH_ZC[p.zhi]) + '</span></td>'; }).join('') + '</tr>' +
+      '<tr><td>天干</td>' + pillars.map(function(p){
+        if (p.unknown) return '<td>—<br><span style="color:var(--gold);font-size:11px">未排</span></td>';
+        return '<td>' + p.gan + '<br><span style="color:var(--gold);font-size:11px">' + shishen(dayStem, p.gan) + '</span></td>';
+      }).join('') + '</tr>' +
+      '<tr><td>地支</td>' + pillars.map(function(p){
+        if (p.unknown) return '<td>未知<br><span style="color:var(--gold);font-size:11px">未排</span></td>';
+        return '<td>' + p.zhi + '<br><span style="color:var(--gold);font-size:11px">' + shishen(dayStem, BRANCH_ZC[p.zhi]) + '</span></td>';
+      }).join('') + '</tr>' +
       '</table>';
 
     // 喜用神（简化：日主旺衰）
@@ -3040,6 +3125,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     var rizhu = RIZHU_INFO[dayStem] || RIZHU_INFO['甲'];
     var ssSet = {};
     pillars.forEach(function(p) {
+      if (p.unknown) return;
       ssSet[shishen(dayStem, p.gan)] = 1;
       ssSet[shishen(dayStem, BRANCH_ZC[p.zhi])] = 1;
     });
@@ -3102,7 +3188,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       (name ? '<div style="font-size:20px;font-weight:600;letter-spacing:2px">' + name + '</div>' : '') +
       '<div class="r-lunar">' + lunarStr + ' · ' + (gender==='male'?'乾造':'坤造') + '</div>' +
       '<div class="r-zodiac">' + zodiac + ' · ' + naYin + '</div>' +
-      (timeUnknown ? '<div class="hint" style="margin-top:10px">出生时间未知，按午时排盘，仅供参考。</div>' : '') + '</div>' +
+      (timeUnknown ? '<div class="hint" style="margin-top:10px">出生时间未知：时柱未排，五行、旺衰按三柱计；若出生在 23:00 之后，日柱可能顺延一天，请以出生时间确认。仅供参考。</div>' : '') + '</div>' +
       '<div class="pillars">' + pillarsHtml + '</div>' +
       '<div class="r-section"><h3>日主 · ' + rizhu.name + '</h3>' +
       '<div class="sd-item"><b>性格</b>' + rizhu.ch + '</div>' +
@@ -3113,16 +3199,16 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       '<div class="r-section"><h3>十神关系（以日主「' + dayStem + '」为中心）</h3>' + shishenTable +
       '<p class="sub">十神是八字的核心概念，反映日主与四柱干支的生克关系。生我者为印，我生者为食伤，克我者为官杀，我克者为财，同我者为比劫。</p></div>' +
       '<div class="r-section"><h3>十神详解</h3><p class="sub">本命盘中出现的十神及其对性格命运的影响：</p>' + ssDetailHtml + '</div>' +
-      '<div class="wx-stats"><h3>五行分布</h3>' + wxStatsHtml + '</div>' +
+      '<div class="wx-stats"><h3>五行分布</h3>' + (timeUnknown ? '<p class="sub">时辰未知，五行只计年月日三柱（共 6 字）。</p>' : '') + wxStatsHtml + '</div>' +
       '<div class="r-section"><h3>五行平衡解读</h3><p>' + wxBalanceText + '</p>' + wxBalanceHtml + '</div>' +
       '<div class="r-section"><h3>旺衰判断与喜用神</h3>' +
-      '<p>日主' + dayMaster + '在八字中共出现 ' + dayWxCount + ' 次，判断为「' + strength + '」。</p>' +
+      '<p>日主' + dayMaster + '在八字中共出现 ' + dayWxCount + ' 次，判断为「' + strength + '」' + (timeUnknown ? '（时辰未知，基于三柱判断）' : '') + '。</p>' +
       '<div style="margin-top:10px">' + xiyongHtml + '</div>' +
       '<p class="sub">' + (isWeak ? '日主偏弱，宜生扶（印、比劫），宜在' + xiYong.join('、') + '方面补益。' : '日主偏强，宜克泄耗（官杀、食伤、财），宜往' + xiYong.join('、') + '方向引导。') + '</p>' +
       '<div class="host-row" style="margin-top:12px">' + remedyHtml + '</div></div>' +
       '<div class="r-section"><h3>大运排盘（' + direction + '排，' + startAgeStr + '起运）</h3>' +
       '<div class="dayun-grid">' + dayunHtml + '</div>' +
-      '<p class="sub">每十年一运，从月柱' + month.stem.toString() + monthBranch + '开始' + direction + '排。当前大运已高亮。</p></div>' +
+      '<p class="sub">每十年一运，从月柱' + month.stem.toString() + monthBranch + '开始' + direction + '排。当前大运已高亮。' + (timeUnknown ? '（时辰未知：大运与起运按出生日期排算，与时辰无关；起运岁数约略，或有数月出入。）' : '') + '</p></div>' +
       '<div class="r-section"><h3>当前大运详解</h3>' + curDyHtml + '</div>' +
       '<div class="r-section"><h3>五行缺失与补益</h3><p>' +
       (strong.length ? '五行偏旺：' + strong.join('、') + '。' : '五行分布较均衡。') +
@@ -4363,6 +4449,12 @@ function histRestore(item) {
         showPage('bazi');
         setHistVal('baziBirthdate', d.birthdate); setHistVal('baziBirthtime', d.time || '');
         setHistVal('baziName', d.name || ''); setHistVal('baziGender', d.gender || 'male');
+        var tuCb = document.getElementById('baziTimeUnknown');
+        if (tuCb) {
+          // 老记录没有 timeUnknown 字段：当时留空即按未知处理
+          tuCb.checked = (typeof d.timeUnknown === 'boolean') ? d.timeUnknown : !d.time;
+          if (window.bzTimeUnknownToggle) window.bzTimeUnknownToggle();
+        }
         if (window.calculate) window.calculate();
         break;
       case '紫微':
@@ -4409,6 +4501,10 @@ function histRestore(item) {
         showPage('peidui');
         if (d.mode === 'bazi') {
           setHistVal('pdBzDateA', d.da); setHistVal('pdBzDateB', d.db);
+          setHistVal('pdBzTimeA', d.ta || ''); setHistVal('pdBzTimeB', d.tb || '');
+          var cbA = document.getElementById('pdBzTimeUnknownA'), cbB = document.getElementById('pdBzTimeUnknownB');
+          if (cbA) { cbA.checked = (typeof d.taUnknown === 'boolean') ? d.taUnknown : !d.ta; if (window.pdTimeUnknownToggle) window.pdTimeUnknownToggle('A'); }
+          if (cbB) { cbB.checked = (typeof d.tbUnknown === 'boolean') ? d.tbUnknown : !d.tb; if (window.pdTimeUnknownToggle) window.pdTimeUnknownToggle('B'); }
           setPdTab('bazi'); if (window.pdBzCalc) window.pdBzCalc();
         } else {
           setHistVal('pdSxA', d.a); setHistVal('pdSxB', d.b);
@@ -4582,13 +4678,13 @@ window.lqDraw = function() {
   var key = todayKey();
   var saved = store.get('xjg_qian');
   if (saved && saved.date === key) {
-    renderQian(saved.qian, true);
+    renderQian(saved.qian, true, key);
     return;
   }
   var qian = LINGQIAN[Math.floor(Math.random() * LINGQIAN.length)];
   store.set('xjg_qian', { date: key, qian: qian });
-  addHistory({ type:'灵签', time:Date.now(), page:'lingqian', summary: '第' + qian.n + '签 · ' + qian.lv + '签 · ' + qian.t, data:{ date: key, qian: qian } });
-  renderQian(qian, false);
+  addHistory({ type:'灵签', time:Date.now(), page:'lingqian', summary: '今日一签 · 签号 ' + qian.n + '「' + qian.t + '」· ' + qian.lv + '签', data:{ date: key, qian: qian } });
+  renderQian(qian, true, key);
 };
 // 签级解读：五档签级的含义与指引
 var LV_DESC = {
@@ -4602,12 +4698,20 @@ var LV_DESC = {
 var __xjgShownQian = null;
 // 历史还原：用存下的签直接重渲染
 window.__xjgRestoreQian = function(qian, date) {
-  renderQian(qian, date === todayKey());
+  renderQian(qian, date === todayKey(), date);
 };
-function renderQian(qian, isToday) {
+function renderQian(qian, isToday, dateStr) {
   __xjgShownQian = qian;
+  window.__xjgShownQianIsToday = !!isToday;
+  var title = isToday
+    ? '今日之签 · 第 ' + qian.n + ' 签「' + qian.t + '」· ' + qian.lv + '签'
+    : '第 ' + qian.n + ' 签「' + qian.t + '」· ' + qian.lv + '签';
+  var note = isToday
+    ? '第 ' + qian.n + ' 签是签号（共 20 签），今天只抽了 1 次'
+    : '第 ' + qian.n + ' 签是签号（共 20 签）' + (dateStr ? ' · 抽于 ' + dateStr : '');
   var html = '<div class="sign-card">' +
-    '<div class="sign-label">— 第 ' + qian.n + ' 签 · ' + qian.lv + ' 签 · ' + qian.t + ' —</div>' +
+    '<div class="sign-label">— ' + title + ' —</div>' +
+    '<div class="hint" style="text-align:center;margin:6px 0 2px">' + note + '</div>' +
     '<div class="sign-text">' + qian.s + '</div>' +
     '<div class="sign-desc">' + qian.j + '</div>' +
     '</div>' +
@@ -4624,8 +4728,9 @@ function renderQian(qian, isToday) {
 window.saveQianCard = function() {
   var q = window.__xjgShownQian || (store.get('xjg_qian') || {}).qian;
   if (!q) return;
+  var isToday = (window.__xjgShownQianIsToday !== false);
   saveResultCard({
-    tag: '今日一签 · 第' + q.n + '签',
+    tag: (isToday ? '今日一签 · 签号 ' : '灵签 · 签号 ') + q.n + '「' + q.t + '」',
     big: q.lv + '签',
     bigSub: q.t,
     rows: [ { k: '签文', v: q.s }, { k: '解签', v: q.j } ]
@@ -4726,24 +4831,73 @@ window.pdSxCalc = function() {
   addHistory({ type:'配对', time:Date.now(), page:'peidui', summary: a + ' ♥ ' + b + ' · ' + rel, data:{ mode:'shengxiao', a: a, b: b } });
   window.scrollTo(0, 0);
 };
+// 配对八字：出生时间下拉（24 小时制）由 JS 生成，与八字页选项一致
+var _pdHourWx = { 0:'子',1:'丑',2:'丑',3:'寅',4:'寅',5:'卯',6:'卯',7:'辰',8:'辰',9:'巳',10:'巳',11:'午',12:'午',13:'未',14:'未',15:'申',16:'申',17:'酉',18:'酉',19:'戌',20:'戌',21:'亥',22:'亥',23:'子' };
+['pdBzTimeA','pdBzTimeB'].forEach(function(id) {
+  var sel = document.getElementById(id); if (!sel) return;
+  var opt0 = document.createElement('option'); opt0.value = ''; opt0.textContent = '请选择时间'; sel.appendChild(opt0);
+  for (var h = 0; h < 24; h++) {
+    var v = (h < 10 ? '0' : '') + h + ':00';
+    var o = document.createElement('option'); o.value = v; o.textContent = v + ' ' + _pdHourWx[h] + '时'; sel.appendChild(o);
+  }
+});
+window.pdTimeUnknownToggle = function(side) {
+  var cb = document.getElementById(side === 'A' ? 'pdBzTimeUnknownA' : 'pdBzTimeUnknownB');
+  var sel = document.getElementById(side === 'A' ? 'pdBzTimeA' : 'pdBzTimeB');
+  if (!cb || !sel) return;
+  sel.disabled = cb.checked;
+  if (cb.checked) sel.value = '';
+};
+// 两人五行生克关系（用于四柱对照）
+function pdWxRelStr(wxA, wxB) {
+  if (wxA === wxB) return '比和（同为' + wxA + '）';
+  if (SHENG[wxA] === wxB) return '相生（' + wxA + '生' + wxB + '）';
+  if (SHENG[wxB] === wxA) return '相生（' + wxB + '生' + wxA + '）';
+  if (KE[wxA] === wxB) return '相克（' + wxA + '克' + wxB + '）';
+  return '相克（' + wxB + '克' + wxA + '）';
+}
+
 window.pdBzCalc = function() {
   var da = document.getElementById('pdBzDateA').value;
   var db = document.getElementById('pdBzDateB').value;
   if (!da || !db) { alert('请选择两人的出生日期'); return; }
-  var a = lunisolar(da + ' 12:00');
-  var b = lunisolar(db + ' 12:00');
+  var taUnknown = document.getElementById('pdBzTimeUnknownA').checked || !document.getElementById('pdBzTimeA').value;
+  var tbUnknown = document.getElementById('pdBzTimeUnknownB').checked || !document.getElementById('pdBzTimeB').value;
+  var ta = taUnknown ? '12:00' : document.getElementById('pdBzTimeA').value; // 仅用于换算年月日三柱，时柱不取用
+  var tb = tbUnknown ? '12:00' : document.getElementById('pdBzTimeB').value;
+  var a = lunisolar(da + ' ' + ta);
+  var b = lunisolar(db + ' ' + tb);
   var aGan = a.char8.day.stem.toString(), aZhi = a.char8.day.branch.toString();
   var bGan = b.char8.day.stem.toString(), bZhi = b.char8.day.branch.toString();
   var aWx = STEM_WX[aGan], bWx = STEM_WX[bGan];
+  var aYear = a.char8.year.stem.toString() + a.char8.year.branch.toString();
+  var bYear = b.char8.year.stem.toString() + b.char8.year.branch.toString();
+  var aMonth = a.char8.month.stem.toString() + a.char8.month.branch.toString();
+  var bMonth = b.char8.month.stem.toString() + b.char8.month.branch.toString();
+  var aYearWx = STEM_WX[a.char8.year.stem.toString()], bYearWx = STEM_WX[b.char8.year.stem.toString()];
+  var aMonthWx = STEM_WX[a.char8.month.stem.toString()], bMonthWx = STEM_WX[b.char8.month.stem.toString()];
+  var aHour = taUnknown ? null : a.char8.hour.stem.toString() + a.char8.hour.branch.toString();
+  var bHour = tbUnknown ? null : b.char8.hour.stem.toString() + b.char8.hour.branch.toString();
+  var aHourWx = taUnknown ? null : STEM_WX[a.char8.hour.stem.toString()];
+  var bHourWx = tbUnknown ? null : STEM_WX[b.char8.hour.stem.toString()];
   var rel, desc, advice, lvClass, level;
   if (aWx === bWx) { rel = '比和'; desc = '两人日主同为「' + aWx + '」，性格相似、心意相通，是"像"多过"补"的组合。'; advice = '相处安心、有共鸣，但需警惕过于相似导致缺乏新鲜感，多制造共同目标。'; lvClass = 'ji-mid'; level = '缘分中上'; }
   else if (SHENG[aWx] === bWx) { rel = '相生'; desc = aWx + '生' + bWx + '，你滋养对方，付出型关系，彼此形成良性循环。'; advice = '一方付出、一方受益，只要心甘情愿，感情和事业都能长久。'; lvClass = 'ji-good'; level = '缘分上等'; }
   else if (SHENG[bWx] === aWx) { rel = '相生'; desc = bWx + '生' + aWx + '，对方扶持你、带给你助力，是很好的互补。'; advice = '对方是你的贵人，珍惜这份扶持，感情会越来越顺。'; lvClass = 'ji-good'; level = '缘分上等'; }
   else if (KE[aWx] === bWx) { rel = '相克'; desc = aWx + '克' + bWx + '，日主五行相克，你在关系中容易占据主导、给对方压力，性格与节奏差异较大。'; advice = '需多理解包容、理性沟通，能磨出"欢喜冤家"式的长久感情。'; lvClass = 'ji-bad'; level = '缘分需磨合'; }
   else { rel = '相克'; desc = bWx + '克' + aWx + '，日主五行相克，对方容易牵制你、让你感到被动，性格与节奏差异较大。'; advice = '需保持独立、学会理性沟通，能磨出"欢喜冤家"式的长久感情。'; lvClass = 'ji-bad'; level = '缘分需磨合'; }
+  var hourRow = (taUnknown || tbUnknown)
+    ? '<p>时柱：' + (taUnknown && tbUnknown ? '双方时间都未知，未对比' : (taUnknown ? '你的时间未知，未对比' : 'TA 的时间未知，未对比')) + '（不做结论）</p>'
+    : '<p>时柱：' + aHour + '（' + aHourWx + '） × ' + bHour + '（' + bHourWx + '） · ' + pdWxRelStr(aHourWx, bHourWx) + '</p>';
   var html = '<div class="r-basic"><div class="r-lunar">' + aGan + aZhi + '日 · ' + aWx + '　♥　' + bGan + bZhi + '日 · ' + bWx + '</div></div>' +
     '<div class="r-score"><div class="score-label" style="font-size:16px;color:var(--gold-light)">' + level + '（日柱五行' + rel + '）</div></div>' +
     '<div class="r-section"><h3>八字日柱合婚</h3><p>' + desc + '</p></div>' +
+    '<div class="r-section"><h3>四柱对照</h3>' +
+    '<p>年柱：' + aYear + '（' + aYearWx + '） × ' + bYear + '（' + bYearWx + '） · ' + pdWxRelStr(aYearWx, bYearWx) + '</p>' +
+    '<p>月柱：' + aMonth + '（' + aMonthWx + '） × ' + bMonth + '（' + bMonthWx + '） · ' + pdWxRelStr(aMonthWx, bMonthWx) + '</p>' +
+    '<p>日柱：' + aGan + aZhi + '（' + aWx + '） × ' + bGan + bZhi + '（' + bWx + '） · ' + pdWxRelStr(aWx, bWx) + '</p>' +
+    hourRow +
+    '<p class="sub" style="margin-top:8px">等级结论以日柱为准；年、月柱为辅；时柱主子女宫与晚年，仅供参考。</p></div>' +
     '<div class="r-section"><h3>合婚建议</h3><p>' + advice + '</p><p class="sub" style="margin-top:8px">此为简版日柱合婚，仅看日柱五行生克，未考虑全盘四柱，结果仅供娱乐参考。</p></div>' +
     '<div class="disclaim">本内容仅供文化娱乐参考，请理性看待。</div>' +
     '<button class="btn" onclick="savePdCard()">保存结果卡片</button>' +
@@ -4751,8 +4905,8 @@ window.pdBzCalc = function() {
     '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
   document.getElementById('pdBzForm').style.display = 'none';
   document.getElementById('pdResult').innerHTML = html;
-  lastPd = { tag: '八字配对', big: aGan + aZhi + ' ♥ ' + bGan + bZhi, bigSub: level, rows: [ { k: '日柱五行', v: aWx + ' / ' + bWx }, { k: '配对关系', v: rel } ] };
-  addHistory({ type:'配对', time:Date.now(), page:'peidui', summary: aGan + aZhi + ' ♥ ' + bGan + bZhi + ' · ' + rel, data:{ mode:'bazi', da: da, db: db } });
+  lastPd = { tag: '八字配对', big: aGan + aZhi + ' ♥ ' + bGan + bZhi, bigSub: level, rows: [ { k: '日柱五行', v: aWx + ' / ' + bWx }, { k: '配对关系', v: rel }, { k: '时柱', v: (taUnknown || tbUnknown) ? '未知' : aHourWx + ' / ' + bHourWx + ' · ' + pdWxRelStr(aHourWx, bHourWx) } ] };
+  addHistory({ type:'配对', time:Date.now(), page:'peidui', summary: aGan + aZhi + ' ♥ ' + bGan + bZhi + ' · ' + rel, data:{ mode:'bazi', da: da, db: db, ta: (taUnknown ? '' : ta), tb: (tbUnknown ? '' : tb), taUnknown: taUnknown, tbUnknown: tbUnknown } });
   window.scrollTo(0, 0);
 };
 window.savePdCard = function() {

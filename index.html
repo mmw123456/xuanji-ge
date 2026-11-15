@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#14100d">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="玄机阁">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <title>玄机阁 · 人格测评与命理测算</title>
 <style>
   :root {
@@ -81,6 +87,7 @@
   .fold-body b { color:var(--gold); }
   .fold-body ul { padding-left:20px; margin:6px 0; }
   .fold-body li { margin-bottom:4px; }
+  .cg-poem { font-family:"Source Han Serif SC","Noto Serif SC","Songti SC","STSong","SimSun",serif; font-size:17px; line-height:2; text-align:center; color:var(--gold-light); margin:6px 0; }
   .r-section.seg { padding:0; overflow:hidden; }
   .r-section.seg .seg-head { padding:16px 18px; cursor:pointer; display:flex; justify-content:space-between; align-items:center; }
   .r-section.seg .seg-head:active { background:var(--bg-card-2); }
@@ -638,6 +645,20 @@
     .taro-slots { max-width:680px; margin-left:auto; margin-right:auto; }
     .taro-fan { max-width:640px; margin-left:auto; margin-right:auto; }
   }
+
+.qm-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0}
+.qm-cell{border:1px solid var(--line);border-radius:8px;padding:6px 7px;font-size:13px;line-height:1.7;background:rgba(200,164,95,.05)}
+.qm-cell.qm-focus{border-color:var(--gold);background:rgba(200,164,95,.14)}
+.qm-pal{font-weight:700;color:var(--gold-light)}
+.qm-mark{font-size:11px;color:var(--gold);font-weight:400}
+.qm-line{display:flex;justify-content:space-between}
+.qm-line .qm-h{color:var(--gold-light);font-weight:700}
+.qm-god{color:var(--text-dim);font-size:12px}
+
+.a2hs-tip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:14px 0;font-size:13px;color:var(--text-dim);background:rgba(200,164,95,.06)}
+.a2hs-tip .a2hs-text{flex:1;line-height:1.6}
+.a2hs-btn{flex:none;border:1px solid var(--gold);color:var(--gold-light);background:transparent;border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer}
+.a2hs-x{flex:none;color:var(--text-dim);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px}
 </style>
 <script>
 /* ============================================================
@@ -650,7 +671,7 @@ window.CONFIG = {
   GOLD_LIGHT: '#e3c88d',             // 主题金色（高亮浅色）
   CONTACT: '微信：wxid_4cs9ei0iftpw22',  // 联系方式（留空则不显示；例如 '微信：xxxx'）
   SHOW_FOOTER: true,                 // 是否显示首页底部的版权与免责信息
-  VERSION: 'v1.4.4',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
+  VERSION: 'v1.8.3',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
   UPDATED: '2026-11-14',              // 更新日期
   FEEDBACK_URL: 'https://wj.qq.com/s2/28674644/054w/',  // 反馈表单链接（腾讯问卷，用户 2026-11-13 自己建的免费表单；改成 '' 则恢复显示微信联系方式）
   SITE_URL: 'https://mmw123456.github.io/xuanji-ge/',  // 官网链接（结果卡片分享区二维码与文字用）
@@ -764,6 +785,29 @@ document.addEventListener('touchstart', function(){}, {passive:true});
     <h3 style="text-align:center">更新日志</h3>
     <div class="tip-note" style="text-align:center" id="clVersion"></div>
     <div style="font-size:13px;color:var(--text-dim);line-height:2">
+      <div style="color:var(--gold-light);font-weight:600">v1.8.3 · 2026-11-15</div>
+      <div>· 奇门遁甲定局修正：原来按“节气后每 5 天换一元”算三元是错的，现改成符头定元（取当日之前最近的甲 / 己日为符头）；11 月 14 日按旧算法会排成阴九局，实际应为立冬下元阴三局，整盘都错了</div>
+      <div>· 值符星与值符神寄宫修正：时干落中宫时，值符星与值符神都寄坤二宫（原来星留在中宫、神分开寄，是错的）</div>
+      <div>· 排盘结果顶部现在显示符头（如“立冬 · 下元（符头己丑）”），时干落中宫时会注明寄坤</div>
+      <div style="color:var(--gold-light);font-weight:600">v1.8.2 · 2026-11-14</div>
+      <div>· 奇门遁甲文案修正：问事时间下拉原先照抄八字的“请选择出生时间”，改回“请选择问事时间”</div>
+      <div>· 称骨算命解析加详细：每档骨重新增详细解读（为人 / 一生走势 / 提醒三段），按传统注解（称骨歌注）与现代白话解读转述；口径说明补了来源与限度</div>
+      <div>· 修了一个真 bug：奇门页的表单与结果容器和起名页撞了 id（qmForm / qmResult），排盘结果会写到起名页去，奇门页上看不到结果；已改成独立的 qimenForm / qimenResult</div>
+      <div style="color:var(--gold-light);font-weight:600">v1.8.1 · 2026-11-14</div>
+      <div>· 桌面图标上线：加了 manifest + service worker + 玄字金标，可从手机桌面像 App 一样打开（安卓 Chrome 菜单“添加到主屏幕”，苹果用分享 → 添加到主屏幕）；离线也能打开</div>
+      <div>· 首页底部多了一行安装提示（已安装或已关闭后不再出现）；单文件本身不变，直接打开 html 仍可正常使用</div>
+      <div style="color:var(--gold-light);font-weight:600">v1.8.0 · 2026-11-14</div>
+      <div>· 奇门遁甲上线：时家奇门九宫盘（拆补定局 + 转盘布盘）+ 时干宫解读 + 伏吟/反吟/门迫/入墓/青龙返首/飞鸟跌穴</div>
+      <div>· 排盘用问事时刻起局；临近节气交节时局数会因定局口径不同而有出入，已在口径说明里写明</div>
+      <div style="color:var(--gold-light);font-weight:600">v1.7.0 · 2026-11-14</div>
+      <div>· 三世书算婚姻上线：夫妇感情位（纳音长生十二表）+ 十二位夫妻感情解释 + 前世因果（十二月）+ 婚宫与配偶星</div>
+      <div>· 查法只用农历月与日柱干支，不用出生时间；原文以女性为准，选“男”时按原文示例换位取义</div>
+      <div style="color:var(--gold-light);font-weight:600">v1.6.0 · 2026-11-14</div>
+      <div>· 日元论命上线：十干本性（《滴天髓》体象口诀）+ 旺衰喜忌（与八字同一套算法）+ 调候用神（《穷通宝鉴》120 格查表）+ 十神结构</div>
+      <div>· 调候表按日主 × 月柱地支查，月份以节气为准；表上用神是否落在整盘喜用里会逐个标注</div>
+      <div style="color:var(--gold-light);font-weight:600">v1.5.0 · 2026-11-14</div>
+      <div>· 称骨算命上线：按袁天罡称骨法，年、月、日、时四项骨重相加，对照 51 首称骨歌；支持“我不清楚出生时间”，列出 12 个时辰各自的骨重</div>
+      <div>· 骨重表三源比对：算准网、Deep Oracle、《增补玉匣记》附录；年按农历年（春节换年）、23:00 后算次日、闰月上半月算本月下半月算下月</div>
       <div style="color:var(--gold-light);font-weight:600">v1.4.4 · 2026-11-14</div>
       <div>· 评审报告 P1 / P2 全修：姓名分数与结论联动、匹配两段不再相同、塔罗四处文本毛病、起名卡片数字带标签、起名跳转可返回、名库性别过滤、历史摘要“命宫命宫”、紫微报错改中文、反馈入口接通、号码加格式校验</div>
       <div>· 结构升级：性别与时辰走同一套枚举、表单报错改内联红字、桌面端放宽到 780px 并加响应式、hash 路由（刷新 / 后退 / 分享不丢页）、结果页默认展开前 4 段、MBTI 性格特质去重、双人速配加厚</div>
@@ -854,6 +898,12 @@ document.addEventListener('touchstart', function(){}, {passive:true});
         <div class="name">八字命理</div>
         <div class="desc">四柱十神 · 大运解析</div>
       </div>
+      <div class="entry-card" onclick="showPage('riyuan')">
+        <span class="tag">新</span>
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7 v5 l3 2"/></svg></div>
+        <div class="name">日元论命</div>
+        <div class="desc">十干本性 · 调候用神</div>
+      </div>
       <div class="entry-card" onclick="showPage('xingming')">
         <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="1.5"/><path d="M4 6 v12 M20 6 v12"/><path d="M9 9 h6 M9 13 h6"/></svg></div>
         <div class="name">姓名分析</div>
@@ -894,16 +944,41 @@ document.addEventListener('touchstart', function(){}, {passive:true});
         <div class="name">择吉日</div>
         <div class="desc">宜忌 · 冲煞生肖</div>
       </div>
+      <div class="entry-card" onclick="showPage('chenggu')">
+        <span class="tag">新</span>
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18"/><path d="M8 21h8"/><path d="M4 7h16"/><path d="M6 7l-2.5 6a2.9 2.9 0 0 0 5 0L6 7z"/><path d="M18 7l-2.5 6a2.9 2.9 0 0 0 5 0L18 7z"/></svg></div>
+        <div class="name">称骨算命</div>
+        <div class="desc">年月日时 · 骨重歌诀</div>
+      </div>
       <div class="entry-card" onclick="showPage('peidui')">
         <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="16" cy="9" r="2.5"/><path d="M3.5 19 c0-3 2.5-5 5.5-5 s5.5 2 5.5 5"/><path d="M16 12 c1.5 0 2.5 1.5 2.5 3.5"/></svg></div>
         <div class="name">缘分配对</div>
         <div class="desc">生肖 · 八字合婚</div>
+      </div>
+
+      <div class="entry-card" onclick="showPage('sanshi')">
+        <span class="tag">新</span>
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.6-7-10a7 7 0 0 1 14 0c0 5.4-7 10-7 10z"/><circle cx="12" cy="11" r="2.5"/></svg></div>
+        <div class="name">三世书算婚姻</div>
+        <div class="desc">夫妇感情 · 前世因果</div>
+      </div>
+
+      <div class="entry-card" onclick="showPage('qimen')">
+        <span class="tag">新</span>
+        <div class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div>
+        <div class="name">奇门遁甲</div>
+        <div class="desc">九宫盘 · 问事起局</div>
       </div>
     </div>
     <div class="tip-entry" onclick="showTip()">
       <div class="tip-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21 C7 16.5 4 13.5 4 9.5 C4 6.5 6.5 4 9.5 4 C11 4 12 5 12 5 C12 5 13 4 14.5 4 C17.5 4 20 6.5 20 9.5 C20 13.5 17 16.5 12 21 Z"/></svg></div>
       <div class="tip-text"><div class="tip-title">喜欢玄机阁？</div><div class="tip-sub">完全免费使用 · 如果觉得有用，欢迎请作者喝杯茶</div></div>
       <div class="tip-btn">打赏</div>
+    </div>
+    <div class="a2hs-tip" id="a2hsTip">
+      <div class="a2hs-text">📱 想从手机桌面直接打开？<span id="a2hsManual">浏览器菜单 → 添加到主屏幕</span></div>
+      <button class="a2hs-btn" id="a2hsBtn" style="display:none" onclick="__xjgInstall()">安装到桌面</button>
+      <span class="a2hs-x" onclick="__xjgHideA2hs()">×</span>
     </div>
     <footer>
       <div>玄机阁 · 传统文化与现代心理学的交汇</div>
@@ -1538,6 +1613,200 @@ document.addEventListener('touchstart', function(){}, {passive:true});
       </div>
     </div>
     <div id="zjResult"></div>
+  </div>
+</div>
+
+<!-- ================= 称骨算命 ================= -->
+<div class="page" id="page-chenggu">
+  <div class="wrap">
+    <div class="topbar">
+      <a class="back" onclick="showPage('home')">‹</a>
+      <div class="title">称骨算命</div>
+      <div class="spacer"></div>
+    </div>
+    <div id="cgForm">
+      <div class="form-card">
+        <div class="field">
+          <label>出生日期</label>
+          <input type="date" id="cgBirthdate" placeholder="请选择出生日期">
+        </div>
+        <div class="field">
+          <label>出生时间</label>
+          <select id="cgBirthtime">
+            <option value="">请选择出生时间（24 时制）</option>
+            <option value="00:00">00:00 子时</option>
+            <option value="01:00">01:00 丑时</option>
+            <option value="02:00">02:00 丑时</option>
+            <option value="03:00">03:00 寅时</option>
+            <option value="04:00">04:00 寅时</option>
+            <option value="05:00">05:00 卯时</option>
+            <option value="06:00">06:00 卯时</option>
+            <option value="07:00">07:00 辰时</option>
+            <option value="08:00">08:00 辰时</option>
+            <option value="09:00">09:00 巳时</option>
+            <option value="10:00">10:00 巳时</option>
+            <option value="11:00">11:00 午时</option>
+            <option value="12:00">12:00 午时</option>
+            <option value="13:00">13:00 未时</option>
+            <option value="14:00">14:00 未时</option>
+            <option value="15:00">15:00 申时</option>
+            <option value="16:00">16:00 申时</option>
+            <option value="17:00">17:00 酉时</option>
+            <option value="18:00">18:00 酉时</option>
+            <option value="19:00">19:00 戌时</option>
+            <option value="20:00">20:00 戌时</option>
+            <option value="21:00">21:00 亥时</option>
+            <option value="22:00">22:00 亥时</option>
+            <option value="23:00">23:00 子时</option>
+          </select>
+          <div class="hint">不知道出生时间？勾选下方“我不清楚出生时间”，将列出 12 个时辰各自的骨重；时辰影响总骨重，建议尽量准确</div>
+          <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="cgTimeUnknown" onchange="cgTimeUnknownToggle()" style="width:16px;height:16px;accent-color:var(--gold)">我不清楚出生时间</label>
+        </div>
+        <div class="hint" style="text-align:center">按袁天罡称骨法：年、月、日、时各有定数，四数相加得总骨重，再对照称骨歌</div>
+        <button class="btn" onclick="cgCalc()">开始称骨</button>
+      </div>
+    </div>
+    <div id="cgResult"></div>
+  </div>
+</div>
+
+<!-- ================= 日元论命 ================= -->
+<div class="page" id="page-riyuan">
+  <div class="wrap">
+    <div class="topbar">
+      <a class="back" onclick="showPage('home')">‹</a>
+      <div class="title">日元论命</div>
+      <div class="spacer"></div>
+    </div>
+    <div id="ryForm">
+      <div class="form-card">
+        <div class="field">
+          <label>出生日期</label>
+          <input type="date" id="ryBirthdate" placeholder="请选择出生日期">
+        </div>
+        <div class="field">
+          <label>出生时间</label>
+          <select id="ryBirthtime">
+            <option value="">请选择出生时间（24 时制）</option>
+            <option value="00:00">00:00 子时</option>
+            <option value="01:00">01:00 丑时</option>
+            <option value="02:00">02:00 丑时</option>
+            <option value="03:00">03:00 寅时</option>
+            <option value="04:00">04:00 寅时</option>
+            <option value="05:00">05:00 卯时</option>
+            <option value="06:00">06:00 卯时</option>
+            <option value="07:00">07:00 辰时</option>
+            <option value="08:00">08:00 辰时</option>
+            <option value="09:00">09:00 巳时</option>
+            <option value="10:00">10:00 巳时</option>
+            <option value="11:00">11:00 午时</option>
+            <option value="12:00">12:00 午时</option>
+            <option value="13:00">13:00 未时</option>
+            <option value="14:00">14:00 未时</option>
+            <option value="15:00">15:00 申时</option>
+            <option value="16:00">16:00 申时</option>
+            <option value="17:00">17:00 酉时</option>
+            <option value="18:00">18:00 酉时</option>
+            <option value="19:00">19:00 戌时</option>
+            <option value="20:00">20:00 戌时</option>
+            <option value="21:00">21:00 亥时</option>
+            <option value="22:00">22:00 亥时</option>
+            <option value="23:00">23:00 子时</option>
+          </select>
+          <div class="hint">不知道出生时间？勾选下方“我不清楚出生时间”，旺衰按三柱判断；时辰影响十神结构，建议尽量准确</div>
+          <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="ryTimeUnknown" onchange="ryTimeUnknownToggle()" style="width:16px;height:16px;accent-color:var(--gold)">我不清楚出生时间</label>
+        </div>
+        <div class="hint" style="text-align:center">日元即日柱天干，是整张八字的起点；本页以日元为中心讲本性、旺衰与调候</div>
+        <button class="btn" onclick="ryCalc()">开始论命</button>
+      </div>
+    </div>
+    <div id="ryResult"></div>
+  </div>
+</div>
+
+<!-- ================= 三世书算婚姻 ================= -->
+<div class="page" id="page-sanshi">
+  <div class="wrap">
+    <div class="topbar">
+      <a class="back" onclick="showPage('home')">‹</a>
+      <div class="title">三世书算婚姻</div>
+      <div class="spacer"></div>
+    </div>
+    <div id="ssForm">
+      <div class="form-card">
+        <div class="field">
+          <label>出生日期</label>
+          <input type="date" id="ssBirthdate" placeholder="请选择出生日期">
+        </div>
+        <div class="field">
+          <label>性别</label>
+          <select id="ssGender">
+            <option value="female">女（原文以女性为准）</option>
+            <option value="male">男（换位取义）</option>
+          </select>
+        </div>
+        <div class="hint" style="text-align:center">三世书查婚姻只看农历月与日柱干支，不用出生时间；夫妇感情位按纳音长生十二表查</div>
+        <button class="btn" onclick="ssCalc()">开始测算</button>
+      </div>
+    </div>
+    <div id="ssResult"></div>
+  </div>
+</div>
+
+<!-- ================= 奇门遁甲 ================= -->
+<div class="page" id="page-qimen">
+  <div class="wrap">
+    <div class="topbar">
+      <a class="back" onclick="showPage('home')">‹</a>
+      <div class="title">奇门遁甲</div>
+      <div class="spacer"></div>
+    </div>
+    <div id="qimenForm">
+      <div class="form-card">
+        <div class="field">
+          <label>问事日期</label>
+          <input type="date" id="qmBirthdate" placeholder="请选择日期">
+        </div>
+        <div class="field">
+          <label>问事时间</label>
+          <select id="qmBirthtime">
+            <option value="">请选择问事时间（24 时制）</option>
+            <option value="00:00">00:00 子时</option>
+            <option value="01:00">01:00 丑时</option>
+            <option value="02:00">02:00 丑时</option>
+            <option value="03:00">03:00 寅时</option>
+            <option value="04:00">04:00 寅时</option>
+            <option value="05:00">05:00 卯时</option>
+            <option value="06:00">06:00 卯时</option>
+            <option value="07:00">07:00 辰时</option>
+            <option value="08:00">08:00 辰时</option>
+            <option value="09:00">09:00 巳时</option>
+            <option value="10:00">10:00 巳时</option>
+            <option value="11:00">11:00 午时</option>
+            <option value="12:00">12:00 午时</option>
+            <option value="13:00">13:00 未时</option>
+            <option value="14:00">14:00 未时</option>
+            <option value="15:00">15:00 申时</option>
+            <option value="16:00">16:00 申时</option>
+            <option value="17:00">17:00 酉时</option>
+            <option value="18:00">18:00 酉时</option>
+            <option value="19:00">19:00 戌时</option>
+            <option value="20:00">20:00 戌时</option>
+            <option value="21:00">21:00 亥时</option>
+            <option value="22:00">22:00 亥时</option>
+            <option value="23:00">23:00 子时</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>所问何事（选填）</label>
+          <input type="text" id="qmMatter" placeholder="例如：这周面试能不能成" maxlength="30">
+        </div>
+        <div class="hint" style="text-align:center">时家奇门以问事时刻起局；不知道时间可点“用现在”</div>
+        <button class="btn" onclick="qmCalc()">开始排盘</button>
+        <button class="btn ghost" onclick="qmNow()">用现在</button>
+      </div>
+    </div>
+    <div id="qimenResult"></div>
   </div>
 </div>
 
@@ -4800,6 +5069,22 @@ function histRestore(item) {
         setHistVal('zjDate', d.date || '');
         if (window.zjCalc) window.zjCalc();
         break;
+      case '称骨':
+        showPage('chenggu');
+        if (window.__xjgRestoreChenggu) window.__xjgRestoreChenggu(d.birthdate, d.time, d.timeUnknown);
+        break;
+      case '日元':
+        showPage('riyuan');
+        if (window.__xjgRestoreRiyuan) window.__xjgRestoreRiyuan(d.birthdate, d.time, d.timeUnknown);
+        break;
+      case '三世书':
+        showPage('sanshi');
+        if (window.__xjgRestoreSanshi) window.__xjgRestoreSanshi(d.birthdate, d.gender);
+        break;
+      case '奇门':
+        showPage('qimen');
+        if (window.__xjgRestoreQimen) window.__xjgRestoreQimen(d.birthdate, d.time, d.matter);
+        break;
       case '配对':
         showPage('peidui');
         if (d.mode === 'bazi') {
@@ -5847,6 +6132,817 @@ window.hmReset = function() {
   window.scrollTo(0, 0);
 };
 
+// ============ 称骨算命（袁天罡称骨法）============
+(function(){
+  // 口径：年按农历年干支（春节换年）、月按农历月、日按农历日、时按十二时辰；23:00 以后出生按次日算；闰月上半月算本月、下半月算下月。
+  // 骨重单位：钱（整数，1两=10钱）。总骨重从二两一钱到七两一钱共 51 档。
+  // 骨重表来源：算准网《袁天罡称骨算命对照表》、Deep Oracle 称骨表、《增补玉匣记》称骨附录，三源比对一致；
+  // 仅三处版本差异（二十日 1.5/1.0、癸亥 0.6/0.7、己丑 0.7/0.8），均取多数本；歌诀采用流传最广的一套刊本。
+  var CG_YEAR = { '甲子':12,'乙丑':9,'丙寅':6,'丁卯':7,'戊辰':12,'己巳':5,'庚午':9,'辛未':8,'壬申':7,'癸酉':8,
+    '甲戌':15,'乙亥':9,'丙子':16,'丁丑':8,'戊寅':8,'己卯':19,'庚辰':12,'辛巳':6,'壬午':8,'癸未':7,
+    '甲申':5,'乙酉':15,'丙戌':6,'丁亥':16,'戊子':15,'己丑':7,'庚寅':9,'辛卯':12,'壬辰':10,'癸巳':7,
+    '甲午':15,'乙未':6,'丙申':5,'丁酉':14,'戊戌':14,'己亥':9,'庚子':7,'辛丑':7,'壬寅':9,'癸卯':12,
+    '甲辰':8,'乙巳':7,'丙午':13,'丁未':5,'戊申':14,'己未':6,'庚申':8,'辛酉':16,'壬戌':10,'癸亥':6,
+    '甲寅':12,'乙卯':8,'丙辰':8,'丁巳':6,'戊午':19,'己酉':5,'庚戌':9,'辛亥':17,'壬子':5,'癸丑':7 };
+  var CG_MONTH = [0,6,7,18,9,5,16,9,15,18,8,9,5];
+  var CG_MONTH_NAME = ['','正月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  var CG_DAY = [0,5,10,8,15,16,15,8,16,8,16,9,17,8,17,10,8,9,18,5,15,10,9,8,9,15,18,7,8,16,6];
+  var CG_HOUR = { '子':16,'丑':6,'寅':7,'卯':10,'辰':9,'巳':16,'午':10,'未':8,'申':8,'酉':9,'戌':6,'亥':6 };
+  var CG_SC = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+  var CG_SC_HOURS = { '子':'23:00–01:00','丑':'01:00–03:00','寅':'03:00–05:00','卯':'05:00–07:00','辰':'07:00–09:00','巳':'09:00–11:00','午':'11:00–13:00','未':'13:00–15:00','申':'15:00–17:00','酉':'17:00–19:00','戌':'19:00–21:00','亥':'21:00–23:00' };
+  var CG_DAY_NAME = ['','初一','初二','初三','初四','初五','初六','初七','初八','初九','初十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
+  var CG_NUM = ['','一','二','三','四','五','六','七','八','九'];
+  // 51 首称骨歌：键为总骨重（钱）。p 为歌诀原文（流传最广的刊本），w 为白话（依诗句大意自撰），t 为命格档（按歌诀语气分：下/中下/中/中上/上）。
+  var CG_SONGS = {
+    21:{ p:'短命非业谓大空，平生灾难事重重，凶祸频临陷逆境，终世困苦事不成。', w:'一生多灾多难，困苦难成。', t:'下' },
+    22:{ p:'身寒骨冷苦伶仃，此命推来行乞人，劳劳碌碌无度日，终年打拱过平生。', w:'孤寒伶仃，劳碌无靠。', t:'下' },
+    23:{ p:'此命推来骨肉轻，求谋做事事难成，妻儿兄弟实难靠，外出他乡做散人。', w:'求谋难成，亲人难靠，只宜离乡。', t:'下' },
+    24:{ p:'此命推来福禄无，门庭困苦总难荣，六亲骨肉皆无靠，流浪他乡作老翁。', w:'福禄全无，六亲无靠，老来飘零。', t:'下' },
+    25:{ p:'此命推来祖业微，门庭营度似稀奇，六亲骨肉如冰炭，一世勤劳自把持。', w:'祖业微薄，亲情冷淡，靠勤劳自立。', t:'下' },
+    26:{ p:'平生衣禄苦中求，独自营谋事不休，离祖出门宜早计，晚来衣禄自无休。', w:'衣禄苦中求，宜早离祖，晚年方稳。', t:'中下' },
+    27:{ p:'一生作事少商量，难靠祖宗作主张，独马单枪空做去，早年晚岁总无长。', w:'做事少商量，难靠祖宗，早晚无长进。', t:'下' },
+    28:{ p:'一生行事似飘蓬，祖宗产业在梦中，若不过房改名姓，也当移徒二三通。', w:'行事飘蓬，祖业如梦，需改姓或迁移。', t:'下' },
+    29:{ p:'初年运蹇未曾亨，纵有功名在后成，须过四旬才可立，移居改姓始为良。', w:'早年不亨，功名在后，四十后方立。', t:'中下' },
+    30:{ p:'劳劳碌碌苦中求，东奔西走何日休，若使终身勤与俭，老来稍可免忧愁。', w:'劳碌一生，终身勤俭，老来稍免忧。', t:'中下' },
+    31:{ p:'忙忙碌碌苦中求，何日云开见日头，难得祖基家可立，中年衣食渐无忧。', w:'难靠祖基，中年衣食渐无忧。', t:'中下' },
+    32:{ p:'初年运蹇事难谋，渐有财源如水流，到得中年衣食旺，那时名利一齐收。', w:'早年运蹇，中年财源如水，名利双收。', t:'中上' },
+    33:{ p:'早年作事事难成，百计徒劳枉费心，半世自如流水去，后来运到得黄金。', w:'早年徒劳，半世流水，后来运到得金。', t:'中上' },
+    34:{ p:'此命福气果如何，僧道门中衣禄多，离祖出家方为妙，朝晚拜佛念弥陀。', w:'福在僧道门中，离祖出家方妙。', t:'中' },
+    35:{ p:'生平福量不周全，祖业根基觉少传，营事生涯宜守旧，时来衣食胜从前。', w:'福量不周，祖业少传，宜守旧，时来胜前。', t:'中' },
+    36:{ p:'不须劳碌过平生，独自成家福不轻，早有福星常照命，任君行去百般成。', w:'不须劳碌，自成家福星照命，百事可成。', t:'中上' },
+    37:{ p:'此命般般事不成，弟兄少力自孤行，虽然祖业须微有，来得明时去不明。', w:'事事难成，兄弟少力，祖业来去不明。', t:'中下' },
+    38:{ p:'一身骨肉最清高，早入簧门姓氏标，待到年将三十六，蓝衫脱去换红袍。', w:'骨肉清高，早入仕途，三十六换红袍。', t:'上' },
+    39:{ p:'此命终身运不通，劳劳作事尽皆空，苦心竭力成家计，到得那时在梦中。', w:'终身运不通，劳碌皆空，成家如梦。', t:'下' },
+    40:{ p:'平生衣禄是绵长，件件心中自主张，前面风霜多受过，后来必定享安康。', w:'衣禄绵长，早年风霜，后来安康。', t:'中上' },
+    41:{ p:'此命推来事不同，为人能干异凡庸，中年还有逍遥福，不比前时运未通。', w:'为人能干，中年有逍遥福，胜过前时。', t:'中上' },
+    42:{ p:'得宽怀处且宽怀，何用双眉皱不开，若使中年命运济，那时名利一齐来。', w:'心放宽些，中年命运一济，名利齐来。', t:'中上' },
+    43:{ p:'为人心性最聪明，作事轩昂近贵人，衣禄一生天数定，不须劳碌过平生。', w:'聪明近贵人，衣禄天定，不须劳碌。', t:'中上' },
+    44:{ p:'万事由天莫苦求，须知福禄命里收，少壮名利难如意，晚景欣然更不忧。', w:'万事由天，少壮名利难如意，晚景欣然。', t:'中上' },
+    45:{ p:'名利推来竟若何，前番辛苦后奔波，命中难养男与女，骨肉扶持也不多。', w:'前辛苦后奔波，子女缘薄，骨肉扶持不多。', t:'中下' },
+    46:{ p:'东西南北尽皆通，出姓移居更觉隆，衣禄无亏天数定，中年晚景一般同。', w:'四方皆通，移居改姓更兴，中晚一般。', t:'中上' },
+    47:{ p:'此命推为旺末年，妻荣子贵自怡然，平生原有滔滔福，财源滚滚似水流。', w:'晚年兴旺，妻荣子贵，财源滚滚。', t:'上' },
+    48:{ p:'初年运道未曾亨，若是蹉跎再不兴，兄弟六亲皆无靠，一身事业晚年成。', w:'早年不亨，兄弟无靠，事业晚年成。', t:'中' },
+    49:{ p:'此命推来福不轻，自成自立显门庭，从来富贵人钦敬，使婢差奴过一生。', w:'福不轻，自成自立，显门庭，富贵受敬。', t:'上' },
+    50:{ p:'为利为名终日劳，中年福禄也多遭，老来是有财星照，不比前番目下高。', w:'为名利终日劳，中年福禄多，老来财星照。', t:'中上' },
+    51:{ p:'一世荣华事事通，不须劳碌自亨通，弟兄叔侄皆如意，家业成时福禄宏。', w:'一世荣华，事事通，不须劳碌自亨通。', t:'上' },
+    52:{ p:'一世荣华事事能，不须劳思自然宁，宗族欣然心皆好，家业丰亨自称心。', w:'一世荣华，事事能，宗族和睦，家业丰亨。', t:'上' },
+    53:{ p:'此格推为气量真，兴家发达在其中，一生福禄安排定，却是人间一富翁。', w:'气量真，兴家发达，一生福禄定，人间富翁。', t:'上' },
+    54:{ p:'此命推来厚且清，诗书满腹看功成，丰衣足食自然稳，正是人间有福人。', w:'厚且清，诗书满腹，丰衣足食，人间有福人。', t:'上' },
+    55:{ p:'走马扬鞭争利名，少年作事费筹论，一朝福禄源源至，富贵荣华显六亲。', w:'少年争利名，一朝福禄至，富贵显六亲。', t:'上' },
+    56:{ p:'此格推来礼义通，一身福禄用无穷，甜酸苦辣皆尝过，滚滚财源稳且丰。', w:'礼义通，福禄用无穷，财源稳丰。', t:'上' },
+    57:{ p:'福禄丰盈万事全，一身荣耀乐天年，名扬威震人争羡，此世逍遥宛似仙。', w:'福禄丰盈，万事全，一生荣耀乐天年。', t:'上' },
+    58:{ p:'平生福禄自然来，名利兼全福寿偕，雁塔题名为贵客，紫袍金带走金阶。', w:'福禄自然来，名利双全，雁塔题名，紫袍金带。', t:'上' },
+    59:{ p:'细推此格妙且清，必定才高礼义通，甲第之中应有分，扬鞭走马显威荣。', w:'才高礼义通，甲第有分，扬鞭走马显威荣。', t:'上' },
+    60:{ p:'一朝金榜快题名，显祖荣宗立大功，衣禄定然原裕足，田园财帛更丰盈。', w:'金榜题名，显祖荣宗，衣禄田园丰盈。', t:'上' },
+    61:{ p:'不作朝中金榜客，定为世上大财翁，聪明天赋经书熟，名显高科自是荣。', w:'不作金榜客，定为世上大财翁，名显高科。', t:'上' },
+    62:{ p:'此命生来福不穷，读书必定显亲宗，紫衣金带为卿相，富贵荣华皆可同。', w:'生来福不穷，读书显亲宗，紫衣金带为卿相。', t:'上' },
+    63:{ p:'命主为官福禄长，得来富贵实丰常，名题金塔传金榜，定中高科天下扬。', w:'为官福禄长，金榜题名，定中高科天下扬。', t:'上' },
+    64:{ p:'此格威权不可当，紫袍金带尘高堂，荣华富贵谁能及，万古留名姓氏扬。', w:'威权不可当，紫袍金带，荣华富贵谁能及。', t:'上' },
+    65:{ p:'细推此命福非轻，富贵荣华孰与争，定国安邦人极品，威声显赫震寰瀛。', w:'福非轻，定国安邦人极品，威声震寰瀛。', t:'上' },
+    66:{ p:'此格人间一福人，堆金积玉满堂春，从来富贵由天定，正笏垂绅谒圣君。', w:'人间一福人，堆金积玉，富贵由天定。', t:'上' },
+    67:{ p:'此命生来福自宏，田园家业最高隆，平生衣禄盈丰足，一世荣华万事通。', w:'生来福自宏，田园家业隆，一世荣华万事通。', t:'上' },
+    68:{ p:'富贵由天莫苦求，万金家计不须谋，如今不比前翻事，祖业根基千古留。', w:'富贵由天，万金家计不须谋，祖业根基留。', t:'上' },
+    69:{ p:'君是人间衣禄星，一生富贵众人钦，纵然福禄由天定，安享荣华过一生。', w:'人间衣禄星，一生富贵众人钦，安享荣华。', t:'上' },
+    70:{ p:'此命推来福禄宏，不须愁虑苦劳心，一生天定衣与禄，富贵荣华主一生。', w:'福禄宏，不须愁虑，一生天定衣禄。', t:'上' },
+    71:{ p:'此命生成大不同，公侯卿相在其中，一生自有逍遥福，富贵荣华极品隆。', w:'生成大不同，公侯卿相在其中，一生逍遥福。', t:'上' }
+  };
+  var CG_DETAIL = {
+    21:{ x:'抗压与独立精神强，但一生阻碍比别人多。', z:'前半生挑战不断，需付出更多努力才能安稳；早年磨练出的韧性是后半生的本钱。', t:'路难走不代表命不好，稳住心态，少冒险，把一件事做深。' },
+    22:{ x:'从零开始的命格，独立打拼，不靠祖业。', z:'早年离家、物质艰难；转机多在中年之后，靠双手积累。', t:'别指望祖业，守住本业，慢慢攒。' },
+    23:{ x:'亲缘淡薄，早年多靠自己，性子直接。', z:'求谋前期波折多，与原生家庭缘分薄，宜离乡发展；多试几次才能找到方向。', t:'离乡是出路，别在原地耗着。' },
+    24:{ x:'极能吃苦，财运平平，靠手艺立身。', z:'早年少助力，六亲难靠；一技之长是晚年的依靠。', t:'学门手艺，稳扎稳打，别强求快钱。' },
+    25:{ x:'祖业难靠，亲情冷淡，但勤劳自立。', z:'一生勤劳自持，晚年靠自己的积累。', t:'自立是本钱，把持住勤劳二字。' },
+    26:{ x:'为人刚强，劳心劳力，能吃苦，知轻重。', z:'初限略有小成，早年家计安康；四十八九岁后末运渐成，事业财源渐盛，老来荣华。', t:'宜早离祖出门谋生，晚年方稳。' },
+    27:{ x:'性纯不刚不柔，心中无毒，做事有始有终。', z:'六亲不得力，早年破尽后白手起家；三十五六方可成家立业，四十外如船遇顺风，五十安稳，末限事业兴。', t:'难靠祖宗，独马单枪也要走下去，别半途而废。' },
+    28:{ x:'多才能，心机灵巧，祖业飘零，离乡可成事。', z:'早年不能聚财，三十三岁方知劳苦；三十八九、四十岁称心如意，末限福如东海。', t:'宜离乡别井，勤俭一生，救人无功也别计较。' },
+    29:{ x:'性爆，心直口快，有才能，见善不欺，量能宽大。', z:'二十三四五不遂，二十七八有好运如枯木逢春；四十九有一险，熬过后七十方走大运。', t:'不能聚财是短板，宜自立家计，出外方好。' },
+    30:{ x:'多才多能，心机灵巧，出外有贵人扶持。', z:'早年不能聚财，三十三岁方知劳苦；三十八九、四十岁称心如意，晚年安稳。', t:'终身勤与俭是本钱，不适合冒险投机。' },
+    31:{ x:'敬重双亲，有福有禄，六亲和睦，义气高强，忠孝双全。', z:'初限早成家计、辛勤劳苦，中限渐渐生财，末限荣华富贵。', t:'少年勤学，中年衣食渐无忧，交友宜谨慎。' },
+    32:{ x:'一生受贵，求谋顺利，出外有人恭敬。', z:'初年运蹇事难谋，中限渐渐称心，财源如水流；四十六七八交末运，名利一齐收。', t:'早年别急，中年自有财源到。' },
+    33:{ x:'性巧心灵，口快无心，恩中招怨，志在四方。', z:'早年作事难成、百计徒劳，半世如流水去；大运交来声名可望，名利振建。', t:'口快是短板，小事宜注意，别得罪人。' },
+    34:{ x:'性躁，与人做事反为不美，宜离祖成家。', z:'初限劳碌奔波不能聚钱，三十六至四十六财不谋而自至，有贵人助，家庭安宁。', t:'宜自成自立；猴猪羊蛇不可配，龙虎马牛方得安。' },
+    35:{ x:'品性纯和，做事忠直，志气高傲，六亲兄弟不得力。', z:'早年驳杂多端、独马单枪，三十五六到四十如金秋菊迎秋放；末限始称怀，祖业有破后重兴。', t:'宜守旧经营，不宜频繁换行或高风险投资。' },
+    36:{ x:'灵机性巧，胸襟通达，志气高，有礼有义，有才能。', z:'少年勤学有功名，青年欠利；中限光耀门庭，末限成家立业，安然到老。', t:'福星常照命，行去百般成，宜勤俭。' },
+    37:{ x:'品性刚直，做事公开有才能，不肯休息，祖业无靠。', z:'初限奔波劳苦，离别他境可成家计；中限未得如意，末限方有转机。', t:'财来财去难聚，宜白手成家，稳住心神。' },
+    38:{ x:'品性刚直，做事公开有才能，抓钱手强、赚钱斗弱。', z:'初限二十三四如明月被云侵，三十外日头重开；终交末运方为贵，渐渐荣昌。', t:'做几番败几番也别灰心，稳步成家计是正路。' },
+    39:{ x:'灵机性巧，胸襟通达，志气高，六亲骨肉可靠。', z:'此首写终身运不通、劳碌皆空，成家如梦；中限光耀门庭，末限安然到老。', t:'少年勤学有功名是底子，遇事宜稳守，别硬拼。' },
+    40:{ x:'性躁，心直口快，有才能，逢善不欺，量能宽大。', z:'初限二十五六连年不遂，二十七八九有好运如枯木逢春；中限四十九有灾，五十六七交大运。', t:'前面风霜多受过，后来必定享安康，别在低谷时放弃。' },
+    41:{ x:'性重气高，有口无心，能干异凡庸。', z:'初限奔波驳杂不能聚财，交过三十八九方可成家，四十五六方能顺意；末限如三月杨柳，晚景处处红。', t:'祖业未交，离别他境事事可成，宜外出发展。' },
+    42:{ x:'操劳，自成自立，与人出力事不成。', z:'初限驳杂多端不能聚钱，三十六到四十六时不谋自待、福不求自至，有贵人助力。', t:'得宽怀处且宽怀，别皱眉，福在中年。' },
+    43:{ x:'性躁刚强，多技多能，平生不受亏，近贵人。', z:'交过三十开外方得开怀，中限能进四方之财，出外逢贵人，方能兴旺。', t:'衣禄天定，不须劳碌，宜善经营。' },
+    44:{ x:'忠直敬重，心慈性躁，深谋远虑，贵人钦敬。', z:'初限美中不足，中限渐入佳境，名利可佳；二十九交佳运，可通花甲。', t:'万事由天莫苦求，晚景欣然更不忧。' },
+    45:{ x:'品性不刚不柔，心中无毒，做事有始有终。', z:'初限运寒多驳杂，祖业破败，重新白手成家；三十五六成家立业，四十开外如船遇顺风，五十安稳，末限事业兴。', t:'子女缘薄、骨肉扶持不多，宜自立。' },
+    46:{ x:'心慈性躁，有口无心，有粗有细，一生奔波。', z:'早业如败落萍，三十五六七八九平平度过；六十前后花开日，中年晚景一般同。', t:'宜出姓移居，东西南北尽皆通。' },
+    47:{ x:'品性纯和，做事公道，忠心待人，气质高。', z:'初限二十八九三十岁交运都好，三十六至四十如金秋菊遇秋开放；末运交来怡称怀，财源滚滚。', t:'旺末年，妻荣子贵，宜稳守待时。' },
+    48:{ x:'性躁，能随机应变，常近贵人。', z:'初限财运如霜雪，中限略可成家，大运突来能立家业，一身事业晚年成。', t:'兄弟六亲皆无靠，自立是正路。' },
+    49:{ x:'品性纯和，做事勤俭，兄弟有克，亲朋相援。', z:'初限贫愁，二十六七如逆水行舟不能聚财；交过四十方可成家立业，般般遂意；四十七八有一小灾。', t:'交友多情有损，赔酒赔饭反说不美，宜小心。' },
+    50:{ x:'正直，伶俐灵巧，有机变，平生无大难。', z:'初限奔波，中限四十岁方交大运如枯木逢春；四十九有一灾，熬过后有十年大运，财禄丰盈。', t:'好一双挣钱手，没有聚钱斗，宜学聚财。' },
+    51:{ x:'做事有能力，能随机应变，性燥能知轻重，气量宽宏。', z:'初限衣禄无亏，四十至五十末限通达昌吉，福禄无亏，财源稳定。', t:'一世荣华事事通，弟兄叔侄皆如意。' },
+    52:{ x:'多才多能，心机灵变，救人无功，重义轻财。', z:'早年聚财凡事顺意，三十八九四十岁如意称心；末限福如东海，寿比南山。', t:'财禄易聚易散，宜留后手。' },
+    53:{ x:'敬重双亲，有福有禄，气质高昂，少年勤学有功名，忠孝两全。', z:'初限早成家计、辛勤劳苦，中限渐渐生财，末限荣华富贵。', t:'兴家发达在其中，宜稳步经营。' },
+    54:{ x:'灵巧，胸襟通达，志气高强，少年勤学有功名。', z:'年轻欠利，中限光辉门庭；成家立业，安然到老。', t:'诗书满腹看功成，丰衣足食自然稳。' },
+    55:{ x:'灵巧机巧，初限尚不聚财，只是虚名虚利。', z:'少年作事费筹论，中限交来可称心，出外有人恭敬；四十九交来末运，夫妻百年同偕老。', t:'一朝福禄源源至，宜少年奋斗。' },
+    56:{ x:'性巧心灵，有口无心，事不保密，少年劳碌难免。', z:'前运乘阴少种树，怀才不遇；中限轻财，大举随行，移动得安然，名声可望。', t:'甜酸苦辣皆尝过，小事宜放松。' },
+    57:{ x:'心灵性巧，做事细致，足智多谋，志气高昂。', z:'少年勤学，名利成就；中限以来自成自立、渐渐荣昌；四十至四十五六，看子成名。', t:'福禄丰盈万事全，宜安享。' },
+    58:{ x:'忠直，做事有头有尾，身清气高。', z:'早限财来财去，中限兴旺；他乡创业，官臣之命。', t:'与人干事恩中招怨，反为不美，宜自立。' },
+    59:{ x:'性情暴躁，刚强，平生不受亏，量大多智多能。', z:'劳心见早，发福见迟；中限可进四方之财，出外有贵人助力，方能兴家立业。', t:'祖业凋零，宜独立成家，坐享福禄。' },
+    60:{ x:'灵机性巧，胸襟发达，志气高强，少年勤学有功名。', z:'青年欠利，中限光辉门户、早能发达；末限成家立业安然到老。', t:'一朝金榜题名，显祖荣宗。' },
+    61:{ x:'心秉直，聪明利达，心善口快，有才能，刚柔有济。', z:'二十至二十五六七八九岁有险，三十开外古镜重磨、明月再圆；六十六至七十方交大运。', t:'祖业如旧，六亲兄弟有靠，自立出外更好。' },
+    62:{ x:'忠直敦厚，心无所毒，性巧灵敏，深谋远虑。', z:'中限渐入佳境，名利可佳；二十九交来阳春暖，花甲一二岁大顺。', t:'读书必定显亲宗，紫衣金带为卿相。' },
+    63:{ x:'聪明利达，近知识，远小人，自觉性强，改悔及时。', z:'福禄寿三星拱照，富贵名扬天下，荣宗显祖。', t:'君子量大，操劳心重，宜先忧后乐。' },
+    64:{ x:'威权之格，紫袍金带，荣华富贵。', z:'一朝金榜题名，显祖荣宗立大功，衣禄田园丰盈。', t:'威权不可当，更要守住本分。' },
+    65:{ x:'定国安邦人极品，威声显赫。', z:'富贵荣华孰与争，一生极品。', t:'盛名之下更要谨慎。' },
+    66:{ x:'人间一福人，堆金积玉满堂春。', z:'富贵由天定，一生丰盈。', t:'富贵天定，守成为上。' },
+    67:{ x:'生来福自宏，田园家业隆。', z:'一世荣华万事通，衣禄盈丰足。', t:'家业为本，稳中求进。' },
+    68:{ x:'祖业根基深厚，万金家计不须谋。', z:'富贵由天莫苦求，如今不比前翻事，祖业根基千古留。', t:'守住祖业根基，莫苦求。' },
+    69:{ x:'人间衣禄星，富贵众人钦。', z:'一生富贵，安享荣华过一生。', t:'知足安享。' },
+    70:{ x:'福禄宏大，不须愁虑苦劳心。', z:'一生天定衣与禄，富贵荣华主一生。', t:'顺其自然，不须愁虑。' },
+    71:{ x:'生成大不同，公侯卿相在其中。', z:'一生自有逍遥福，富贵荣华极品隆。', t:'极品命格，仍以德行为重。' }
+  };
+  var CG_TIER = { '下':'命格偏轻', '中下':'先苦后甘', '中':'平实安稳', '中上':'福禄渐厚', '上':'福禄深厚' };
+  var lastCg = null;
+  function cgFmt(q) { var l = Math.floor(q / 10), r = q % 10; return r === 0 ? CG_NUM[l] + '两' : CG_NUM[l] + '两' + CG_NUM[r] + '钱'; }
+  function cgFmtW(q) { if (q >= 10) { var l = Math.floor(q / 10), r = q % 10; return r === 0 ? CG_NUM[l] + '两' : CG_NUM[l] + '两' + CG_NUM[r] + '钱'; } return CG_NUM[q] + '钱'; }
+  // 农历年干支：1984 年为甲子，以此推算（与八字的立春换年不同，称骨按春节换年）
+  function cgGanzhi(lYn) { var idx = ((lYn - 1984) % 60 + 60) % 60; return STEMS[idx % 10] + BRANCHES[idx % 12]; }
+  function cgMonthInfo(p) {
+    if (p.isLeap) {
+      if (p.lDn <= 15) return { m: p.lMn, w: CG_MONTH[p.lMn], note: '农历闰' + CG_MONTH_NAME[p.lMn] + '（上半月，按本月算）' };
+      var nm = p.lMn % 12 + 1;
+      return { m: nm, w: CG_MONTH[nm], note: '农历闰' + CG_MONTH_NAME[p.lMn] + '（下半月，按' + CG_MONTH_NAME[nm] + '算）' };
+    }
+    return { m: p.lMn, w: CG_MONTH[p.lMn], note: '农历' + CG_MONTH_NAME[p.lMn] };
+  }
+  // 时辰换算（本地实现：别调 hourToTimeIndex，它只定义在紫微 IIFE 里，外面看不见——v1.4.3 的 P0-1 同类问题）
+  function cgHourToSc(hour) { if (hour >= 23 || hour < 1) return 0; return Math.floor((hour + 1) / 2); }
+  function cgParse(birthdate, time) {
+    var d = lunisolar(birthdate + ' ' + time);
+    var lYn = parseInt(d.format('lYn'), 10);
+    var lMnRaw = parseInt(d.format('lMn'), 10);
+    var isLeap = lMnRaw >= 100;
+    return { d: d, lYn: lYn, lMn: isLeap ? lMnRaw - 100 : lMnRaw, isLeap: isLeap, lDn: parseInt(d.format('lDn'), 10) };
+  }
+  function cgPartsHtml(gz, yW, mInfo, p, dW, timeInfo) {
+    var h = '<div class="sd-item"><b>年</b>农历' + gz + '年 · ' + cgFmtW(yW) + '</div>' +
+      '<div class="sd-item"><b>月</b>' + mInfo.note + ' · ' + cgFmtW(mInfo.w) + '</div>' +
+      '<div class="sd-item"><b>日</b>农历' + CG_DAY_NAME[p.lDn] + ' · ' + cgFmtW(dW) + '</div>';
+    if (timeInfo) h += '<div class="sd-item"><b>时</b>' + timeInfo.sc + '时（' + timeInfo.time + '） · ' + cgFmtW(timeInfo.hW) + '</div>' +
+      '<div class="sd-item"><b>总计</b>' + cgFmt(yW + mInfo.w + dW + timeInfo.hW) + '</div>';
+    return h;
+  }
+  function cgKoujingHtml() {
+    return '<div class="r-section"><h3>口径说明</h3><p>年按农历年（春节换年）、月日按农历；23:00 以后出生按次日算；闰月上半月算本月、下半月算下月；歌诀男女通用，沿用通行的一套刊本。称骨是民间简法，只看四个重量相加，不看干支生克与大运，仅供传统文化参考。详细解读按传统注解（称骨歌注）与现代白话解读转述写成，取性格与走势的大意；注解原文中关于寿元、婚配、子息的具体说法流传不一，不作个人断语。</p></div>';
+  }
+  function cgFootHtml(withSave) {
+    return '<div class="disclaim">本内容仅供文化娱乐参考，请理性看待。</div>' +
+      '<span class="tip-link" onclick="showTip()">觉得有用？打赏支持一下</span><span class="tip-link" onclick="showFeedback()">有问题？点这里反馈</span>' +
+      (withSave ? '<button class="btn" onclick="saveCgCard()">保存结果卡片</button>' : '') +
+      '<button class="btn ghost" onclick="cgReset()">重新测算</button>' +
+      '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
+  }
+  window.cgTimeUnknownToggle = function() {
+    var cb = document.getElementById('cgTimeUnknown'), sel = document.getElementById('cgBirthtime');
+    if (!cb || !sel) return;
+    sel.disabled = cb.checked; if (cb.checked) sel.value = '';
+  };
+  window.cgCalc = function() {
+    clearFormErrs('page-chenggu');
+    var bd = document.getElementById('cgBirthdate').value;
+    if (!bd) { showFormErr('cgBirthdate', '请选择出生日期'); return; }
+    var unknown = document.getElementById('cgTimeUnknown').checked;
+    var time = document.getElementById('cgBirthtime').value;
+    if (!unknown && !time) { showFormErr('cgBirthtime', '请选择出生时间，或勾选“我不清楚出生时间”'); return; }
+    if (unknown) {
+      // 时辰未知：用正午换算农历（正午无 23:00 换日之虞），列出 12 个时辰各自的骨重
+      var p = cgParse(bd, '12:00');
+      var gz = cgGanzhi(p.lYn), yW = CG_YEAR[gz];
+      var mInfo = cgMonthInfo(p), dW = CG_DAY[p.lDn];
+      var base = yW + mInfo.w + dW;
+      var rows = CG_SC.map(function(sc) {
+        var tot = base + CG_HOUR[sc];
+        return '<div class="sd-item"><b>' + sc + '时（' + CG_SC_HOURS[sc] + '）</b>' + cgFmt(tot) + ' · ' + CG_TIER[CG_SONGS[tot].t] + '</div>';
+      }).join('');
+      var minT = base + 6, maxT = base + 16; // 时辰最轻 6 钱、最重 1 两 6 钱
+      var htmlU = '<div class="r-score"><div class="score-num" style="font-size:32px">' + cgFmt(minT) + ' — ' + cgFmt(maxT) + '</div><div class="score-label">总骨重范围 · 时辰未知</div></div>' +
+        '<div class="r-section"><h3>十二个时辰的骨重</h3><p>出生日期已定（' + p.d.format('lY年lMlD日') + '），只差时辰。下面是 12 个时辰各自的总骨重，知道大致时段可据此选一个：</p>' + rows + '</div>' +
+        '<div class="r-section"><h3>四项骨重（不含时辰）</h3>' + cgPartsHtml(gz, yW, mInfo, p, dW, null) + '</div>' +
+        cgKoujingHtml() + cgFootHtml(false);
+      lastCg = null;
+      addHistory({ type:'称骨', time:Date.now(), page:'chenggu', summary:'骨重 ' + cgFmt(minT) + '—' + cgFmt(maxT) + '（时辰未知）', data:{ birthdate:bd, time:'', timeUnknown:true } });
+      document.getElementById('cgForm').style.display = 'none';
+      document.getElementById('cgResult').innerHTML = htmlU;
+      segmentize('cgResult', 4);
+      window.scrollTo(0, 0);
+      return;
+    }
+    var p2 = cgParse(bd, time);
+    var gz2 = cgGanzhi(p2.lYn), yW2 = CG_YEAR[gz2];
+    var mInfo2 = cgMonthInfo(p2), dW2 = CG_DAY[p2.lDn];
+    var hour = parseInt(time.split(':')[0], 10);
+    var sc = CG_SC[cgHourToSc(hour)];
+    var hW = CG_HOUR[sc];
+    var total = yW2 + mInfo2.w + dW2 + hW;
+    var song = CG_SONGS[total];
+    var tier = CG_TIER[song.t];
+    lastCg = { tag:'称骨算命', big:cgFmt(total), bigSub:'总骨重 · ' + tier, rows:[
+      { k:'农历', v:p2.d.format('lY年lMlD日') },
+      { k:'年', v:'农历' + gz2 + '年 · ' + cgFmtW(yW2) },
+      { k:'月', v:mInfo2.note + ' · ' + cgFmtW(mInfo2.w) },
+      { k:'日', v:'农历' + CG_DAY_NAME[p2.lDn] + ' · ' + cgFmtW(dW2) },
+      { k:'时', v:sc + '时（' + time + '） · ' + cgFmtW(hW) }
+    ] };
+    var html = '<div class="r-score"><div class="score-num" style="font-size:44px">' + cgFmt(total) + '</div><div class="score-label">总骨重 · ' + tier + '</div></div>' +
+      '<div class="r-section"><h3>称骨歌</h3><p class="cg-poem">' + song.p + '</p></div>' +
+      '<div class="r-section"><h3>白话</h3><p>' + song.w + '</p></div>' +
+      '<div class="r-section"><h3>详细解读</h3><div class="sd-item"><b>为人</b>' + CG_DETAIL[total].x + '</div><div class="sd-item"><b>一生走势</b>' + CG_DETAIL[total].z + '</div><div class="sd-item"><b>提醒</b>' + CG_DETAIL[total].t + '</div></div>' +
+      '<div class="r-section"><h3>四项骨重</h3>' + cgPartsHtml(gz2, yW2, mInfo2, p2, dW2, { sc:sc, time:time, hW:hW }) + '</div>' +
+      '<div class="r-section"><h3>骨重定位</h3><p>骨重从二两一钱到七两一钱共 51 档，你的骨重排在第 ' + (total - 20) + ' 档。歌诀按轻到重排列，重的一端多写富贵、轻的一端多写劳碌，但中间几档也有写困顿的，逐首看比只看两数准确。命格轻重按歌诀语气分档，仅供参考。</p></div>' +
+      cgKoujingHtml() + cgFootHtml(true);
+    addHistory({ type:'称骨', time:Date.now(), page:'chenggu', summary:'总骨重 ' + cgFmt(total) + ' · ' + tier, data:{ birthdate:bd, time:time, timeUnknown:false } });
+    document.getElementById('cgForm').style.display = 'none';
+    document.getElementById('cgResult').innerHTML = html;
+    segmentize('cgResult', 4);
+    window.scrollTo(0, 0);
+  };
+  window.saveCgCard = function() { if (!lastCg) return; saveResultCard(lastCg); };
+  window.cgReset = function() {
+    document.getElementById('cgForm').style.display = '';
+    document.getElementById('cgResult').innerHTML = '';
+    window.scrollTo(0, 0);
+  };
+  window.__xjgRestoreChenggu = function(birthdate, time, timeUnknown) {
+    setHistVal('cgBirthdate', birthdate || '');
+    var cb = document.getElementById('cgTimeUnknown');
+    if (cb) { cb.checked = !!timeUnknown; cgTimeUnknownToggle(); }
+    setHistVal('cgBirthtime', timeUnknown ? '' : (time || ''));
+    if (window.cgCalc) window.cgCalc();
+  };
+})();
+
+// ============ 日元论命（十干本性 + 旺衰 + 调候用神）============
+(function(){
+  // 旺衰与喜忌的算法与八字模块同一套（出现次数 + 月令生扶），两个模块对同一张盘结论一致；
+  // 调候用神取自《穷通宝鉴》（又名《栏江网》）“十天干生十二月取用提要”的通行整理表（知命八字站版，已按原文核对甲木巳午未酉、辛金亥子丑）；
+  // 月份以节气为准（立春后寅月），即月柱地支，与八字模块的月柱一致。
+  // 十干本性取《滴天髓》十干体象口诀与《渊海子平》十干体象诗，解读为自撰白话。
+  var RY_TIAOHOU = {
+    '甲': { '寅':'丙癸', '卯':'庚丙丁戊己', '辰':'庚丁壬', '巳':'癸丁庚', '午':'癸丁庚', '未':'丁庚癸', '申':'庚丁壬', '酉':'丁丙庚', '戌':'庚甲丁壬癸', '亥':'庚丁丙戊', '子':'丁庚丙', '丑':'丁庚丙' },
+    '乙': { '寅':'丙癸', '卯':'丙癸', '辰':'癸丙戊', '巳':'癸', '午':'癸丙', '未':'癸丙', '申':'丙癸己', '酉':'癸丙丁', '戌':'癸辛', '亥':'丙戊', '子':'丙', '丑':'丙' },
+    '丙': { '寅':'壬庚', '卯':'壬己', '辰':'壬甲', '巳':'壬癸庚', '午':'壬庚', '未':'壬庚', '申':'壬戊', '酉':'壬癸', '戌':'甲壬', '亥':'甲戊庚壬', '子':'壬戊己', '丑':'壬甲' },
+    '丁': { '寅':'甲庚', '卯':'庚甲', '辰':'甲庚', '巳':'甲庚', '午':'壬庚癸', '未':'甲壬庚', '申':'甲庚丙戊', '酉':'甲庚丙戊', '戌':'甲庚戊', '亥':'甲庚', '子':'甲庚', '丑':'甲庚' },
+    '戊': { '寅':'丙甲癸', '卯':'丙甲癸', '辰':'甲丙癸', '巳':'甲丙癸', '午':'壬甲丙', '未':'癸丙甲', '申':'丙癸甲', '酉':'丙癸', '戌':'甲丙癸', '亥':'甲丙', '子':'丙甲', '丑':'丙甲' },
+    '己': { '寅':'丙庚甲', '卯':'甲癸丙', '辰':'丙癸甲', '巳':'癸丙', '午':'癸丙', '未':'癸丙', '申':'丙癸', '酉':'丙癸', '戌':'甲丙癸', '亥':'丙甲戊', '子':'丙甲戊', '丑':'丙甲戊' },
+    '庚': { '寅':'戊甲壬丙丁', '卯':'丁甲庚丙', '辰':'甲丁壬癸', '巳':'壬戊丙丁', '午':'壬癸', '未':'丁甲', '申':'丁甲', '酉':'丁甲丙', '戌':'甲壬', '亥':'丁丙', '子':'丁甲丙', '丑':'丙丁甲' },
+    '辛': { '寅':'己壬庚', '卯':'壬甲', '辰':'壬甲', '巳':'壬甲癸', '午':'壬己癸', '未':'壬庚甲', '申':'壬甲戊', '酉':'壬甲', '戌':'壬甲', '亥':'壬丙', '子':'丙戊壬甲', '丑':'丙壬戊己' },
+    '壬': { '寅':'庚丙戊', '卯':'戊辛庚', '辰':'甲庚', '巳':'壬辛庚癸', '午':'癸庚辛', '未':'辛甲', '申':'戊丁', '酉':'甲庚', '戌':'甲丙', '亥':'戊丙庚', '子':'戊丙', '丑':'丙丁甲' },
+    '癸': { '寅':'辛丙', '卯':'庚辛', '辰':'丙辛甲', '巳':'辛', '午':'庚辛壬癸', '未':'庚辛壬癸', '申':'丁', '酉':'辛丙', '戌':'辛甲壬癸', '亥':'庚辛戊丁', '子':'丙辛', '丑':'丙丁' }
+  };
+  var RY_MONTH_NAME = { '寅':'寅月（立春—惊蛰）', '卯':'卯月（惊蛰—清明）', '辰':'辰月（清明—立夏）', '巳':'巳月（立夏—芒种）', '午':'午月（芒种—小暑）', '未':'未月（小暑—立秋）', '申':'申月（立秋—白露）', '酉':'酉月（白露—寒露）', '戌':'戌月（寒露—立冬）', '亥':'亥月（立冬—大雪）', '子':'子月（大雪—小寒）', '丑':'丑月（小寒—立春）' };
+  var RY_STEM = {
+    '甲': { xiang:'参天之木', ditian:'甲木参天，脱胎要火。春不容金，秋不容土。火炽乘龙，水荡骑虎。地润天和，植立千古。', xing:'正直、有主见、讲原则，认定的方向不易被人摇动，天生带着几分承担。', you:'正直可靠，有担当，执行力强。', duan:'固执，不会转弯，容易与人硬碰硬。', shiye:'宜管理、公职、带团队；成材要经过磨炼，太顺反而难成大器。', cai:'正财为主，稳中求进，不宜投机。', gan:'专一认真，但话少、不会哄人，要多表达。', jian:'注意肝胆、筋骨与头颈。' },
+    '乙': { xiang:'藤萝之木', ditian:'乙木虽柔，刲羊解牛。怀丁抱丙，跨凤乘猴。虚湿之地，骑马亦忧。藤萝系甲，可春可秋。', xing:'外柔内刚，适应力强，懂得看情势调整身段，在人际之间圆融。', you:'灵活，善变通，人缘好。', duan:'依赖性强，立场易摇摆，想得多、做得少。', shiye:'宜服务、咨询、创意、协作，借力而行，依附贵人易成。', cai:'偏财有路，靠人脉与信息，但守财要紧。', gan:'温柔体贴，但易多愁善感、患得患失。', jian:'注意肝胆、情绪与睡眠。' },
+    '丙': { xiang:'太阳之火', ditian:'丙火猛烈，欺霜侮雪。能锻庚金，逢辛反怯。土众成慈，水猖显节。虎马犬乡，甲来成灭。', xing:'热情外放、光明磊落，情绪写在脸上，来得快也去得快，天生有带动气氛的本事。', you:'有感染力，行动快，敢为人先。', duan:'性子急、话直，锋芒太露时容易在无意间得罪人。', shiye:'宜传播、销售、表现型工作，靠热度与影响力吃饭。', cai:'来得快去得也快，宜量入为出。', gan:'爱得热烈直白，但要给对方空间。', jian:'注意心火、眼睛与血压。' },
+    '丁': { xiang:'灯烛之火', ditian:'丁火柔中，内性昭融。抱乙而孝，合壬而忠。旺而不烈，衰而不穷。如有嫡母，可秋可冬。', xing:'温和细腻、体贴周到，思虑深、观察入微，常是团体里真正照顾人的那个。', you:'观察入微，照顾人，有耐性。', duan:'想得多、顾虑多，容易内耗。', shiye:'宜技术、服务、幕后精细活，靠手艺与口碑。', cai:'细水长流，靠手艺与口碑。', gan:'专一深情，但要防猜疑与钻牛角尖。', jian:'注意心脏、视力与神经衰弱。' },
+    '戊': { xiang:'城墙之土', ditian:'戊土固重，既中且正。静翕动辟，万物司命。水润物生，土燥物病。若在艮坤，怕动宜静。', xing:'稳健可靠、包容力强，是众人愿意托付的类型，重然诺、耐得住磨。', you:'耐得住磨，众人愿意托付。', duan:'固执迟缓，不善变通，容易钻牛角尖。', shiye:'宜地产、金融、实业、守成型工作。', cai:'厚积薄发，不动产与长期持有为宜。', gan:'忠诚稳重，但木讷，要主动表达。', jian:'注意脾胃与体重。' },
+    '己': { xiang:'田园之土', ditian:'己土卑湿，中正蓄藏。不愁木盛，不畏水狂。火少火晦，金多金光。若要物旺，宜助宜帮。', xing:'务实随和、心思细腻，懂得替人设想，做事有耐性、能守成。', you:'有耐性，替人设想，执行稳。', duan:'优柔寡断，想太多，容易被情绪带走。', shiye:'宜服务、农业、教育、后勤。', cai:'积少成多，守成为主。', gan:'温柔顾家，但易多疑。', jian:'注意脾胃、湿气与消化。' },
+    '庚': { xiang:'剑戟之金', ditian:'庚金带煞，刚健为最。得水而清，得火而锐。土润则生，土干则脆。能赢甲兄，输于乙妹。', xing:'果决乾脆、讲义气、重是非，该出手时不拖泥带水。', you:'行动力强，敢担当，有魄力。', duan:'性子硬，容易冲动，说话伤人。', shiye:'宜军警、法律、金融、工程；须火来锻，方成器。', cai:'偏财有运，但波动大。', gan:'直接坦率，但要收敛锋芒。', jian:'注意肺、大肠与骨骼。' },
+    '辛': { xiang:'珠玉之金', ditian:'辛金软弱，温润有性。畏土之多，乐水之盈。能扶社稷，能救生灵。热则喜木，寒则喜丁。', xing:'讲究精致、审美敏锐、对品质有要求，做事重细节。', you:'品味好，做事细，要求高。', duan:'挑剔，想太多，容易钻牛角尖。', shiye:'宜精工、艺术、金融、品质类工作。', cai:'精耕细作，靠专业吃饭。', gan:'重感觉、讲仪式感，但易冷热不定。', jian:'注意肺、皮肤与呼吸道。' },
+    '壬': { xiang:'江河之水', ditian:'壬水通河，能泄金气。刚中之德，周流不滞。通根透癸，冲天奔地。化则有情，从则相济。', xing:'聪明机变、格局开阔、能容各种人事，见识广、点子多。', you:'见识广，点子多，适应力强。', duan:'定性不足，兴趣转移快，容易虎头蛇尾。', shiye:'宜贸易、流动、策划、大格局的工作。', cai:'财来财去，宜有规划。', gan:'洒脱随性，但要防三心二意。', jian:'注意肾、膀胱与腰。' },
+    '癸': { xiang:'雨露之水', ditian:'癸水至弱，达于天津。得龙而润，功化斯神。不愁火土，不论庚辛。合戊见火，化象斯真。', xing:'内敛细腻、直觉敏锐、想像力丰富，常有旁人看不见的深度。', you:'心思细，灵感多，善谋划。', duan:'多愁善感，情绪藏在里面，容易内耗。', shiye:'宜策划、研究、文字、幕后工作。', cai:'暗财有路，靠智慧与信息。', gan:'细腻深情，但易患得患失。', jian:'注意肾、耳与情绪。' }
+  };
+  var RY_SS_READ = {
+    '比肩':'比劫最旺：自我意识强，靠自己打拼，朋友助力多，但也容易破财冲动。',
+    '劫财':'比劫最旺：自我意识强，靠自己打拼，朋友助力多，但也容易破财冲动。',
+    '食神':'食伤最旺：才华外露，靠手艺与表达吃饭，想法多、行动也快。',
+    '伤官':'食伤最旺：才华外露，靠手艺与表达吃饭，想法多、行动也快。',
+    '正财':'财星最旺：求财有路，对金钱敏感，宜把精力放在能变现的本事上。',
+    '偏财':'财星最旺：求财有路，对金钱敏感，宜把精力放在能变现的本事上。',
+    '正官':'官杀最旺：事业心重，讲规矩、扛责任，宜在体制与规则里往上走。',
+    '七杀':'官杀最旺：事业心重，讲规矩、扛责任，宜在体制与规则里往上走。',
+    '正印':'印星最旺：靠学识与贵人，宜读书、考证、走专业路线。',
+    '偏印':'印星最旺：靠学识与贵人，宜读书、考证、走专业路线。'
+  };
+  var RY_SS_ORDER = ['正印','偏印','正官','七杀','正财','偏财','食神','伤官','比肩','劫财'];
+  var lastRy = null;
+  window.ryTimeUnknownToggle = function() {
+    var cb = document.getElementById('ryTimeUnknown'), sel = document.getElementById('ryBirthtime');
+    if (!cb || !sel) return;
+    sel.disabled = cb.checked; if (cb.checked) sel.value = '';
+  };
+  window.ryCalc = function() {
+    clearFormErrs('page-riyuan');
+    var birthdate = document.getElementById('ryBirthdate').value;
+    if (!birthdate) { showFormErr('ryBirthdate', '请选择出生日期'); return; }
+    var timeUnknown = !!document.getElementById('ryTimeUnknown').checked;
+    var time = document.getElementById('ryBirthtime').value;
+    if (!timeUnknown && !time) { showFormErr('ryBirthtime', '请选择出生时间，或勾选“我不清楚出生时间”'); return; }
+    if (timeUnknown) time = '12:00'; // 仅用于换算年月日三柱（取正午可避开子时换日），时柱不取用
+    var d = lunisolar(birthdate + ' ' + time);
+    var year = d.char8.year, month = d.char8.month, day = d.char8.day, hour = d.char8.hour;
+    var dayStem = day.stem.toString();
+    var dayMaster = STEM_WX[dayStem];
+    var monthBranch = month.branch.toString();
+    var pillars = [
+      { title:'年柱', gan:year.stem.toString(), zhi:year.branch.toString() },
+      { title:'月柱', gan:month.stem.toString(), zhi:monthBranch },
+      { title:'日柱', gan:dayStem, zhi:day.branch.toString() },
+      timeUnknown ? { title:'时柱', gan:'—', zhi:'未知', unknown:true }
+                  : { title:'时柱', gan:hour.stem.toString(), zhi:hour.branch.toString() }
+    ];
+    var ganzhiStr = pillars.map(function(p){ return p.unknown ? '时柱未知' : p.gan + p.zhi; }).join(' ');
+    var lunarStr = d.format('lY年lMlD日');
+    // 旺衰：与八字模块同一套算法（日主五行出现次数 + 月令生扶）
+    var wxCount = { '木':0,'火':0,'土':0,'金':0,'水':0 };
+    pillars.forEach(function(p) { if (p.unknown) return; wxCount[STEM_WX[p.gan]]++; wxCount[BRANCH_WX[p.zhi]]++; });
+    var dayWxCount = wxCount[dayMaster];
+    var monthZC = BRANCH_ZC[monthBranch];
+    var monthWx = STEM_WX[monthZC];
+    var monthSupports = (SHENG[monthWx] === dayMaster) || (monthWx === dayMaster);
+    var strength;
+    if (dayWxCount >= 3) strength = '身强';
+    else if (dayWxCount === 2) strength = monthSupports ? '偏强' : '中和';
+    else strength = monthSupports ? '中和' : '身弱';
+    var SHENG_REV = { '木':'水','火':'木','土':'火','金':'土','水':'金' };
+    var KE_REV = { '木':'金','火':'水','土':'木','金':'火','水':'土' };
+    var yinWx = SHENG_REV[dayMaster], shiWx = SHENG[dayMaster], guanWx = KE_REV[dayMaster], caiWx = KE[dayMaster], biWx = dayMaster;
+    var isWeak = (strength === '身弱');
+    var xiYong = isWeak ? [yinWx, biWx] : [guanWx, shiWx, caiWx];
+    var jiShen = isWeak ? [guanWx, shiWx, caiWx] : [yinWx, biWx];
+    // 调候用神：《穷通宝鉴》日主 × 月柱地支
+    var tiao = RY_TIAOHOU[dayStem][monthBranch];
+    var tiaoStems = tiao.split('');
+    var tiaoFirst = tiaoStems[0];
+    var tiaoFirstWx = STEM_WX[tiaoFirst];
+    // 十神结构：除日主外其余七字（天干 + 地支藏干）
+    var ssCount = {};
+    pillars.forEach(function(p) {
+      if (p.unknown) return;
+      if (p.gan !== dayStem || p.title !== '日柱') { var s1 = shishen(dayStem, p.gan); if (s1) ssCount[s1] = (ssCount[s1] || 0) + 1; }
+      var s2 = shishen(dayStem, BRANCH_ZC[p.zhi]); if (s2) ssCount[s2] = (ssCount[s2] || 0) + 1;
+    });
+    var ssTop = null, ssTopN = 0;
+    RY_SS_ORDER.forEach(function(s) { if ((ssCount[s] || 0) > ssTopN) { ssTopN = ssCount[s]; ssTop = s; } });
+    var ssHtml = RY_SS_ORDER.filter(function(s){ return ssCount[s]; }).map(function(s){ return '<div class="sd-item"><b>' + s + '</b>出现 ' + ssCount[s] + ' 次</div>'; }).join('');
+    var stem = RY_STEM[dayStem];
+    var monthName = RY_MONTH_NAME[monthBranch];
+    var tiaoHtml = tiaoStems.map(function(s, i) {
+      var w = STEM_WX[s];
+      var inXi = xiYong.indexOf(w) >= 0;
+      return '<div class="sd-item"><b>' + (i === 0 ? '首选' : '备选') + ' · ' + s + w + '</b>' + (i === 0 ? '《穷通宝鉴》该月首选调候用神' : '同表备选用神') + (inXi ? '（也在你的喜用里）' : '（不在整盘喜用里，仅作调候参考）') + '</div>';
+    }).join('');
+    var xiyongHtml = '<div class="tag-group">' +
+      xiYong.map(function(w){ return '<span class="wxtag xi">喜用：' + w + '</span>'; }).join('') +
+      '</div><div class="tag-group" style="margin-top:8px">' +
+      jiShen.map(function(w){ return '<span class="wxtag ji">忌：' + w + '</span>'; }).join('') +
+      '</div>';
+    lastRy = { tag:'日元论命', big:dayStem + dayMaster, bigSub:strength + ' · 调候首选' + tiaoFirst + tiaoFirstWx, rows:[
+      { k:'四柱', v:ganzhiStr },
+      { k:'日元', v:dayStem + dayMaster + ' · ' + stem.xiang },
+      { k:'旺衰', v:strength },
+      { k:'调候首选', v:tiaoFirst + tiaoFirstWx + '（' + monthBranch + '月）' },
+      { k:'喜用', v:xiYong.join('、') }
+    ]};
+    var html = '<div class="r-score"><div class="score-num" style="font-size:44px">' + dayStem + dayMaster + '</div><div class="score-label">日元 · ' + stem.xiang + ' · ' + strength + '</div></div>' +
+      '<div class="r-section"><h3>日元本性</h3><p>' + stem.xing + '</p><p class="cg-poem">「' + stem.ditian + '」</p><p style="color:var(--text-dim);font-size:13px">——《滴天髓》十干体象</p></div>' +
+      '<div class="r-section"><h3>旺衰与喜忌</h3><p>四柱：' + ganzhiStr + '（农历' + lunarStr + '）。日主' + dayMaster + '在四柱中共出现 ' + dayWxCount + ' 次，月令' + monthBranch + '月' + (monthSupports ? '生扶日主' : '不生扶日主') + '，判断为「' + strength + '」' + (timeUnknown ? '（时辰未知，基于三柱判断）' : '') + '。</p>' + xiyongHtml + '</div>' +
+      '<div class="r-section"><h3>调候用神 · ' + monthName + '</h3><p>《穷通宝鉴》按“日主 × 月份”列出该月通常最需要的用神（月份以节气为准，即月柱地支）。</p>' + tiaoHtml +
+      '<p style="color:var(--text-dim);font-size:13px;margin-top:8px">表说的是同月出生的人“通常”需要什么，具体还要看整盘强弱与命中原本的寒暖——书中首选与整盘第一喜用并不总是一致，上面已标出哪些调候用神同时落在你的喜用里。</p></div>' +
+      '<div class="r-section"><h3>十神结构</h3>' + ssHtml + '<p>' + (ssTop ? RY_SS_READ[ssTop] : '') + '</p></div>' +
+      '<div class="r-section"><h3>性格与人生</h3>' +
+      '<div class="sd-item"><b>优势</b>' + stem.you + '</div>' +
+      '<div class="sd-item"><b>短板</b>' + stem.duan + '</div>' +
+      '<div class="sd-item"><b>事业</b>' + stem.shiye + '</div>' +
+      '<div class="sd-item"><b>财运</b>' + stem.cai + '</div>' +
+      '<div class="sd-item"><b>感情</b>' + stem.gan + '</div>' +
+      '<div class="sd-item"><b>健康</b>' + stem.jian + '</div></div>' +
+      '<div class="r-section"><h3>口径说明</h3><p>旺衰与喜忌沿用八字模块的简化算法（出现次数 + 月令生扶），与八字结果一致；调候用神只按日主与出生月份查表，不看整盘。以上皆为传统命理说法，仅供文化参考，不构成人生建议。</p></div>' +
+      '<div class="disclaim">本内容仅供文化娱乐参考，请理性看待。</div>' +
+      '<span class="tip-link" onclick="showTip()">觉得有用？打赏支持一下</span><span class="tip-link" onclick="showFeedback()">有问题？点这里反馈</span>' +
+      '<button class="btn" onclick="saveRyCard()">保存结果卡片</button>' +
+      '<button class="btn ghost" onclick="ryReset()">重新测算</button>' +
+      '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
+    addHistory({ type:'日元', time:Date.now(), page:'riyuan', summary:dayStem + dayMaster + ' · ' + strength + ' · 调候首选' + tiaoFirst + tiaoFirstWx, data:{ birthdate:birthdate, time:(timeUnknown ? '' : time), timeUnknown:timeUnknown } });
+    document.getElementById('ryForm').style.display = 'none';
+    document.getElementById('ryResult').innerHTML = html;
+    segmentize('ryResult', 4);
+    window.scrollTo(0, 0);
+  };
+  window.saveRyCard = function() { if (!lastRy) return; saveResultCard(lastRy); };
+  window.ryReset = function() {
+    document.getElementById('ryForm').style.display = '';
+    document.getElementById('ryResult').innerHTML = '';
+    window.scrollTo(0, 0);
+  };
+  window.__xjgRestoreRiyuan = function(birthdate, time, timeUnknown) {
+    setHistVal('ryBirthdate', birthdate || '');
+    var cb = document.getElementById('ryTimeUnknown');
+    if (cb) { cb.checked = !!timeUnknown; ryTimeUnknownToggle(); }
+    setHistVal('ryBirthtime', timeUnknown ? '' : (time || ''));
+    if (window.ryCalc) window.ryCalc();
+  };
+})();
+
+// ============ 三世书算婚姻（夫妇感情位 + 前世因果 + 婚宫）============
+(function(){
+  // 查法取自卜易居《三世书》查婚姻（大道家园 / 360doc 转载、华人论坛转载均同文）：
+  //   农历月份 + 出生日干支 → 日柱纳音五行 → 纳音长生十二表查夫妇感情位 → 十二位解释。
+  // 夫妇感情位表（金四五六七八九十十一十二正二三 / 水七八九十十一十二正二三四五六 /
+  //   木十十一十二正二三四五六七八九 / 火正二三四五六七八九十十一十二 / 土同水）已用两处例证核对：
+  //   戊申日纳音土，九月 → 冠带；庚午日纳音土，四月 → 绝。
+  // 前世因果取自《三世相法》/《命运大观》体系的“每人所生之月三世因果”（港风风水网转载），
+  //   与 139s 站的另一套前生文字不同——三世书各版本文字有出入，此处各取其一并在口径说明里写明。
+  // 原文以女性为准，男性请换位取义：性别选“男”时，解释里的“丈夫”按原文示例换读为“妻子”。
+  // 闰月口径同称骨：上半月算本月、下半月算下月。查法只用农历月与日柱干支，不用出生时间。
+  var SS_CS = {
+    '金': ['绝','胎','养','长生','沐浴','冠带','临官','帝旺','衰','病','死','墓'],
+    '水': ['病','死','墓','绝','胎','养','长生','沐浴','冠带','临官','帝旺','衰'],
+    '木': ['临官','帝旺','衰','病','死','墓','绝','胎','养','长生','沐浴','冠带'],
+    '火': ['长生','沐浴','冠带','临官','帝旺','衰','病','死','墓','绝','胎','养'],
+    '土': ['病','死','墓','绝','胎','养','长生','沐浴','冠带','临官','帝旺','衰']
+  };
+  var SS_READ = {
+    '长生': '夫妻没有形克，二人幸福，有商有量，能够旺夫，结婚后可以白头，但丈夫赚钱能力低。',
+    '沐浴': '丈夫脾气暴躁，没有忍耐力，二十七岁前结婚的话，将在三十岁后出现婚姻危机，二人难以白头。',
+    '冠带': '夫妻可以白头到老（生肖相冲的例外），二人互相照顾，没有家事烦恼，丈夫是中产人仕。',
+    '临官': '夫妻在年轻时就认识，二人心有灵犀，可惜中年过后，丈夫忍受不住诱惑，见异思迁。',
+    '帝旺': '夫妻心连心，有长远的人生计划，喜欢互相比拼，晚年的时候，二人是富裕的。',
+    '衰': '在错误的选择下结了婚，婚后二人常常争吵，丈夫会在中年时候离开家庭，老来是痛苦。',
+    '病': '结婚过程中已有人出来反对，可是男方花言巧语令女方下嫁，这段婚姻是为凶。',
+    '死': '二人一生恩爱，少争吵，可惜缘份薄弱，常常分开两地，丈夫难以送自己最后一程。',
+    '墓': '丈夫必须年长十五年或以上，夫妇有共同的兴趣，互相尊重，晚年二人死亡的差距不足五年。',
+    '绝': '离婚，夫妇反目成仇，子女成祸根，没有共同的心，大家都不愿维系这段婚姻。',
+    '胎': '孤独一人，即使结了婚，二人都常分离，而配偶年龄相近，会晚年丧偶。',
+    '养': '夫妻二人年龄相若，可以平安步入晚年，老来互相照顾，一生无悔。'
+  };
+  var SS_PREV = {
+    1: '正月生人前年四月受胎，前世生于四川，做秀才，喜教人事，行善积德，爱顾庄民，舍己成仁，受人恭敬，大有慈悲。今世可以享足衣禄，荣幸之人。但此世不可骄奢，继励前世之态，后世不忧也。',
+    2: '二月生人前年五月受胎，前世生于奉州，游乐人，好赌博，今世虽有衣禄，但无固定职业，与双亲或兄弟情意不投，而有淡泊之气概，能给人好感，有义气心。此世不学前世之习惯，自当励业，后世可得良好职位。',
+    3: '三月生人前年六月受胎，前世生于湖北，百万长者，今世聪明智敏，但有好淫荡的欠缺，男者常抛妻儿，女者多有虚荣心，常与丈夫不睦。少年运平常，自四十岁后可获良机发达成功。恐有精神病之忧，也有长寿之人。此世如果勉求夫妻友睦，舍去放荡与虚荣，后世以免来结恩仇之苦也。',
+    4: '四月生人前年七月受胎，前世生于岭岩道，有权压劳者，不敬神不敬人，横事逆理，今世多少劳获得有微田地牛羊，足以衣食，但前世因不善于事，致手足惧有病症，此世努力修身养德，布施善事，后世因必得在高贵之境也。',
+    5: '五月生人前年八月受胎，前世生于湘南，慈善好德，喜善事对人忠厚，以礼待人。在黄鹤楼前施奉敬茶，给行道人饮用，功德无量，今世亦受人恭敬。而出好之后丁子孙，此世励继前世因，后世可得高贵头名之位也。',
+    6: '六月生人前年九月受胎，前世生于淮南，家财百贯，常对贫困或孤独无依之人施给财物，作善行德，铺桥筑路，今世亦有富裕之家，亦受人尊敬恭仰。又因前世误给食物予人中毒，致今世惧带神经病，或中风性之病忧。此世再继续行善，后世可能会达到上，贵之位也。',
+    7: '七月生人前年十月受胎，前世生于闽广。信仰宗教，诵经礼佛，行善布施，今世可得荣华。少年多少辛苦磨难，至中年交来自然受人提拔顺调，成功发达，妻子亦有相当地位，可谓妻贤子贵。此世再修行积德，后世荣华富贵之人也。',
+    8: '八月生人前年十一月受胎，前世生于隆州，会诵十藏经，但中途而废，致今世多少劳苦之命，且居住所移迁多次都不得安定。虽是有智能之人，做事常常无由夭折，且前世有毒杀人之生命等，此世言行应谨慎，自励行善修身积德，自然会得幸福。若无此行者，后世苦惨临头，孤贫之人也。',
+    9: '九月生人前年十二月受胎，前世生于山东，身为将军，尽忠报国。今世因性情刚烈，致对妻儿缘分薄，有独立之气，不求他人，到老亦受人崇敬，可得近贵人。如果此世能够家庭和睦圆满者，后世能够夫妻济美家财万贯，幸福之人也。',
+    10: '十月生人是年正月受胎，前世生于武陵，为人非常忠厚，富贵隐静之人，不与人交际往来，今世致兄弟不睦，朋友疏远之人。从经商励业，回转善意待人，经营三十年后自然成为富豪之人。此世以礼服人，谦逊行事，后世可得兄弟得力，以免孤独也。',
+    11: '十一月生人是年二月受胎，前世生于江南，为僧侣，修功积德，慈悲为本，方便为文，今世亦安分守己，善技艺方面功课，晚年可得近富近贵，名利双全福，子孙之余庆。再修善果，后世富贵福禄之人也。',
+    12: '十二月生人是年三月受胎，前世生于京路，饲牛人，因立志将所饲牛出卖后出家行善，其功心感动天，今世足于衣食丰富，但出卖牛匹之罪，到底未得近贵。有带眼病之虑，有得妻财之福。宜在远方必配者，福禄在外乡，寿命延长。此世多放生或救贫布施喜舍，后世子孙满堂，福禄无疆之人也。'
+  };
+  var SS_MONTH_NAME = ['正月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'];
+  var lastSs = null;
+  function ssReadForGender(text, gender) {
+    if (gender !== 'male') return text;
+    return text.replace(/丈夫是中产人仕/g, '妻子出身中产人家').replace(/旺夫/g, '旺妻').replace(/丈夫/g, '妻子');
+  }
+  window.ssCalc = function() {
+    clearFormErrs('page-sanshi');
+    var birthdate = document.getElementById('ssBirthdate').value;
+    if (!birthdate) { showFormErr('ssBirthdate', '请选择出生日期'); return; }
+    var gender = document.getElementById('ssGender').value || 'female';
+    var d = lunisolar(birthdate + ' 12:00');
+    var day = d.char8.day;
+    var dayStem = day.stem.toString(), dayBranch = day.branch.toString();
+    var dayGanzhi = dayStem + dayBranch;
+    var naYinName = getNaYin(dayStem, dayBranch); // 如“大驿土”
+    var naYinWx = naYinName.slice(-1); // 金木水火土
+    var lMnRaw = parseInt(d.format('lMn'), 10); // 闰月返回 月+100（如 106=闰六月）
+    var lDn = parseInt(d.format('lDn'), 10);
+    var isLeap = lMnRaw > 100;
+    var baseMonth = isLeap ? lMnRaw - 100 : lMnRaw;
+    var lunarMonth = baseMonth;
+    var leapNote = '';
+    if (isLeap) {
+      if (lDn <= 15) { lunarMonth = baseMonth; leapNote = '闰' + SS_MONTH_NAME[baseMonth - 1] + '上半月，按本月算'; }
+      else { lunarMonth = baseMonth % 12 + 1; leapNote = '闰' + SS_MONTH_NAME[baseMonth - 1] + '下半月，按下月（' + SS_MONTH_NAME[lunarMonth - 1] + '）算'; }
+    }
+    var pos = SS_CS[naYinWx][lunarMonth - 1];
+    var read = ssReadForGender(SS_READ[pos], gender);
+    var prev = SS_PREV[lunarMonth];
+    // 婚宫：日支
+    var dayWx = STEM_WX[dayStem];
+    var zhiWx = BRANCH_WX[dayBranch];
+    var zhiSS = shishen(dayStem, BRANCH_ZC[dayBranch]);
+    var rel = (zhiWx === dayWx) ? '日支与日干同行，比和' :
+      (SHENG[zhiWx] === dayWx) ? '日支生扶日干' :
+      (SHENG[dayWx] === zhiWx) ? '日干生扶日支' :
+      (KE[zhiWx] === dayWx) ? '日支克日干' : '日干克日支';
+    var spouseStar = (gender === 'male') ? '正财、偏财' : '正官、七杀';
+    var starIn = (gender === 'male') ? (zhiSS === '正财' || zhiSS === '偏财') : (zhiSS === '正官' || zhiSS === '七杀');
+    var lunarStr = d.format('lY年lMlD日');
+    lastSs = { tag:'三世书', big:pos, bigSub:dayGanzhi + ' · 纳音' + naYinWx, rows:[
+      { k:'日柱', v:dayGanzhi },
+      { k:'纳音', v:naYinName },
+      { k:'感情位', v:pos },
+      { k:'前世', v:'农历' + SS_MONTH_NAME[lunarMonth - 1] + '生' }
+    ]};
+    var html = '<div class="r-score"><div class="score-num" style="font-size:44px">' + pos + '</div><div class="score-label">夫妇感情位 · ' + dayGanzhi + '日 · 纳音' + naYinName + '</div></div>' +
+      '<div class="r-section"><h3>夫妇感情</h3><p>' + read + '</p><p style="color:var(--text-dim);font-size:13px">查法：农历' + SS_MONTH_NAME[lunarMonth - 1] + '（' + lunarStr + '）生，日柱 ' + dayGanzhi + '，纳音为' + naYinName + '（' + naYinWx + '），按纳音长生十二表查得感情位「' + pos + '」' + (leapNote ? '（' + leapNote + '）' : '') + '。</p></div>' +
+      '<div class="r-section"><h3>前世因果</h3><p>' + prev + '</p><p style="color:var(--text-dim);font-size:13px">——《三世相法》“每人所生之月三世因果”。不同版本的三世书前生文字有出入，此处取这一版。</p></div>' +
+      '<div class="r-section"><h3>婚宫与配偶星</h3>' +
+      '<div class="sd-item"><b>婚宫（日支）</b>' + dayBranch + ' · ' + zhiWx + ' · 十神' + zhiSS + '</div>' +
+      '<div class="sd-item"><b>日柱关系</b>' + rel + '</div>' +
+      '<div class="sd-item"><b>配偶星</b>' + (gender === 'male' ? '男命以财星（' + spouseStar + '）为妻星' : '女命以官星（' + spouseStar + '）为夫星') + '；' + (starIn ? '日支藏干正是' + zhiSS + '，配偶星入婚宫' : '日支藏干为' + zhiSS + '，配偶星不在日支') + '。</div></div>' +
+      '<div class="r-section"><h3>口径说明</h3><p>夫妇感情位只看农历月与日柱纳音，不用出生时间；前世因果只看农历月。原文以女性为准，男性请换位取义（本页选“男”时已按原文示例把“丈夫”换读为“妻子”）。《三世书》各版本文字有出入，此处注明所取版本；以上皆为传统命理说法，仅供文化参考，不构成人生建议。</p></div>' +
+      '<div class="disclaim">本内容仅供文化娱乐参考，请理性看待。</div>' +
+      '<span class="tip-link" onclick="showTip()">觉得有用？打赏支持一下</span><span class="tip-link" onclick="showFeedback()">有问题？点这里反馈</span>' +
+      '<button class="btn" onclick="saveSsCard()">保存结果卡片</button>' +
+      '<button class="btn ghost" onclick="ssReset()">重新测算</button>' +
+      '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
+    addHistory({ type:'三世书', time:Date.now(), page:'sanshi', summary:dayGanzhi + ' · ' + pos, data:{ birthdate:birthdate, gender:gender } });
+    document.getElementById('ssForm').style.display = 'none';
+    document.getElementById('ssResult').innerHTML = html;
+    segmentize('ssResult', 4);
+    window.scrollTo(0, 0);
+  };
+  window.saveSsCard = function() { if (!lastSs) return; saveResultCard(lastSs); };
+  window.ssReset = function() {
+    document.getElementById('ssForm').style.display = '';
+    document.getElementById('ssResult').innerHTML = '';
+    window.scrollTo(0, 0);
+  };
+  window.__xjgRestoreSanshi = function(birthdate, gender) {
+    setHistVal('ssBirthdate', birthdate || '');
+    var g = document.getElementById('ssGender'); if (g) g.value = gender || 'female';
+    if (window.ssCalc) window.ssCalc();
+  };
+})();
+
+// ============ 奇门遁甲（时家奇门 · 拆补定局 + 转盘布盘）============
+(function(){
+  // 口径：拆补法定局——符头定元（取当日之前最近的甲日或己日为符头，日支子午卯酉上元、寅申巳亥中元、辰戌丑未下元）+ 转盘布盘。
+  // 局数表取自两处独立来源（昊天易学网、YouMind 遁天技能），24 节气逐一核对一致。
+  // 地盘：阳遁顺布六仪、逆布三奇；阴遁逆布六仪、顺布三奇；皆自局数宫起（元灵经芒种阳九局、霜降阴八局两例核对）。
+  // 九星：值符星落时干宫，其余按蓬任冲辅英芮柱心禽顺时针转；天禽寄坤2宫（茅山派丁巳时例：芮坎1→柱艮8→心震3→蓬巽4，禽不参与顺转）。
+  // 禽为值符时禽落时干宫；禽寄宫被占（时干宫即坤2）时改寄中5。
+  // 八门：值使门落值使宫，其余按休生伤杜景死惊开顺时针转；中宫无门。
+  // 八神：值符落时干宫，阳遁顺时针、阴遁逆时针，按值符螣蛇太阴六合白虎玄武九地九天。
+  // 天盘干：九星本位宫的地盘干。空亡按日柱旬；马星按时支三合。
+  // 注意：临近节气交节时刻，局数会因定局口径（拆补/置闰）不同而有出入，见口径说明。
+  var QM_JU = {
+    '冬至':[1,7,4],'小寒':[2,8,5],'大寒':[3,9,6],'立春':[8,5,2],'雨水':[9,6,3],'惊蛰':[1,7,4],
+    '春分':[3,9,6],'清明':[4,1,7],'谷雨':[5,2,8],'立夏':[4,1,7],'小满':[5,2,8],'芒种':[6,3,9],
+    '夏至':[9,3,6],'小暑':[8,2,5],'大暑':[7,1,4],'立秋':[2,5,8],'处暑':[1,4,7],'白露':[9,3,6],
+    '秋分':[7,1,4],'寒露':[6,9,3],'霜降':[5,8,2],'立冬':[6,9,3],'小雪':[5,8,2],'大雪':[4,7,1]
+  };
+  var QM_YANG_TERMS = ['冬至','小寒','大寒','立春','雨水','惊蛰','春分','清明','谷雨','立夏','小满','芒种'];
+  var QM_TERM_NAMES = ['小寒','大寒','立春','雨水','惊蛰','春分','清明','谷雨','立夏','小满','芒种','夏至','小暑','大暑','立秋','处暑','白露','秋分','寒露','霜降','立冬','小雪','大雪','冬至'];
+  var QM_PALACE_NAME = {1:'坎',2:'坤',3:'震',4:'巽',5:'中',6:'乾',7:'兑',8:'艮',9:'离'};
+  var QM_PALACE_WX = {1:'水',2:'土',3:'木',4:'木',5:'土',6:'金',7:'金',8:'土',9:'火'};
+  var QM_CW = [1,8,3,4,9,2,7,6]; // 顺时针宫序（不含中宫）
+  var QM_CW9 = [1,8,3,4,9,2,7,6,5]; // 顺时针宫序（含中宫）
+  var QM_STAR_HOME = {'天蓬':1,'天芮':2,'天冲':3,'天辅':4,'天禽':5,'天心':6,'天柱':7,'天任':8,'天英':9};
+  var QM_GATE_HOME = {'休门':1,'死门':2,'伤门':3,'杜门':4,'景门':9,'惊门':7,'开门':6,'生门':8};
+  var QM_STAR_ORDER = ['天蓬','天任','天冲','天辅','天英','天芮','天柱','天心','天禽'];
+  var QM_GATE_ORDER = ['休门','生门','伤门','杜门','景门','死门','惊门','开门'];
+  var QM_GOD_ORDER = ['值符','螣蛇','太阴','六合','白虎','玄武','九地','九天'];
+  var QM_XUN_DUN = {'子':'戊','戌':'己','申':'庚','午':'辛','辰':'壬','寅':'癸'};
+  var QM_XUN_KONG = {'子':['戌','亥'],'戌':['申','酉'],'申':['午','未'],'午':['辰','巳'],'辰':['寅','卯'],'寅':['子','丑']};
+  var QM_BRANCH_PALACE = {'子':1,'丑':8,'寅':8,'卯':3,'辰':4,'巳':4,'午':9,'未':2,'申':2,'酉':7,'戌':6,'亥':6};
+  var QM_MA = {'申':'寅','子':'寅','辰':'寅','寅':'申','午':'申','戌':'申','巳':'亥','酉':'亥','丑':'亥','亥':'巳','卯':'巳','未':'巳'};
+  var QM_STAR_WX = {'天蓬':'水','天芮':'土','天冲':'木','天辅':'木','天禽':'土','天心':'金','天柱':'金','天任':'土','天英':'火'};
+  var QM_GATE_WX = {'休门':'水','生门':'土','伤门':'木','杜门':'木','景门':'火','死门':'土','惊门':'金','开门':'金'};
+  var QM_STAR_JI = {'天蓬':'凶','天芮':'凶','天冲':'凶','天辅':'吉','天禽':'吉','天心':'吉','天柱':'凶','天任':'中','天英':'凶'};
+  var QM_GATE_JI = {'休门':'吉','生门':'吉','伤门':'凶','杜门':'中','景门':'中','死门':'凶','惊门':'凶','开门':'吉'};
+  var QM_MU = {'甲':'未','乙':'未','丙':'戌','丁':'戌','戊':'戌','己':'戌','庚':'丑','辛':'丑','壬':'辰','癸':'辰'};
+  function qmStep(p, d) { var v = p + d; if (v > 9) v -= 9; if (v < 1) v += 9; return v; }
+  // 太阳视黄经（Meeus 低精度公式），返回 0-360 度
+  function qmSunLongitude(date) {
+    var jd = date.getTime() / 86400000 + 2440587.5;
+    var T = (jd - 2451545.0) / 36525;
+    var L0 = 280.46646 + 36000.76983 * T + 0.0003032 * T * T;
+    var M = 357.52911 + 35999.05029 * T - 0.0001537 * T * T;
+    var Mr = M * Math.PI / 180;
+    var C = (1.914602 - 0.004817 * T - 0.000014 * T * T) * Math.sin(Mr)
+          + (0.019993 - 0.000101 * T) * Math.sin(2 * Mr)
+          + 0.000289 * Math.sin(3 * Mr);
+    var lam = (L0 + C) % 360; if (lam < 0) lam += 360;
+    return lam;
+  }
+  // 查某时刻所在的节气（二十四节气）及其开始时刻（本地时区）
+  function qmTermAt(date) {
+    var CYCLE = ['春分','清明','谷雨','立夏','小满','芒种','夏至','小暑','大暑','立秋','处暑','白露','秋分','寒露','霜降','立冬','小雪','大雪','冬至','小寒','大寒','立春','雨水','惊蛰'];
+    var lam = qmSunLongitude(date);
+    var k = Math.floor(lam / 15);
+    var target = k * 15;
+    var lo = date.getTime() - 17 * 86400000, hi = date.getTime();
+    for (var i = 0; i < 50; i++) {
+      var mid = (lo + hi) / 2;
+      var l = qmSunLongitude(new Date(mid));
+      var diff = ((l - target) % 360 + 360) % 360;
+      if (diff < 180) hi = mid; else lo = mid;
+    }
+    return { name: CYCLE[k], startMs: (lo + hi) / 2 };
+  }
+  function qmDiPan(ju, yang) {
+    var di = {};
+    var six = ['戊','己','庚','辛','壬','癸'], three = ['乙','丙','丁'];
+    var p = ju, i;
+    for (i = 0; i < 6; i++) { di[p] = six[i]; p = qmStep(p, yang ? 1 : -1); }
+    p = ju;
+    for (i = 0; i < 3; i++) { p = qmStep(p, yang ? -1 : 1); di[p] = three[i]; }
+    return di;
+  }
+  window.qmTermAt = qmTermAt; // 供探针调用：查某时刻的节气与开始时刻
+  // 输入：公历日期 'YYYY-MM-DD'、时间 'HH:00'，返回整张盘（纯计算，可供探针调用）
+  window.qmCompute = function(birthdate, time) {
+    var d = lunisolar(birthdate + ' ' + time);
+    var year = d.char8.year, month = d.char8.month, day = d.char8.day, hour = d.char8.hour;
+    var yStem = year.stem.toString(), yBranch = year.branch.toString();
+    var mStem = month.stem.toString(), mBranch = month.branch.toString();
+    var dStem = day.stem.toString(), dBranch = day.branch.toString();
+    var hStem = hour.stem.toString(), hBranch = hour.branch.toString();
+    // 节气与三元（拆补法：节气定阴阳遁与局数表，符头定元）。注意：lunisolar 的 recentSolarTerm()
+    // 只返回十二“节”（立春/惊蛰/清明…，管八字月柱），不返回十二“气”（雨水/春分/霜降…），
+    // 奇门定局要二十四节气全表，故节气用太阳黄经自行计算（Meeus 简化公式，精度约 0.01°≈15 分钟）。
+    var st = qmTermAt(d.toDate());
+    var termName = st.name;
+    var termStart = st.startMs;
+    var nowMs = d.toDate().getTime();
+    var daysSince = Math.floor((nowMs - termStart) / 86400000);
+    // 三元（拆补法，符头定元——2026-11-15 与 hkir 逐宫比对发现旧规则是错的）：
+    // 元不是“节气后每 5 天一元”，而是由符头定：取当日之前最近的甲日或己日
+    // （含当日）为符头，符头日支子午卯酉为上元、寅申巳亥为中元、辰戌丑未为下元
+    // （甲子/甲午/己卯/己酉上元，甲寅/甲申/己巳/己亥中元，甲辰/甲戌/己丑/己未下元）。
+    // 例：2026-11-14 日柱壬辰，往前最近的甲/己日是 11-11 己丑（丑→下元），
+    // 故立冬下元阴三局；旧规则按距立冬 6 天算成中元阴九局，是错的。
+    var dIdx = jiaziIndex(dStem, dBranch);
+    var dStemIdx = dIdx % 10;
+    var backToFu = (dStemIdx === 0 || dStemIdx === 5) ? 0 : (dStemIdx > 5 ? dStemIdx - 5 : dStemIdx);
+    var fuIdx = dIdx - backToFu;
+    var fuTou = STEMS[fuIdx % 10] + BRANCHES[fuIdx % 12];
+    var fuBranchIdx = fuIdx % 12;
+    var yuan = (fuBranchIdx === 0 || fuBranchIdx === 6 || fuBranchIdx === 3 || fuBranchIdx === 9) ? 1
+      : (fuBranchIdx === 2 || fuBranchIdx === 8 || fuBranchIdx === 5 || fuBranchIdx === 11) ? 2 : 3;
+    var yang = QM_YANG_TERMS.indexOf(termName) >= 0;
+    var ju = QM_JU[termName][yuan - 1];
+    // 地盘
+    var di = qmDiPan(ju, yang);
+    // 旬首（时柱）与值符值使
+    var hIdx = jiaziIndex(hStem, hBranch);
+    var xunStart = hIdx - (hIdx % 10);
+    var xunStem = STEMS[xunStart % 10], xunBranch = BRANCHES[xunStart % 12];
+    var dunStem = QM_XUN_DUN[xunBranch];
+    var dunPalace = null, p;
+    for (p = 1; p <= 9; p++) if (di[p] === dunStem) dunPalace = p;
+    var zhiFuStar = null, zhiShiGate = null, s;
+    for (s in QM_STAR_HOME) if (QM_STAR_HOME[s] === dunPalace) zhiFuStar = s;
+    // 遁干在中宫时值使门借坤宫（元灵经芒种例：“借坤宫死门加于兑宫，作为值使”）
+    var dunGatePalace = (dunPalace === 5) ? 2 : dunPalace;
+    for (s in QM_GATE_HOME) if (QM_GATE_HOME[s] === dunGatePalace) zhiShiGate = s;
+    // 时干宫：时干为甲时，甲遁于六仪，取甲所遁之仪的宫位（甲子戊/甲戌己/甲申庚/甲午辛/甲辰壬/甲寅癸）
+    var hourDiStem = (hStem === '甲') ? QM_XUN_DUN[hBranch] : hStem;
+    var hourPalace = null;
+    for (p = 1; p <= 9; p++) if (di[p] === hourDiStem) hourPalace = p;
+    // 九星：值符星落时干宫，其余按序顺时针转；天禽寄坤（茅山派丁巳时例：
+    // 芮坎1→柱艮8→心震3→蓬巽4，证明禽不参与顺转、而是寄坤2宫；顺转的八星按
+    // 蓬任冲辅英芮柱心循环）。禽为值符时例外：禽落时干宫，其余八星按禽后顺序顺转。
+    // 禽寄宫被占时（值符星即在坤2）改寄中5。
+    // 值符寄宫（2026-11-15 与 hkir 逐宫比对 + 张志春《神奇之门》核对）：
+    // 时干宫若为中5，值符星与值符神都寄坤2宫（中五寄坤，不分阴阳；旧版把值符星
+    // 留在中5、值符神阴遁寄艮8，是错的）。
+    var zhiFuPalace = (hourPalace === 5) ? 2 : hourPalace;
+    var QM_STAR_ROT = ['天蓬','天任','天冲','天辅','天英','天芮','天柱','天心'];
+    var stars = {};
+    var cw9 = QM_CW9.slice();
+    if (zhiFuStar === '天禽') {
+      var sIdx = cw9.indexOf(zhiFuPalace);
+      stars[zhiFuPalace] = '天禽';
+      for (k = 0; k < 8; k++) stars[cw9[(sIdx + 1 + k) % 9]] = QM_STAR_ORDER[k];
+    } else {
+      var qinPark = (zhiFuPalace === 2) ? 5 : 2;
+      var rotPalaces = [];
+      for (k = 0; k < 9; k++) {
+        var pp = cw9[(cw9.indexOf(zhiFuPalace) + k) % 9];
+        if (pp !== qinPark) rotPalaces.push(pp);
+      }
+      var ri = QM_STAR_ROT.indexOf(zhiFuStar);
+      for (k = 0; k < 8; k++) stars[rotPalaces[k]] = QM_STAR_ROT[(ri + k) % 8];
+      stars[qinPark] = '天禽';
+    }
+    // 八门：值使门落值使宫，其余按序顺时针转（中宫无门）
+    var gates = {};
+    var nSteps = hIdx - xunStart; // 旬内第几位（0-9）
+    var zsPalace = dunPalace;
+    for (k = 0; k < nSteps; k++) zsPalace = qmStep(zsPalace, yang ? 1 : -1);
+    var zsJi = false;
+    if (zsPalace === 5) { zsPalace = yang ? 2 : 8; zsJi = true; } // 值使落中宫：阳遁寄坤，阴遁寄艮
+    var gi = QM_GATE_ORDER.indexOf(zhiShiGate);
+    var cw8 = QM_CW.slice();
+    var gStart = cw8.indexOf(zsPalace);
+    for (k = 0; k < 8; k++) gates[cw8[(gStart + k) % 8]] = QM_GATE_ORDER[(gi + k) % 8];
+    // 八神：值符神永远跟着值符星走（张志春《神奇之门》），阳顺阴逆；
+    // 时干宫若为中宫，值符星与值符神都寄坤2（中五寄坤，不分阴阳），故从
+    // zhiFuPalace 起排。八神不入中宫。
+    var gods = {};
+    var cwDir = yang ? QM_CW.slice() : QM_CW.slice().reverse();
+    var dStart = cwDir.indexOf(zhiFuPalace);
+    for (k = 0; k < 8; k++) gods[cwDir[(dStart + k) % 8]] = QM_GOD_ORDER[k];
+    // 天盘干：星本位宫的地盘干
+    var heaven = {};
+    for (p = 1; p <= 9; p++) heaven[p] = di[QM_STAR_HOME[stars[p]]];
+    // 空亡（日柱旬）与马星（时支）
+    var dIdx = jiaziIndex(dStem, dBranch);
+    var dXunStart = dIdx - (dIdx % 10);
+    var dXunBranch = BRANCHES[dXunStart % 12];
+    var kongBranches = QM_XUN_KONG[dXunBranch];
+    var kongPalaces = [];
+    kongBranches.forEach(function(b) { var pp = QM_BRANCH_PALACE[b]; if (kongPalaces.indexOf(pp) < 0) kongPalaces.push(pp); });
+    var maBranch = QM_MA[hBranch];
+    var maPalace = QM_BRANCH_PALACE[maBranch];
+    return {
+      ganzhi: [yStem + yBranch, mStem + mBranch, dStem + dBranch, hStem + hBranch],
+      term: termName, yuan: yuan, yang: yang, ju: ju, daysSince: daysSince, fuTou: fuTou,
+      xun: xunStem + xunBranch, dunStem: dunStem, dunPalace: dunPalace,
+      zhiFuStar: zhiFuStar, zhiShiGate: zhiShiGate, hourPalace: hourPalace, zhiFuPalace: zhiFuPalace, zhiShiPalace: zsPalace, zhiShiJi: zsJi,
+      di: di, stars: stars, gates: gates, gods: gods, heaven: heaven,
+      kongPalaces: kongPalaces, kongBranches: kongBranches, maPalace: maPalace, maBranch: maBranch
+    };
+  };
+  var lastQm = null;
+  window.qmCalc = function() {
+    clearFormErrs('page-qimen');
+    var birthdate = document.getElementById('qmBirthdate').value;
+    if (!birthdate) { showFormErr('qmBirthdate', '请选择日期'); return; }
+    var time = document.getElementById('qmBirthtime').value;
+    if (!time) { showFormErr('qmBirthtime', '请选择时间，或点“用现在”'); return; }
+    var matter = (document.getElementById('qmMatter').value || '').trim();
+    var pan;
+    try { pan = window.qmCompute(birthdate, time); } catch (e) { showFormErr('qmBirthdate', '排盘失败，请检查日期时间'); return; }
+    var hourStem = pan.ganzhi[3][0];
+    // 时干宫解读
+    var hp = pan.hourPalace;
+    var hGate = pan.gates[hp] || '—', hStar = pan.stars[hp], hGod = pan.gods[hp] || '—';
+    var hHeaven = pan.heaven[hp], hEarth = pan.di[hp];
+    var flags = [];
+    if (hHeaven === hEarth) flags.push('伏吟：天盘干与地盘干相同，事多反复、进展缓慢');
+    else if (KE[STEM_WX[hHeaven]] === STEM_WX[hEarth]) flags.push('反吟：天盘干克地盘干，事多变动、反复');
+    if (hGate !== '—' && KE[QM_GATE_WX[hGate]] === QM_PALACE_WX[hp]) flags.push('门迫：' + hGate + '（' + QM_GATE_WX[hGate] + '）克宫（' + QM_PALACE_WX[hp] + '），行事受阻');
+    if (QM_MU[hHeaven] && QM_BRANCH_PALACE[QM_MU[hHeaven]] === hp) flags.push('入墓：天盘干' + hHeaven + '入墓库，力量受困');
+    if (hHeaven === '乙' && hEarth === '丙') flags.push('青龙返首：天盘乙奇临地盘丙奇，大吉');
+    if (hHeaven === '丙' && hEarth === '乙') flags.push('飞鸟跌穴：天盘丙奇临地盘乙奇，大吉');
+    if (pan.kongPalaces.indexOf(hp) >= 0) flags.push('时干落空亡宫：所问之事暂无着落，不宜强求');
+    if (pan.maPalace === hp) flags.push('时干逢马星：事情有动象，出行、变动之应');
+    if (hStar === pan.zhiFuStar) flags.push('时干逢值符星：得贵人、主导之象');
+    if (hGate === pan.zhiShiGate) flags.push('时干逢值使门：事情走正路');
+    var gridOrder = [4, 9, 2, 3, 5, 7, 8, 1, 6];
+    var cells = gridOrder.map(function(pp) {
+      var marks = [];
+      if (pp === pan.hourPalace) marks.push('时干');
+      if (pp === pan.zhiShiPalace) marks.push('值使' + (pan.zhiShiJi ? '（寄宫）' : ''));
+      if (pan.stars[pp] === pan.zhiFuStar) marks.push('值符');
+      if (pan.kongPalaces.indexOf(pp) >= 0) marks.push('空亡');
+      if (pp === pan.maPalace) marks.push('马星');
+      return '<div class="qm-cell' + (pp === hp ? ' qm-focus' : '') + '">' +
+        '<div class="qm-pal">' + QM_PALACE_NAME[pp] + pp + ' · ' + QM_PALACE_WX[pp] + (marks.length ? ' <span class="qm-mark">' + marks.join('·') + '</span>' : '') + '</div>' +
+        '<div class="qm-line"><span class="qm-h">天盘 ' + pan.heaven[pp] + '</span><span>地盘 ' + pan.di[pp] + '</span></div>' +
+        '<div class="qm-line"><span>' + pan.stars[pp] + '</span><span>' + (pan.gates[pp] || '—') + '</span></div>' +
+        '<div class="qm-god">' + (pan.gods[pp] || '') + '</div></div>';
+    }).join('');
+    var yuanName = ['', '上元', '中元', '下元'][pan.yuan];
+    lastQm = { tag:'奇门遁甲', big:(pan.yang ? '阳' : '阴') + pan.ju + '局', bigSub:pan.term + ' · ' + pan.ganzhi[2] + '日 ' + pan.ganzhi[3] + '时', rows:[
+      { k:'局数', v:(pan.yang ? '阳遁' : '阴遁') + pan.ju + '局' },
+      { k:'值符', v:pan.zhiFuStar + '（' + pan.ganzhi[3] + '时）' },
+      { k:'值使', v:pan.zhiShiGate },
+      { k:'时干宫', v:QM_PALACE_NAME[hp] + hp + '宫' }
+    ]};
+    var html = '<div class="r-score"><div class="score-num" style="font-size:40px">' + (pan.yang ? '阳' : '阴') + '遁 ' + pan.ju + '局</div><div class="score-label">' + pan.term + ' · ' + yuanName + '（符头' + pan.fuTou + '） · 四柱 ' + pan.ganzhi.join(' ') + '</div></div>' +
+      '<div class="r-section"><h3>九宫盘</h3><div class="qm-grid">' + cells + '</div>' +
+      '<p style="color:var(--text-dim);font-size:13px;margin-top:8px">旬首 ' + pan.xun + '（' + pan.dunStem + '）· 值符 ' + pan.zhiFuStar + ' · 值使 ' + pan.zhiShiGate + '（落' + QM_PALACE_NAME[pan.zhiShiPalace] + pan.zhiShiPalace + '宫）· 空亡 ' + pan.kongBranches.join('、') + '（' + pan.kongPalaces.map(function(pp){ return QM_PALACE_NAME[pp] + pp; }).join('、') + '宫）· 马星 ' + pan.maBranch + '（' + QM_PALACE_NAME[pan.maPalace] + pan.maPalace + '宫）</p></div>' +
+      '<div class="r-section"><h3>时干宫 · ' + QM_PALACE_NAME[hp] + hp + '宫' + (matter ? ' · 所问：' + matter : '') + '</h3>' +
+      '<p>时干' + hourStem + '落' + QM_PALACE_NAME[hp] + hp + '宫：' + (hGate === '—' ? '中宫无门' : hGate + '（' + QM_GATE_JI[hGate] + '）') + ' · ' + hStar + '（' + QM_STAR_JI[hStar] + '）· ' + hGod + '，天盘' + hHeaven + '、地盘' + hEarth + (hp === 5 ? '。时干落中宫，值符星与值符神寄坤二宫' : '') + '。</p>' +
+      (flags.length ? flags.map(function(f){ return '<div class="sd-item"><b>提示</b>' + f + '</div>'; }).join('') : '<p>时干宫无特殊格局，按门星神组合常情读：吉门吉星为顺，凶门凶星为阻。</p>') + '</div>' +
+      '<div class="r-section"><h3>口径说明</h3><p>拆补法定局：符头定元（当日之前最近的甲日或己日为符头，日支子午卯酉为上元、寅申巳亥为中元、辰戌丑未为下元），转盘布盘；中宫无门；八神不入中宫（时干落中宫时值符寄坤）。临近节气交节时刻，局数会因定局口径（拆补/置闰）不同而有出入；不同流派排盘亦有差异。以上皆为传统命理说法，仅供文化参考，不构成人生建议。</p></div>' +
+      '<div class="disclaim">本内容仅供文化娱乐参考，请理性看待。</div>' +
+      '<span class="tip-link" onclick="showTip()">觉得有用？打赏支持一下</span><span class="tip-link" onclick="showFeedback()">有问题？点这里反馈</span>' +
+      '<button class="btn" onclick="saveQmCard()">保存结果卡片</button>' +
+      '<button class="btn ghost" onclick="qmReset()">重新排盘</button>' +
+      '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
+    addHistory({ type:'奇门', time:Date.now(), page:'qimen', summary:(pan.yang ? '阳' : '阴') + pan.ju + '局 · ' + pan.ganzhi[2] + '日' + pan.ganzhi[3] + '时', data:{ birthdate:birthdate, time:time, matter:matter } });
+    document.getElementById('qimenForm').style.display = 'none';
+    document.getElementById('qimenResult').innerHTML = html;
+    segmentize('qimenResult', 4);
+    window.scrollTo(0, 0);
+  };
+  window.saveQmCard = function() { if (!lastQm) return; saveResultCard(lastQm); };
+  window.qmReset = function() {
+    document.getElementById('qimenForm').style.display = '';
+    document.getElementById('qimenResult').innerHTML = '';
+    window.scrollTo(0, 0);
+  };
+  window.qmNow = function() {
+    var now = new Date();
+    var s = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+    document.getElementById('qmBirthdate').value = s;
+    document.getElementById('qmBirthtime').value = String(now.getHours()).padStart(2, '0') + ':00';
+  };
+  window.__xjgRestoreQimen = function(birthdate, time, matter) {
+    setHistVal('qmBirthdate', birthdate || '');
+    setHistVal('qmBirthtime', time || '');
+    var m = document.getElementById('qmMatter'); if (m) m.value = matter || '';
+    if (window.qmCalc) window.qmCalc();
+  };
+})();
+
 // ============ 缘分配对（生肖 + 八字）============
 var lastPd = null;
 var LIUHE = { '鼠':'牛','牛':'鼠','虎':'猪','猪':'虎','兔':'狗','狗':'兔','龙':'鸡','鸡':'龙','蛇':'猴','猴':'蛇','马':'羊','羊':'马' };
@@ -5983,6 +7079,30 @@ if (window.__xjgErrPending && typeof window.__xjgShowErrToast === 'function') {
   window.__xjgShowErrToast(window.__xjgErrPending);
   window.__xjgErrPending = null;
 }
+/* PWA：桌面图标。service worker 只在 http(s) 下注册（file:// 直接打开时跳过，不影响使用） */
+(function(){
+  var isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone;
+  var tip = document.getElementById('a2hsTip');
+  try { if (localStorage.getItem('xjg_hide_a2hs') === '1') isStandalone = true; } catch (e) {}
+  if (isStandalone && tip) tip.style.display = 'none';
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
+  }
+  var deferredPrompt = null;
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault(); deferredPrompt = e;
+    var b = document.getElementById('a2hsBtn'); if (b) b.style.display = '';
+  });
+  window.__xjgInstall = function(){
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(){ deferredPrompt = null; if (tip) tip.style.display = 'none'; });
+  };
+  window.__xjgHideA2hs = function(){
+    if (tip) tip.style.display = 'none';
+    try { localStorage.setItem('xjg_hide_a2hs', '1'); } catch (e) {}
+  };
+})();
 </script>
 </body>
 </html>

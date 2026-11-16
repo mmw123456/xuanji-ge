@@ -50,7 +50,9 @@
   @keyframes cardIn { from{opacity:0;transform:translateY(10px);} to{opacity:1;transform:translateY(0);} }
 
   .topbar { display:flex; align-items:center; padding:20px 0; }
-  .back { color:var(--gold); text-decoration:none; font-size:22px; cursor:pointer; user-select:none; }
+  .back { color:var(--gold); text-decoration:none; font-size:22px; cursor:pointer; user-select:none; min-width:44px; min-height:44px; display:inline-flex; align-items:center; justify-content:center; }
+  /* v1.8.7：键盘焦点可见（之前全站 0 处 :focus-visible，Tab 移动看不出焦点） */
+  :focus-visible { outline:2px solid var(--gold); outline-offset:2px; }
   .title { flex:1; text-align:center; font-size:20px; font-weight:600; letter-spacing:2px; font-family:var(--serif); }
   .spacer { width:22px; }
 
@@ -114,6 +116,8 @@
     padding:14px; color:var(--text); font-size:16px; outline:none;
   }
   .field input:focus, .field select:focus { border-color:var(--gold); }
+  /* v1.8.7：复选框默认 20px（行内写死的 16/17/18px 另改——行内样式会压过这里） */
+  .field input[type="checkbox"] { width:20px; height:20px; flex:none; accent-color:var(--gold); }
   .field input[type="date"], .field input[type="time"] { color-scheme: dark; }
   .field.center input { text-align:center; letter-spacing:4px; font-size:18px; }
   .field-row { display:flex; gap:12px; }
@@ -161,7 +165,7 @@
   .entry-card.featured { background:linear-gradient(135deg,#2a1f14,#1e1915); border-color:#4a3a24; }
   .history-bar { display:flex; justify-content:flex-end; padding:0 2px 6px; }
   .pf-link { color:var(--gold); cursor:pointer; text-decoration:underline; }
-  .history-link { font-size:13px; color:var(--gold); cursor:pointer; opacity:.85; letter-spacing:1px; }
+  .history-link { font-size:13px; color:var(--gold); cursor:pointer; opacity:.85; letter-spacing:1px; display:inline-block; padding:13px 8px; }
   .history-link:active { opacity:1; }
   .today-card { background:radial-gradient(ellipse 90% 80% at 50% 0%, rgba(200,164,95,.12), transparent 70%), linear-gradient(135deg,#2a1f14,#1e1915); border:1px solid #4a3a24; border-radius:16px; padding:20px 18px; margin-bottom:4px; position:relative; }
   .today-card::before, .today-card::after { content:''; position:absolute; width:20px; height:20px; border:0 solid var(--gold); opacity:.5; pointer-events:none; }
@@ -498,7 +502,7 @@
   .tip-link:active { opacity:1; }
 
   /* 页脚链接（更新日志 / 反馈） */
-  .flink { color:var(--gold); cursor:pointer; opacity:.85; }
+  .flink { color:var(--gold); cursor:pointer; opacity:.85; display:inline-block; padding:13px 6px; line-height:1.4; }
   .flink:active { opacity:1; text-decoration:underline; }
 
   /* 反馈面板 */
@@ -659,7 +663,7 @@
 .a2hs-tip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:14px 0;font-size:13px;color:var(--text-dim);background:rgba(200,164,95,.06)}
 .a2hs-tip .a2hs-text{flex:1;line-height:1.6}
 .a2hs-btn{flex:none;border:1px solid var(--gold);color:var(--gold-light);background:transparent;border-radius:8px;padding:6px 12px;font-size:13px;cursor:pointer}
-.a2hs-x{flex:none;color:var(--text-dim);font-size:18px;line-height:1;cursor:pointer;padding:2px 4px}
+.a2hs-x{flex:none;color:var(--text-dim);font-size:18px;line-height:1;cursor:pointer;min-width:44px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0}
 </style>
 <script>
 /* ============================================================
@@ -672,7 +676,7 @@ window.CONFIG = {
   GOLD_LIGHT: '#e3c88d',             // 主题金色（高亮浅色）
   CONTACT: '微信：wxid_4cs9ei0iftpw22',  // 联系方式（留空则不显示；例如 '微信：xxxx'）
   SHOW_FOOTER: true,                 // 是否显示首页底部的版权与免责信息
-  VERSION: 'v1.8.6',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
+  VERSION: 'v1.8.7',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
   UPDATED: '2026-11-15',              // 更新日期
   FEEDBACK_URL: 'https://wj.qq.com/s2/28674644/054w/',  // 反馈表单链接（腾讯问卷，用户 2026-11-13 自己建的免费表单；改成 '' 则恢复显示微信联系方式）
   SITE_URL: 'https://mmw123456.github.io/xuanji-ge/',  // 官网链接（结果卡片分享区二维码与文字用）
@@ -786,6 +790,16 @@ document.addEventListener('touchstart', function(){}, {passive:true});
     <h3 style="text-align:center">更新日志</h3>
     <div class="tip-note" style="text-align:center" id="clVersion"></div>
     <div style="font-size:13px;color:var(--text-dim);line-height:2">
+      <div style="color:var(--gold-light);font-weight:600">v1.8.7 · 2026-11-15</div>
+      <div>· 灵签/塔罗刷新不再白屏：原来直接刷新或从分享链接进这两页会只剩标题栏，现在路由进来就初始化（历史还原时跳过，还原函数自己渲染）</div>
+      <div>· 起名按五行相生选字：原来从全池随机抽、只拦凶数，两字常相克（实测 20.2%）、卡片徽标还与用字对不上（64.4%）；现在两字必定相生，徽标直接写“火生土”这种真实组合</div>
+      <div>· 起名卡片分数改成综合分：原来首行那个分是总格单格分，看着像综合分还对不上姓名分析页；现在与姓名分析页同源计算，五格明细带画数</div>
+      <div>· 姓名分析不再吓人：外格 2 画（单姓单名固定值）不作吉凶论断；人格与总格同数时评语只写一次；张三这类测试名结论措辞软化（分数照算）</div>
+      <div>· 今日运势接档案：填了档案后，运势卡显示你的生肖和日主，“今日”那句话按今日天干与日主的生克换说法，幸运色/幸运数字/吉时也按日主推；没填档案时保持原样</div>
+      <div>· 结果页默认展开前 2 段：原来有的页展开 4 段、有的页 1 段都不展开，现在统一展开前 2 段</div>
+      <div>· 灵签从 20 签扩到 60 签：每签按事业/姻缘/财运分档，签面写清“宜问”哪类</div>
+      <div>· 返回按钮、表单标签、触控目标：返回按钮热区撑到 44px 并加了无障碍名称；51 处表单 label 关联了对应控件；页脚链接、“我的测评”、安装提示的 ×、复选框都放大了触控目标；全站加了键盘焦点样式</div>
+      <div>· 新版本提示：线上 manifest 的版本号与本地版本对不上时，页面底部会提示“发现新版本，点刷新用最新版”</div>
       <div style="color:var(--gold-light);font-weight:600">v1.8.6 · 2026-11-15</div>
       <div>· 塔罗“一句话”改写：原来只贴单个关键词、建议位还不标正逆位（“宝剑国王：操纵”看不出是逆位提醒），现在每张牌都标正逆位、方向句用建议位那张牌自己的解读句</div>
       <div>· 八字配对加了“奇门合盘”：以问事时间起时家奇门局，日干为你、时干为对方，看两干落宫生克，另看六合落宫；不依赖出生时间，时柱未知时也能看全盘</div>
@@ -1014,19 +1028,19 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-profile">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">我的档案</div>
       <div class="spacer"></div>
     </div>
     <div class="form-card">
       <div class="hint" style="margin-bottom:12px">填一次，全站自动带出：八字、紫微、姓名、称骨、日元、三世书、起名、配对都不用重复填。只存在当前浏览器本地，不上传服务器。</div>
       <div class="field">
-        <label>姓名（选填）</label>
+        <label for="pfName">姓名（选填）</label>
         <input type="text" id="pfName" placeholder="请输入姓名">
       </div>
       <div class="field-row">
         <div class="field">
-          <label>性别</label>
+          <label for="pfGender">性别</label>
           <select id="pfGender">
             <option value="">请选择</option>
             <option value="male">男</option>
@@ -1034,17 +1048,17 @@ document.addEventListener('touchstart', function(){}, {passive:true});
           </select>
         </div>
         <div class="field">
-          <label>出生日期</label>
+          <label for="pfBirthdate">出生日期</label>
           <input type="date" id="pfBirthdate" placeholder="请选择出生日期">
         </div>
       </div>
       <div class="field">
-        <label>出生时间</label>
+        <label for="pfBirthtime">出生时间</label>
         <select id="pfBirthtime">
 <option value="">请选择出生时间（24 时制）</option><option value="00:00">00:00 子时</option><option value="01:00">01:00 丑时</option><option value="02:00">02:00 丑时</option><option value="03:00">03:00 寅时</option><option value="04:00">04:00 寅时</option><option value="05:00">05:00 卯时</option><option value="06:00">06:00 卯时</option><option value="07:00">07:00 辰时</option><option value="08:00">08:00 辰时</option><option value="09:00">09:00 巳时</option><option value="10:00">10:00 巳时</option><option value="11:00">11:00 午时</option><option value="12:00">12:00 午时</option><option value="13:00">13:00 未时</option><option value="14:00">14:00 未时</option><option value="15:00">15:00 申时</option><option value="16:00">16:00 申时</option><option value="17:00">17:00 酉时</option><option value="18:00">18:00 酉时</option><option value="19:00">19:00 戌时</option><option value="20:00">20:00 戌时</option><option value="21:00">21:00 亥时</option><option value="22:00">22:00 亥时</option><option value="23:00">23:00 子时</option>
         </select>
         <div class="hint">不知道出生时间？勾选下方“我不清楚出生时间”，按时辰未知保存</div>
-        <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="pfTimeUnknown" onchange="pfTimeUnknownToggle()" style="width:18px;height:18px;accent-color:#c8a45f"> 我不清楚出生时间</label>
+        <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="pfTimeUnknown" onchange="pfTimeUnknownToggle()" style="width:20px;height:20px;accent-color:#c8a45f"> 我不清楚出生时间</label>
       </div>
       <button class="btn" onclick="saveProfile()">保存档案</button>
       <button class="btn ghost" onclick="clearProfile()" style="margin-top:10px">清除档案</button>
@@ -1059,7 +1073,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-mbti">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">MBTI 人格测试</div>
       <div class="spacer"></div>
     </div>
@@ -1101,7 +1115,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-tujian">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('mbti')">‹</a>
+      <a class="back" onclick="showPage('mbti')" aria-label="返回">‹</a>
       <div class="title">16 型人格图鉴</div>
       <div class="spacer"></div>
     </div>
@@ -1117,18 +1131,18 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-supei">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('mbti')">‹</a>
+      <a class="back" onclick="showPage('mbti')" aria-label="返回">‹</a>
       <div class="title">双人速配</div>
       <div class="spacer"></div>
     </div>
     <div id="spForm">
       <div class="form-card">
         <div class="field">
-          <label>你的 MBTI 类型</label>
+          <label for="spA">你的 MBTI 类型</label>
           <select id="spA"></select>
         </div>
         <div class="field">
-          <label>对方的 MBTI 类型</label>
+          <label for="spB">对方的 MBTI 类型</label>
           <select id="spB"></select>
         </div>
         <div class="hint" style="text-align:center">不知道自己的类型？先去测一次 MBTI</div>
@@ -1144,19 +1158,19 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-bazi">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">八字排盘</div>
       <div class="spacer"></div>
     </div>
     <div id="baziForm">
       <div class="form-card">
         <div class="field">
-          <label>姓名（选填）</label>
+          <label for="baziName">姓名（选填）</label>
           <input type="text" id="baziName" placeholder="请输入姓名">
         </div>
         <div class="field-row">
           <div class="field">
-            <label>性别</label>
+            <label for="baziGender">性别</label>
             <select id="baziGender">
               <option value="">请选择</option>
               <option value="male">男</option>
@@ -1164,12 +1178,12 @@ document.addEventListener('touchstart', function(){}, {passive:true});
             </select>
           </div>
           <div class="field">
-            <label>出生日期</label>
+            <label for="baziBirthdate">出生日期</label>
             <input type="date" id="baziBirthdate" placeholder="请选择出生日期">
                       </div>
         </div>
         <div class="field">
-          <label>出生时间</label>
+          <label for="baziBirthtime">出生时间</label>
           <select id="baziBirthtime">
             <option value="">请选择出生时间（24 时制）</option>
             <option value="00:00">00:00 子时</option>
@@ -1198,7 +1212,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
             <option value="23:00">23:00 子时</option>
           </select>
           <div class="hint">不知道出生时间？勾选下方“我不清楚出生时间”，时柱将显示为未知，不会用默认时辰代替；时辰影响时柱，建议尽量准确</div>
-          <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="baziTimeUnknown" onchange="bzTimeUnknownToggle()" style="width:18px;height:18px;accent-color:#c8a45f"> 我不清楚出生时间</label>
+          <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="baziTimeUnknown" onchange="bzTimeUnknownToggle()" style="width:20px;height:20px;accent-color:#c8a45f"> 我不清楚出生时间</label>
         </div>
         <button class="btn" onclick="calculate()">开始排盘</button>
       </div>
@@ -1211,19 +1225,19 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-ziwei">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">紫微斗数</div>
       <div class="spacer"></div>
     </div>
     <div id="zwForm">
       <div class="form-card">
         <div class="field">
-          <label>姓名（选填）</label>
+          <label for="zwName">姓名（选填）</label>
           <input type="text" id="zwName" placeholder="请输入姓名">
         </div>
         <div class="field-row">
           <div class="field">
-            <label>性别</label>
+            <label for="zwGender">性别</label>
             <select id="zwGender">
               <option value="">请选择</option>
               <option value="male">男</option>
@@ -1231,12 +1245,12 @@ document.addEventListener('touchstart', function(){}, {passive:true});
             </select>
           </div>
           <div class="field">
-            <label>出生日期</label>
+            <label for="zwBirthdate">出生日期</label>
             <input type="date" id="zwBirthdate" placeholder="请选择出生日期">
                       </div>
         </div>
         <div class="field">
-          <label>出生时间</label>
+          <label for="zwBirthtime">出生时间</label>
           <select id="zwBirthtime">
             <option value="">请选择出生时间（24 时制）</option>
             <option value="00:00">00:00 子时</option>
@@ -1277,7 +1291,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-xingming">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">姓名分析</div>
       <div class="spacer"></div>
     </div>
@@ -1290,11 +1304,11 @@ document.addEventListener('touchstart', function(){}, {passive:true});
     <div id="xmForm">
       <div class="form-card">
         <div class="field center">
-          <label>姓氏</label>
+          <label for="xmXing">姓氏</label>
           <input type="text" id="xmXing" placeholder="请输入姓氏">
         </div>
         <div class="field center">
-          <label>名字</label>
+          <label for="xmMing">名字</label>
           <input type="text" id="xmMing" placeholder="请输入名字">
         </div>
         <div class="hint" style="text-align:center">按康熙字典笔画计算五格数理</div>
@@ -1305,13 +1319,13 @@ document.addEventListener('touchstart', function(){}, {passive:true});
       <div class="form-card">
         <div class="couple-head">第一个人</div>
         <div class="field-row">
-          <div class="field"><label>姓氏</label><input type="text" id="xmXingA" placeholder="姓"></div>
-          <div class="field"><label>名字</label><input type="text" id="xmMingA" placeholder="名"></div>
+          <div class="field"><label for="xmXingA">姓氏</label><input type="text" id="xmXingA" placeholder="姓"></div>
+          <div class="field"><label for="xmMingA">名字</label><input type="text" id="xmMingA" placeholder="名"></div>
         </div>
         <div class="couple-head">第二个人</div>
         <div class="field-row">
-          <div class="field"><label>姓氏</label><input type="text" id="xmXingB" placeholder="姓"></div>
-          <div class="field"><label>名字</label><input type="text" id="xmMingB" placeholder="名"></div>
+          <div class="field"><label for="xmXingB">姓氏</label><input type="text" id="xmXingB" placeholder="姓"></div>
+          <div class="field"><label for="xmMingB">名字</label><input type="text" id="xmMingB" placeholder="名"></div>
         </div>
         <div class="hint" style="text-align:center">输入两人的姓名，测算五行相合与相处关系</div>
         <button class="btn" onclick="analyzeCouple()">开始测算</button>
@@ -1321,13 +1335,13 @@ document.addEventListener('touchstart', function(){}, {passive:true});
       <div class="form-card">
         <div class="couple-head">男方</div>
         <div class="field-row">
-          <div class="field"><label>姓氏</label><input type="text" id="xmLoveXingA" placeholder="姓"></div>
-          <div class="field"><label>名字</label><input type="text" id="xmLoveMingA" placeholder="名"></div>
+          <div class="field"><label for="xmLoveXingA">姓氏</label><input type="text" id="xmLoveXingA" placeholder="姓"></div>
+          <div class="field"><label for="xmLoveMingA">名字</label><input type="text" id="xmLoveMingA" placeholder="名"></div>
         </div>
         <div class="couple-head">女方</div>
         <div class="field-row">
-          <div class="field"><label>姓氏</label><input type="text" id="xmLoveXingB" placeholder="姓"></div>
-          <div class="field"><label>名字</label><input type="text" id="xmLoveMingB" placeholder="名"></div>
+          <div class="field"><label for="xmLoveXingB">姓氏</label><input type="text" id="xmLoveXingB" placeholder="姓"></div>
+          <div class="field"><label for="xmLoveMingB">名字</label><input type="text" id="xmLoveMingB" placeholder="名"></div>
         </div>
         <div class="hint" style="text-align:center">测算两人作为恋人 / 伴侣的缘分深浅与适配程度</div>
         <button class="btn" onclick="analyzeLove()">开始测算</button>
@@ -1341,7 +1355,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-yixue">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">易学百科</div>
       <div class="spacer"></div>
     </div>
@@ -1584,14 +1598,14 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-qiming">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">免费起名</div>
       <div class="spacer"></div>
     </div>
     <div id="qmForm">
       <div class="form-card">
         <div class="field center">
-          <label>姓氏</label>
+          <label for="qmXing">姓氏</label>
           <input type="text" id="qmXing" placeholder="请输入姓氏">
         </div>
         <div class="field">
@@ -1613,7 +1627,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-lingqian">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">今日一签</div>
       <div class="spacer"></div>
     </div>
@@ -1625,7 +1639,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-tarot">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">塔罗占卜</div>
       <div class="spacer"></div>
     </div>
@@ -1637,7 +1651,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-haoma">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">号码吉凶</div>
       <div class="spacer"></div>
     </div>
@@ -1652,7 +1666,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
           </div>
         </div>
         <div class="field center">
-          <label id="hmLabel">请输入手机号</label>
+          <label for="hmInput" id="hmLabel">请输入手机号</label>
           <input type="text" id="hmInput" placeholder="请输入手机号" maxlength="11">
         </div>
         <div class="hint" style="text-align:center">号码只在本地计算，不保存、不上传</div>
@@ -1667,14 +1681,14 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-zejiri">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">择吉日</div>
       <div class="spacer"></div>
     </div>
     <div id="zjForm">
       <div class="form-card">
         <div class="field">
-          <label>选择日期</label>
+          <label for="zjDate">选择日期</label>
           <input type="date" id="zjDate" placeholder="请选择日期">
         </div>
         <button class="btn" onclick="zjCalc()">查看宜忌</button>
@@ -1688,18 +1702,18 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-chenggu">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">称骨算命</div>
       <div class="spacer"></div>
     </div>
     <div id="cgForm">
       <div class="form-card">
         <div class="field">
-          <label>出生日期</label>
+          <label for="cgBirthdate">出生日期</label>
           <input type="date" id="cgBirthdate" placeholder="请选择出生日期">
         </div>
         <div class="field">
-          <label>出生时间</label>
+          <label for="cgBirthtime">出生时间</label>
           <select id="cgBirthtime">
             <option value="">请选择出生时间（24 时制）</option>
             <option value="00:00">00:00 子时</option>
@@ -1728,7 +1742,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
             <option value="23:00">23:00 子时</option>
           </select>
           <div class="hint">不知道出生时间？勾选下方“我不清楚出生时间”，将列出 12 个时辰各自的骨重；时辰影响总骨重，建议尽量准确</div>
-          <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="cgTimeUnknown" onchange="cgTimeUnknownToggle()" style="width:16px;height:16px;accent-color:var(--gold)">我不清楚出生时间</label>
+          <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="cgTimeUnknown" onchange="cgTimeUnknownToggle()" style="width:20px;height:20px;accent-color:var(--gold)">我不清楚出生时间</label>
         </div>
         <div class="hint" style="text-align:center">按袁天罡称骨法：年、月、日、时各有定数，四数相加得总骨重，再对照称骨歌</div>
         <button class="btn" onclick="cgCalc()">开始称骨</button>
@@ -1742,18 +1756,18 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-riyuan">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">日元论命</div>
       <div class="spacer"></div>
     </div>
     <div id="ryForm">
       <div class="form-card">
         <div class="field">
-          <label>出生日期</label>
+          <label for="ryBirthdate">出生日期</label>
           <input type="date" id="ryBirthdate" placeholder="请选择出生日期">
         </div>
         <div class="field">
-          <label>出生时间</label>
+          <label for="ryBirthtime">出生时间</label>
           <select id="ryBirthtime">
             <option value="">请选择出生时间（24 时制）</option>
             <option value="00:00">00:00 子时</option>
@@ -1782,7 +1796,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
             <option value="23:00">23:00 子时</option>
           </select>
           <div class="hint">不知道出生时间？勾选下方“我不清楚出生时间”，旺衰按三柱判断；时辰影响十神结构，建议尽量准确</div>
-          <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="ryTimeUnknown" onchange="ryTimeUnknownToggle()" style="width:16px;height:16px;accent-color:var(--gold)">我不清楚出生时间</label>
+          <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="ryTimeUnknown" onchange="ryTimeUnknownToggle()" style="width:20px;height:20px;accent-color:var(--gold)">我不清楚出生时间</label>
         </div>
         <div class="hint" style="text-align:center">日元即日柱天干，是整张八字的起点；本页以日元为中心讲本性、旺衰与调候</div>
         <button class="btn" onclick="ryCalc()">开始论命</button>
@@ -1796,18 +1810,18 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-sanshi">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">三世书算婚姻</div>
       <div class="spacer"></div>
     </div>
     <div id="ssForm">
       <div class="form-card">
         <div class="field">
-          <label>出生日期</label>
+          <label for="ssBirthdate">出生日期</label>
           <input type="date" id="ssBirthdate" placeholder="请选择出生日期">
         </div>
         <div class="field">
-          <label>性别</label>
+          <label for="ssGender">性别</label>
           <select id="ssGender">
             <option value="female">女（原文以女性为准）</option>
             <option value="male">男（换位取义）</option>
@@ -1825,18 +1839,18 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-qimen">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">奇门遁甲</div>
       <div class="spacer"></div>
     </div>
     <div id="qimenForm">
       <div class="form-card">
         <div class="field">
-          <label>问事日期</label>
+          <label for="qmBirthdate">问事日期</label>
           <input type="date" id="qmBirthdate" placeholder="请选择日期">
         </div>
         <div class="field">
-          <label>问事时间</label>
+          <label for="qmBirthtime">问事时间</label>
           <select id="qmBirthtime">
             <option value="">请选择问事时间（24 时制）</option>
             <option value="00:00">00:00 子时</option>
@@ -1866,7 +1880,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
           </select>
         </div>
         <div class="field">
-          <label>所问何事（选填）</label>
+          <label for="qmMatter">所问何事（选填）</label>
           <input type="text" id="qmMatter" placeholder="例如：这周面试能不能成" maxlength="30">
         </div>
         <div class="hint" style="text-align:center">时家奇门以问事时刻起局；不知道时间可点“用现在”</div>
@@ -1882,7 +1896,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-peidui">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">缘分配对</div>
       <div class="spacer"></div>
     </div>
@@ -1894,11 +1908,11 @@ document.addEventListener('touchstart', function(){}, {passive:true});
       <div class="form-card">
         <div class="field-row">
           <div class="field">
-            <label>你的生肖</label>
+            <label for="pdSxA">你的生肖</label>
             <select id="pdSxA"><option value="">请选择</option><option>鼠</option><option>牛</option><option>虎</option><option>兔</option><option>龙</option><option>蛇</option><option>马</option><option>羊</option><option>猴</option><option>鸡</option><option>狗</option><option>猪</option></select>
           </div>
           <div class="field">
-            <label>TA 的生肖</label>
+            <label for="pdSxB">TA 的生肖</label>
             <select id="pdSxB"><option value="">请选择</option><option>鼠</option><option>牛</option><option>虎</option><option>兔</option><option>龙</option><option>蛇</option><option>马</option><option>羊</option><option>猴</option><option>鸡</option><option>狗</option><option>猪</option></select>
           </div>
         </div>
@@ -1909,16 +1923,16 @@ document.addEventListener('touchstart', function(){}, {passive:true});
       <div class="form-card">
         <div class="couple-head">你的信息</div>
         <div class="field-row">
-          <div class="field"><label>出生日期</label><input type="date" id="pdBzDateA" placeholder="请选择"></div>
-          <div class="field"><label>出生时间</label><select id="pdBzTimeA"></select></div>
+          <div class="field"><label for="pdBzDateA">出生日期</label><input type="date" id="pdBzDateA" placeholder="请选择"></div>
+          <div class="field"><label for="pdBzTimeA">出生时间</label><select id="pdBzTimeA"></select></div>
         </div>
-        <label style="display:flex;align-items:center;gap:8px;margin:2px 0 14px;font-size:13px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="pdBzTimeUnknownA" onchange="pdTimeUnknownToggle('A')" style="width:17px;height:17px;accent-color:#c8a45f"> 我不清楚出生时间</label>
+        <label style="display:flex;align-items:center;gap:8px;margin:2px 0 14px;font-size:13px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="pdBzTimeUnknownA" onchange="pdTimeUnknownToggle('A')" style="width:20px;height:20px;accent-color:#c8a45f"> 我不清楚出生时间</label>
         <div class="couple-head">TA 的信息</div>
         <div class="field-row">
-          <div class="field"><label>出生日期</label><input type="date" id="pdBzDateB" placeholder="请选择"></div>
-          <div class="field"><label>出生时间</label><select id="pdBzTimeB"></select></div>
+          <div class="field"><label for="pdBzDateB">出生日期</label><input type="date" id="pdBzDateB" placeholder="请选择"></div>
+          <div class="field"><label for="pdBzTimeB">出生时间</label><select id="pdBzTimeB"></select></div>
         </div>
-        <label style="display:flex;align-items:center;gap:8px;margin:2px 0 14px;font-size:13px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="pdBzTimeUnknownB" onchange="pdTimeUnknownToggle('B')" style="width:17px;height:17px;accent-color:#c8a45f"> 我不清楚出生时间</label>
+        <label style="display:flex;align-items:center;gap:8px;margin:2px 0 14px;font-size:13px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="pdBzTimeUnknownB" onchange="pdTimeUnknownToggle('B')" style="width:20px;height:20px;accent-color:#c8a45f"> 我不清楚出生时间</label>
         <div class="hint" style="text-align:center">按双方日柱五行生克，测合婚缘分；不填时间或勾选不清楚，时柱按未知处理</div>
         <button class="btn" onclick="pdBzCalc()">开始配对</button>
       </div>
@@ -1931,7 +1945,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
 <div class="page" id="page-history">
   <div class="wrap">
     <div class="topbar">
-      <a class="back" onclick="showPage('home')">‹</a>
+      <a class="back" onclick="showPage('home')" aria-label="返回首页">‹</a>
       <div class="title">我的测评</div>
       <div class="spacer"></div>
     </div>
@@ -3120,6 +3134,11 @@ function showPage(id) {
   if (id === 'home') renderHomeExtras(); /* v1.8.5：首页刷新档案卡与最近使用 */
   applyProfile(id); /* v1.8.5：我的档案——表单还空着时按档案自动带出 */ /* v1.4.3：别处进历史页也渲染——之前只在首页入口 showHistory() 里渲染 */
   if (id === 'xingming') requestAnimationFrame(function(){ if (window.positionXmBlob) window.positionXmBlob(true); });
+  /* v1.8.7：灵签/塔罗刷新或分享链接进来会白屏——首页入口调了 lqDraw()/taroHome()，路由没调。还原时跳过（还原函数自己渲染，避免 lqDraw 提前抽走今天的签） */
+  if (!window.__xjgRestoring) {
+    if (id === 'lingqian' && window.lqDraw) lqDraw();
+    if (id === 'tarot' && window.taroHome) taroHome();
+  }
   /* v1.4.4：hash 路由（P2-20）——切页同步写 #/页名，刷新/后退/分享不丢页；pushState 不触发 hashchange，不会循环 */
   if (location.hash !== '#/' + id) { try { history.pushState(null, '', '#/' + id); } catch (e) {} }
 }
@@ -3944,7 +3963,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       '<button class="btn" onclick="saveMbtiCard()">保存结果卡片</button>' + '<button class="btn ghost" onclick="shareLastResult(this)">分享链接</button>' +
       '<button class="btn ghost" onclick="mbtiReset()">重新测试</button>' +
       '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
-    segmentize('mbtiResult', 4);
+    segmentize('mbtiResult', 2);
     window.scrollTo(0, 0);
   }
 
@@ -4363,7 +4382,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
 
     document.getElementById('baziForm').style.display = 'none';
     document.getElementById('baziResult').innerHTML = html;
-    segmentize('baziResult', 4);
+    segmentize('baziResult', 2);
     window.scrollTo(0, 0);
   };
 
@@ -4768,7 +4787,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     document.getElementById('zwForm').style.display = 'none';
     document.getElementById('zwResult').style.display = ''; // v1.4.4：排盘失败藏过结果块，成功时要恢复显示（P1-14）
     document.getElementById('zwResult').innerHTML = html;
-    segmentize('zwResult', 4);
+    segmentize('zwResult', 2);
     window.scrollTo(0, 0);
   };
 
@@ -4920,6 +4939,9 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     hard:   [ {k:'恋人关系', v:'一见倾心，相处有坎'}, {k:'婚姻伴侣', v:'需多磨合，切莫草率'}, {k:'相处之道', v:'学会退让，方能长久'} ]
   };
 
+  // v1.8.7：常见测试用名——随手一填的占位名，结论措辞软化（分数照算）
+  var XM_TEST_NAMES = { '张三':1, '李四':1, '王五':1, '赵六':1, '张小明':1, '李小明':1, '王小明':1 };
+
   window.analyze = function() {
     clearFormErrs('page-xingming');
     var xing = document.getElementById('xmXing').value.trim();
@@ -4943,6 +4965,18 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     });
     var avgScore = Math.round(totalScore / 5);
 
+    // v1.8.7：外格=2（单姓单名固定值）不作吉凶论断；同数格的评语只出现一次
+    (function(){
+      var seenNums = {};
+      wugeDetail.forEach(function(w){
+        if (seenNums[w.num]) { w.desc = '与「' + seenNums[w.num] + '」同为 ' + w.num + ' 画，数理含义见上。'; }
+        else seenNums[w.num] = w.name;
+      });
+      wugeDetail.forEach(function(w){
+        if (w.name === '外格' && w.num === 2) { w.jiText = '平'; w.jiClass = 'ji-mid'; w.desc = '外格 2 画是单姓单名的固定数理，不作吉凶论断。'; }
+      });
+    })();
+
     var wugeHtml = wugeDetail.map(function(w) {
       return '<div class="wuge-item"><div class="wg-title">' + w.name + '</div><div class="wg-num">' + w.num + '</div>' +
         '<div class="wg-ji ' + w.jiClass + '">' + w.jiText + '</div></div>';
@@ -4965,6 +4999,8 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       : avgScore >= 70 ? '名字整体尚可，有吉有凶，个别数理稍弱，可结合建议微调。'
       : avgScore >= 60 ? '名字整体一般，凶数偏多，数理有欠流通，建议参考用字建议调整。'
       : '名字整体偏弱，凶数较多，数理流通不畅，建议认真参考用字建议，考虑改名或加字。';
+    // v1.8.7：常见测试用名（张三之类）软化措辞——分数照算，结论不吓人
+    if (XM_TEST_NAMES[full] && avgScore < 60) bandText = '名字整体偏弱，凶数较多——不过这是常见的测试用名，分数只作参考，不必当真；真想看名字，还是填真实姓名再测一次。';
     var zongping = '「' + full + '」综合评分 ' + avgScore + ' 分，五格中吉 ' + jiCount + ' 格、凶 ' + xiongCount + ' 格；三才配置为' + sancai.text + '，总格五行属「' + totalWx + '」。' + bandText;
     var buxu = WX_BUXU[totalWx] || null;
     var yongzi = buxu ? '总格属「' + totalWx + '」，宜补「' + totalWx + '」：宜用字如' + buxu.name + '；宜用颜色 ' + buxu.color + '，宜向 ' + buxu.dir + ' 发展；可佩戴 ' + buxu.item + '；日常可' + buxu.habit + '；适合的行业方向如 ' + buxu.career + '。' : '';
@@ -5000,7 +5036,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
 
     document.getElementById('xmForm').style.display = 'none';
     document.getElementById('xmResult').innerHTML = html;
-    segmentize('xmResult', 4);
+    segmentize('xmResult', 2);
     window.scrollTo(0, 0);
   };
 
@@ -5090,7 +5126,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
 
     document.getElementById('xmCoupleForm').style.display = 'none';
     document.getElementById('xmResult').innerHTML = html;
-    segmentize('xmResult', 4);
+    segmentize('xmResult', 2);
     window.scrollTo(0, 0);
   };
 
@@ -5214,7 +5250,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
 
     document.getElementById('xmLoveForm').style.display = 'none';
     document.getElementById('xmResult').innerHTML = html;
-    segmentize('xmResult', 4);
+    segmentize('xmResult', 2);
     window.scrollTo(0, 0);
   };
 
@@ -5313,9 +5349,16 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
   }
 
   function makeName(pool) {
-    var chars = [];
-    Object.keys(pool).forEach(function(wx){ chars = chars.concat(Array.from(pool[wx])); });
-    var build = function(ming) {
+    // v1.8.7：两字五行必须相生（旧版从全池随机抽，只拦凶数，20.2% 相克、64.4% 徽标与用字不符）。SHENG 在共享常量里。
+    var wxKeys = Object.keys(pool);
+    var pickPair = function() {
+      var wxA = wxKeys[Math.floor(Math.random() * wxKeys.length)];
+      var wxB = SHENG[wxA];
+      var pa = pool[wxA], pb = pool[wxB];
+      if (!pa || !pb || !pa.length || !pb.length) return null;
+      return { a: pa[Math.floor(Math.random() * pa.length)], b: pb[Math.floor(Math.random() * pb.length)], wxA: wxA, wxB: wxB };
+    };
+    var build = function(ming, wxA, wxB) {
       var g = calcWuge(qmXing, ming);
       var info = getWugeInfo(g.zongge);
       // 注意：起名 IIFE 内的 calcWuge 只返回五格数字（无 wuge 数组），此处直接由五格数字拼出明细
@@ -5329,20 +5372,22 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
         var i = getWugeInfo(w.num);
         return { name: w.name, num: w.num, ji: i ? i.jiText : '', score: i ? i.score : 50 };
       });
-      return { ming: ming, zongge: g.zongge, score: info ? info.score : 60, wx: wxOfNum(g.zongge), detail: detail };
+      // 综合分与姓名分析页同源：五格单格分的平均（四舍五入）
+      var total = Math.round(detail.reduce(function(s, d){ return s + d.score; }, 0) / 5);
+      return { ming: ming, zongge: g.zongge, score: info ? info.score : 60, wx: wxA || wxOfNum(g.zongge), wx2: wxB || '', total: total, detail: detail };
     };
     for (var tries = 0; tries < 300; tries++) {
-      var a = chars[Math.floor(Math.random()*chars.length)];
-      var b = chars[Math.floor(Math.random()*chars.length)];
-      if (a === b) continue;
-      var r = build(a + b);
-      if (qmSex === 'boy' && (QM_FEM.indexOf(a) >= 0 || QM_FEM.indexOf(b) >= 0)) continue;
-      if (qmSex === 'girl' && (QM_MASC.indexOf(a) >= 0 || QM_MASC.indexOf(b) >= 0)) continue;
+      var p = pickPair();
+      if (!p || p.a === p.b) continue;
+      var r = build(p.a + p.b, p.wxA, p.wxB);
+      if (qmSex === 'boy' && (QM_FEM.indexOf(p.a) >= 0 || QM_FEM.indexOf(p.b) >= 0)) continue;
+      if (qmSex === 'girl' && (QM_MASC.indexOf(p.a) >= 0 || QM_MASC.indexOf(p.b) >= 0)) continue;
       var zi = getWugeInfo(r.zongge);
       if (zi && zi.jiClass === 'ji-bad') continue;
       return r;
     }
-    return build(chars[0] + chars[1]);
+    var fp = pickPair();
+    return fp ? build(fp.a + fp.b, fp.wxA, fp.wxB) : build('明坤', '火', '土');
   }
 
   function renderNames(results) {
@@ -5351,9 +5396,9 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       results.map(function(r){
         return '<div class="qm-name-card" onclick="qmUseName(\'' + r.ming + '\')">' +
           '<div class="qn-text">' + r.ming + '</div>' +
-          '<div class="qn-wx" style="background:' + WX_COLORS[r.wx] + '">' + r.wx + '</div>' +
-          '<div class="qn-score">总格 ' + r.zongge + ' 画 · ' + r.score + ' 分</div>' +
-          '<div class="qn-detail">' + r.detail.map(function(d){ return d.name + d.score + '分'; }).join(' · ') + '</div></div>';
+          '<div class="qn-wx" style="background:' + WX_COLORS[r.wx] + '">' + r.wx + (r.wx2 ? '生' + r.wx2 : '') + '</div>' +
+          '<div class="qn-score">综合 ' + r.total + ' 分 · 总格 ' + r.zongge + ' 画</div>' +
+          '<div class="qn-detail">' + r.detail.map(function(d){ return d.name + ' ' + d.num + ' 画 · ' + d.score + ' 分'; }).join(' · ') + '</div></div>';
       }).join('') +
       '</div>' +
       '<div class="disclaim">本内容仅供文化娱乐参考，请理性看待。</div>' +
@@ -5802,6 +5847,7 @@ window.clearProfileForm = function(page) {
 };
 // 首页附加区：档案卡 + 最近使用（最近两条历史，点一下回到当时那份结果）
 function renderHomeExtras() {
+  renderToday(); /* v1.8.7：回首页时刷新今日运势卡（档案改了，运势卡要跟着变） */
   var pc = document.getElementById('profileCard');
   if (pc) {
     var p = getProfile();
@@ -6181,15 +6227,45 @@ function renderToday() {
   var seed = dateSeed(dateStr);
   var luckyColor = LUCKY_COLORS[seed % LUCKY_COLORS.length];
   var luckyNum = (seed % 9) + 1;
+  var luckyHour = (seed % 12 + 1) + '时';
   var chong = chongSha(dayBranch);
   var tip = TIPS[seed % TIPS.length];
+  var personal = '';
+  // v1.8.7：有档案时按生肖/日主个人化——填了档案要看得到不同（无档案时保持原样）
+  var prof = null; try { prof = getProfile(); } catch (e) {}
+  if (prof && prof.birthdate) {
+    try {
+      var pd = lunisolar(prof.birthdate + ' 12:00');
+      var pz = ZODIAC_MAP[pd.char8.year.branch.toString()];
+      var rzStem = pd.char8.day.stem.toString();
+      var rzWx = STEM_WX[rzStem];
+      var dayStem = d.char8.day.stem.toString();
+      var dayWx = STEM_WX[dayStem];
+      var rel;
+      if (dayWx === rzWx) rel = '今日与你同气，平稳顺遂';
+      else if (SHENG[dayWx] === rzWx) rel = '今日天干生你，宜主动把握';
+      else if (SHENG[rzWx] === dayWx) rel = '今日你生天干，付出偏多，宜守成';
+      else if (KE[dayWx] === rzWx) rel = '今日天干克你，宜低调、别硬碰';
+      else rel = '今日你克天干，宜主动、能压住场面';
+      tip = rel;
+      var lc = LUCKY_COLORS.filter(function(x){ return x.wx === rzWx; })[0];
+      if (lc) luckyColor = lc;
+      luckyNum = ((STEMS.indexOf(rzStem) + seed) % 9) + 1;
+      for (var bi = 0; bi < BRANCHES.length; bi++) {
+        var bw = BRANCH_WX[BRANCHES[bi]];
+        if (SHENG[bw] === rzWx || bw === rzWx) { luckyHour = BRANCHES[bi] + '时'; break; }
+      }
+      personal = '<br><b>你的生肖：</b>' + pz + '　<b>日主：</b>' + rzStem + rzWx;
+      if (chong === pz) personal += '　<b>今日冲你的生肖，宜低调</b>';
+    } catch (e) {}
+  }
   el.innerHTML = '<div class="today-card">' +
     '<div class="today-head"><div class="today-title">今日运势 · 宜忌</div><div class="today-date">' + d.format('lMlD日') + ' · 建除「' + jc.name + '」</div></div>' +
-    '<div class="today-body"><b>宜：</b>' + jc.yi.join('、') + '　<b>忌：</b>' + jc.ji.join('、') + '<br><b>冲煞：</b>冲' + chong + '　<b>今日：</b>' + tip + '<br><b>建除：</b>' + JIANCHU_DESC[jc.name].split('。')[0] + '。' + '</div>' +
+    '<div class="today-body"><b>宜：</b>' + jc.yi.join('、') + '　<b>忌：</b>' + jc.ji.join('、') + '<br><b>冲煞：</b>冲' + chong + '　<b>今日：</b>' + tip + '<br><b>建除：</b>' + JIANCHU_DESC[jc.name].split('。')[0] + '。' + personal + '</div>' +
     '<div class="today-lucky">' +
       '<div class="lk-item"><div class="lk-v" style="color:' + WX_COLORS[luckyColor.wx] + '">' + luckyColor.c + '</div><div class="lk-k">幸运色</div></div>' +
       '<div class="lk-item"><div class="lk-v" style="color:var(--gold-light)">' + luckyNum + '</div><div class="lk-k">幸运数字</div></div>' +
-      '<div class="lk-item"><div class="lk-v" style="color:var(--gold-light)">' + (seed % 12 + 1) + '时</div><div class="lk-k">幸运时辰</div></div>' +
+      '<div class="lk-item"><div class="lk-v" style="color:var(--gold-light)">' + luckyHour + '</div><div class="lk-k">幸运时辰</div></div>' +
     '</div></div>';
 }
 window.zjCalc = function() {
@@ -6462,7 +6538,7 @@ window.taroPickNeed = function(need){
   __taro.need = need; __taro.q = '';
   var nd = TARO_NEEDS[need];
   document.getElementById('taroRoot').innerHTML =
-    '<div class="form-card"><div class="field"><label>你想问的是「' + nd.zh + '」</label>' +
+    '<div class="form-card"><div class="field"><label for="taroQ">你想问的是「' + nd.zh + '」</label>' +
     '<input type="text" id="taroQ" maxlength="60" placeholder="一句话写下具体是什么事（可选）">' +
     '<div class="hint" style="margin-top:8px">' + TARO_Q_EXAMPLES[need] + '。写得越具体，解读越准；不写也能继续。</div></div>' +
     '<div class="hint" style="text-align:center;margin-top:6px">一次只聚焦一件事；不问确切时间，不问别人的私密想法</div>' +
@@ -6950,26 +7026,66 @@ window.taroSaveCard = function(){
 
 // ============ 今日一签（观音灵签）============
 var LINGQIAN = [
-  { n:1, lv:'上上', t:'钟离成道', s:'开天辟地作良缘，吉日良时万物全。', j:'所求之事顺遂，宜把握时机、积极进取。', yi:'求财、婚嫁', ji:'争讼、动土' },
-  { n:2, lv:'中平', t:'苏秦得志', s:'鲸鱼未变守江河，不可升腾更望高。', j:'时机未到先蓄力，守得江河静待时，他日一飞冲天。', yi:'读书、守成', ji:'冒进、投机' },
-  { n:3, lv:'上吉', t:'董永遇仙', s:'临风冒雨去还乡，正是其身似燕儿。', j:'虽有小波折，终能平安，贵人在旁。', yi:'出行、求医', ji:'久居、懒散' },
-  { n:4, lv:'上吉', t:'玉莲会十朋', s:'千年古镜复重圆，女再求夫男再婚。', j:'失而复得，旧缘可续，柳暗花明。', yi:'婚嫁、和解', ji:'气馁、放弃' },
-  { n:5, lv:'中上', t:'刘晨遇仙', s:'一锄掘地须时待，今日花开朵朵鲜。', j:'付出终有回报，宜耐心等待收成。', yi:'耕耘、置业', ji:'急躁、改行' },
-  { n:6, lv:'中上', t:'仁贵遇主', s:'投身岩下铜鸟居，须是还他大丈夫。', j:'贵人提携之象，宜大胆展现才能。', yi:'求职、谋事', ji:'退缩、藏拙' },
-  { n:7, lv:'中平', t:'苏娘走难', s:'奔波阻隔重重险，带水拖泥去又回。', j:'诸事多阻，宜谨慎慢行，切莫强求。', yi:'守成、祈福', ji:'远行、签约' },
-  { n:8, lv:'中平', t:'姜太公钓鱼', s:'菱花镜破又重圆，自此门庭重改换。', j:'旧事翻新，宜放下执念，重新出发。', yi:'改行、搬迁', ji:'恋旧、固执' },
-  { n:9, lv:'中下', t:'孔明点将', s:'烦君勿作私心事，此意偏宜说问公。', j:'宜公正无私，切莫因私误事。', yi:'公事、诉讼', ji:'私谋、暗箱' },
-  { n:10, lv:'中下', t:'庞涓观阵', s:'石藏无价玉和珍，只管他乡外客寻。', j:'良机在近处，莫舍近求远。', yi:'就近、务实', ji:'远走、幻想' },
-  { n:11, lv:'中上', t:'陈三抓人', s:'五湖四海任君行，高挂帆篷自在撑。', j:'顺风顺水，宜把握当下乘势而行；但根基未稳，宜早日安定、留有余地。', yi:'出行、谋事', ji:'漂泊、冒险' },
-  { n:12, lv:'上上', t:'伍子胥过关', s:'却来此地前观景，两处风光一样春。', j:'眼前即是好光景，宜珍惜当下。', yi:'置业、安家', ji:'好高、攀比' },
-  { n:13, lv:'上吉', t:'罗通拜帅', s:'自小生在富贵家，眼前万事总奢华。', j:'根基稳固，宜守成并开拓。', yi:'守成、传承', ji:'挥霍、折腾' },
-  { n:14, lv:'中平', t:'子牙弃官', s:'宛如仙鹤出凡笼，脱得凡笼路路通。', j:'脱离束缚后海阔天空，宜果断求变。', yi:'离职、求变', ji:'困守、将就' },
-  { n:15, lv:'中上', t:'苏武牧羊', s:'古人得此相为宾，谋望皆无所不遂。', j:'苦尽甘来，坚持到底终有转机。', yi:'坚持、求学', ji:'半途、放弃' },
-  { n:16, lv:'上上', t:'叶梦熊朝帝', s:'愁眉思虑暂时开，咫尺云开见日来。', j:'云开见日，烦恼散去，好运将至。', yi:'求财、谋事', ji:'焦虑、自扰' },
-  { n:17, lv:'中平', t:'曹操下江南', s:'莫听闲言说是非，晨昏只好念阿弥。', j:'勿听闲言碎语，专注自身最要紧。', yi:'静心、修心', ji:'八卦、是非' },
-  { n:18, lv:'上吉', t:'曹国舅为仙', s:'金乌西坠兔东升，日夜循环至古今。', j:'顺其自然，规律行事则百事可成。', yi:'作息、养生', ji:'熬夜、透支' },
-  { n:19, lv:'中上', t:'刘智远得岳氏', s:'急水滩头放船归，风波作浪欲何为。', j:'风浪将至宜避险，稳字当头。', yi:'避险、守成', ji:'冒险、出海' },
-  { n:20, lv:'上上', t:'文王访贤', s:'求官如问故人书，指日云程通帝里。', j:'贵人引路，前程似锦，宜大胆求进。', yi:'求职、升学', ji:'观望、犹豫' }
+  { n:1, lv:'上上', t:'钟离成道', s:'开天辟地作良缘，吉日良时万物全。', j:'所求之事顺遂，宜把握时机、积极进取。', yi:'求财、婚嫁', ji:'争讼、动土', cat:'财运' },
+  { n:2, lv:'中平', t:'苏秦得志', s:'鲸鱼未变守江河，不可升腾更望高。', j:'时机未到先蓄力，守得江河静待时，他日一飞冲天。', yi:'读书、守成', ji:'冒进、投机', cat:'事业' },
+  { n:3, lv:'上吉', t:'董永遇仙', s:'临风冒雨去还乡，正是其身似燕儿。', j:'虽有小波折，终能平安，贵人在旁。', yi:'出行、求医', ji:'久居、懒散', cat:'姻缘' },
+  { n:4, lv:'上吉', t:'玉莲会十朋', s:'千年古镜复重圆，女再求夫男再婚。', j:'失而复得，旧缘可续，柳暗花明。', yi:'婚嫁、和解', ji:'气馁、放弃', cat:'姻缘' },
+  { n:5, lv:'中上', t:'刘晨遇仙', s:'一锄掘地须时待，今日花开朵朵鲜。', j:'付出终有回报，宜耐心等待收成。', yi:'耕耘、置业', ji:'急躁、改行', cat:'财运' },
+  { n:6, lv:'中上', t:'仁贵遇主', s:'投身岩下铜鸟居，须是还他大丈夫。', j:'贵人提携之象，宜大胆展现才能。', yi:'求职、谋事', ji:'退缩、藏拙', cat:'事业' },
+  { n:7, lv:'中平', t:'苏娘走难', s:'奔波阻隔重重险，带水拖泥去又回。', j:'诸事多阻，宜谨慎慢行，切莫强求。', yi:'守成、祈福', ji:'远行、签约', cat:'事业' },
+  { n:8, lv:'中平', t:'姜太公钓鱼', s:'菱花镜破又重圆，自此门庭重改换。', j:'旧事翻新，宜放下执念，重新出发。', yi:'改行、搬迁', ji:'恋旧、固执', cat:'事业' },
+  { n:9, lv:'中下', t:'孔明点将', s:'烦君勿作私心事，此意偏宜说问公。', j:'宜公正无私，切莫因私误事。', yi:'公事、诉讼', ji:'私谋、暗箱', cat:'事业' },
+  { n:10, lv:'中下', t:'庞涓观阵', s:'石藏无价玉和珍，只管他乡外客寻。', j:'良机在近处，莫舍近求远。', yi:'就近、务实', ji:'远走、幻想', cat:'事业' },
+  { n:11, lv:'中上', t:'陈三抓人', s:'五湖四海任君行，高挂帆篷自在撑。', j:'顺风顺水，宜把握当下乘势而行；但根基未稳，宜早日安定、留有余地。', yi:'出行、谋事', ji:'漂泊、冒险', cat:'事业' },
+  { n:12, lv:'上上', t:'伍子胥过关', s:'却来此地前观景，两处风光一样春。', j:'眼前即是好光景，宜珍惜当下。', yi:'置业、安家', ji:'好高、攀比', cat:'财运' },
+  { n:13, lv:'上吉', t:'罗通拜帅', s:'自小生在富贵家，眼前万事总奢华。', j:'根基稳固，宜守成并开拓。', yi:'守成、传承', ji:'挥霍、折腾', cat:'事业' },
+  { n:14, lv:'中平', t:'子牙弃官', s:'宛如仙鹤出凡笼，脱得凡笼路路通。', j:'脱离束缚后海阔天空，宜果断求变。', yi:'离职、求变', ji:'困守、将就', cat:'事业' },
+  { n:15, lv:'中上', t:'苏武牧羊', s:'古人得此相为宾，谋望皆无所不遂。', j:'苦尽甘来，坚持到底终有转机。', yi:'坚持、求学', ji:'半途、放弃', cat:'事业' },
+  { n:16, lv:'上上', t:'叶梦熊朝帝', s:'愁眉思虑暂时开，咫尺云开见日来。', j:'云开见日，烦恼散去，好运将至。', yi:'求财、谋事', ji:'焦虑、自扰', cat:'财运' },
+  { n:17, lv:'中平', t:'曹操下江南', s:'莫听闲言说是非，晨昏只好念阿弥。', j:'勿听闲言碎语，专注自身最要紧。', yi:'静心、修心', ji:'八卦、是非', cat:'事业' },
+  { n:18, lv:'上吉', t:'曹国舅为仙', s:'金乌西坠兔东升，日夜循环至古今。', j:'顺其自然，规律行事则百事可成。', yi:'作息、养生', ji:'熬夜、透支', cat:'事业' },
+  { n:19, lv:'中上', t:'刘智远得岳氏', s:'急水滩头放船归，风波作浪欲何为。', j:'风浪将至宜避险，稳字当头。', yi:'避险、守成', ji:'冒险、出海', cat:'事业' },
+  { n:20, lv:'上上', t:'文王访贤', s:'求官如问故人书，指日云程通帝里。', j:'贵人引路，前程似锦，宜大胆求进。', yi:'求职、升学', ji:'观望、犹豫', cat:'事业' },
+  { n:21, lv:'上上', t:'桃园结义', s:'同心同德结金兰，风雨同舟共患难。', j:'志同道合者将至，宜结盟共事。', yi:'结盟、合作', ji:'独断、猜疑', cat:'事业' },
+  { n:22, lv:'上吉', t:'韩信点兵', s:'多多益善展雄才，点将台前任去来。', j:'才干终被看见，宜主动请缨。', yi:'求职、谋事', ji:'自卑、退让', cat:'事业' },
+  { n:23, lv:'上吉', t:'张良拾履', s:'圯桥三进得真传，谦下终能成大器。', j:'低头处自有贵人，宜虚心受教。', yi:'求学、拜师', ji:'傲慢、轻狂', cat:'事业' },
+  { n:24, lv:'中上', t:'勾践卧薪', s:'卧薪尝胆十年功，雪耻从来在忍中。', j:'眼下忍耐是为将来，宜蓄势待发。', yi:'忍耐、筹备', ji:'急躁、泄愤', cat:'事业' },
+  { n:25, lv:'中上', t:'范蠡归湖', s:'功成身退泛扁舟，湖光山色自悠悠。', j:'见好就收是智慧，宜及时落袋。', yi:'收获、变现', ji:'贪恋、拖延', cat:'财运' },
+  { n:26, lv:'中平', t:'西施浣纱', s:'浣纱溪畔影双双，清波不语自成章。', j:'缘分在平常处，宜顺其自然。', yi:'相亲、约会', ji:'强求、算计', cat:'姻缘' },
+  { n:27, lv:'上吉', t:'梁祝化蝶', s:'双飞彩蝶越山岗，情深终得两相望。', j:'真心终会相通，宜勇敢表达。', yi:'表白、婚嫁', ji:'犹豫、错过', cat:'姻缘' },
+  { n:28, lv:'中平', t:'牛郎织女', s:'银河迢迢隔两端，一年一度是佳期。', j:'相聚不易更要珍惜，宜主动维系。', yi:'约会、沟通', ji:'冷战、疏远', cat:'姻缘' },
+  { n:29, lv:'中上', t:'白蛇传情', s:'断桥烟雨诉衷情，风雨同舟见真心。', j:'患难见真情，宜同舟共济。', yi:'和解、相守', ji:'猜忌、翻旧账', cat:'姻缘' },
+  { n:30, lv:'中下', t:'孟姜女寻夫', s:'千里寻夫路漫漫，痴心一片付长天。', j:'所盼之人未必如愿，宜先顾好自己。', yi:'静心、守候', ji:'苦等、纠缠', cat:'姻缘' },
+  { n:31, lv:'上上', t:'岳飞枪挑小梁王', s:'一杆银枪破敌阵，少年英气贯长虹。', j:'凭真本事破局，宜果断出手。', yi:'竞争、应试', ji:'畏缩、拖延', cat:'事业' },
+  { n:32, lv:'上吉', t:'穆桂英挂帅', s:'巾帼挂帅定乾坤，不让须眉立战功。', j:'临危受命反是良机，宜挺身而出。', yi:'担当、升职', ji:'推脱、谦让', cat:'事业' },
+  { n:33, lv:'中上', t:'杨家将出征', s:'满门忠烈赴沙场，同心协力保安邦。', j:'众人拾柴火焰高，宜借力同行。', yi:'合作、组队', ji:'单打独斗', cat:'事业' },
+  { n:34, lv:'中平', t:'薛仁贵征东', s:'白袍小将初露锋，沙场磨砺始成龙。', j:'资历尚浅莫心急，宜多练本事。', yi:'学习、积累', ji:'冒进、逞强', cat:'事业' },
+  { n:35, lv:'上吉', t:'樊梨花征西', s:'梨花枪下无敌手，巾帼从来不让须眉。', j:'换个赛道反见光明，宜勇于转身。', yi:'转行、尝试', ji:'困守、将就', cat:'事业' },
+  { n:36, lv:'中上', t:'狄青夜袭昆仑', s:'夜袭昆仑破敌营，出其不意立奇功。', j:'另辟蹊径反见奇效，宜换个打法。', yi:'创新、奇招', ji:'墨守成规', cat:'事业' },
+  { n:37, lv:'中平', t:'包公审案', s:'铁面无私断是非，公道自在人心间。', j:'讲道理、走正道，宜光明磊落。', yi:'维权、签约', ji:'暗箱、投机', cat:'事业' },
+  { n:38, lv:'上上', t:'孔明借东风', s:'东风一借火连天，巧借天时事竟成。', j:'天时已到，宜顺势而为。', yi:'行动、签约', ji:'观望、错失', cat:'事业' },
+  { n:39, lv:'中下', t:'关公月下斩貂蝉', s:'月下挥刀断情丝，大义当前莫徘徊。', j:'该断则断，宜快刀斩乱麻。', yi:'决断、止损', ji:'拖泥带水', cat:'事业' },
+  { n:40, lv:'上吉', t:'赵子龙救主', s:'单骑救主出重围，忠勇从来不负人。', j:'危中自有生机，宜沉住气杀出去。', yi:'救场、坚持', ji:'慌乱、放弃', cat:'事业' },
+  { n:41, lv:'中上', t:'关公千里走单骑', s:'千里单骑护嫂行，义字当头路自平。', j:'守住道义，路会越走越宽。', yi:'远行、坚持', ji:'背信、走捷径', cat:'事业' },
+  { n:42, lv:'上吉', t:'刘备三顾茅庐', s:'三顾茅庐请孔明，求贤若渴见真诚。', j:'诚意能打动贵人，宜放下身段。', yi:'求贤、请教', ji:'自负、敷衍', cat:'事业' },
+  { n:43, lv:'中上', t:'诸葛亮七擒孟获', s:'七擒七纵收人心，攻心为上是良谋。', j:'收服人心比赢一次更重要，宜以诚化人。', yi:'谈判、调解', ji:'强压、硬碰', cat:'事业' },
+  { n:44, lv:'中平', t:'周瑜打黄盖', s:'一个愿打一个愿挨，苦肉计中藏玄机。', j:'表面吃亏未必真亏，宜看长远。', yi:'忍让、布局', ji:'计较、翻脸', cat:'事业' },
+  { n:45, lv:'上吉', t:'吕布辕门射戟', s:'辕门射戟解干戈，一箭双雕两全功。', j:'居中调停反成赢家，宜善做和事佬。', yi:'调解、谈判', ji:'选边、站队', cat:'事业' },
+  { n:46, lv:'中平', t:'貂蝉拜月', s:'拜月亭前诉衷肠，月老暗中系红绳。', j:'缘分暗中已动，宜耐心等待。', yi:'等待、相亲', ji:'心急、将就', cat:'姻缘' },
+  { n:47, lv:'中下', t:'王宝钏守寒窑', s:'寒窑苦守十八载，痴心一片待君归。', j:'守候太久要问值不值得，宜先爱自己。', yi:'自省、取舍', ji:'盲等、牺牲', cat:'姻缘' },
+  { n:48, lv:'中平', t:'薛平贵西征', s:'西征十八载归来，苦尽甘来见曙光。', j:'长期付出快见回报，宜再坚持一下。', yi:'坚持、收尾', ji:'半途、改道', cat:'事业' },
+  { n:49, lv:'中下', t:'秦香莲寻夫', s:'寻夫路上多辛酸，公道终须问青天。', j:'遇人不淑宜止损，公道在人心。', yi:'维权、止损', ji:'忍气吞声', cat:'姻缘' },
+  { n:50, lv:'中下', t:'杜十娘怒沉百宝箱', s:'百宝箱沉怒江中，识人不明悔已迟。', j:'看人看事要多留心，宜谨慎托付。', yi:'止损、谨慎', ji:'轻信、托付', cat:'财运' },
+  { n:51, lv:'上上', t:'沈万三聚宝盆', s:'聚宝盆中金满溢，财源滚滚自天来。', j:'财路已开，宜把握机会。', yi:'求财、投资', ji:'挥霍、冒险', cat:'财运' },
+  { n:52, lv:'中下', t:'和珅敛财', s:'敛财虽多终是祸，贪字当头失自由。', j:'来路不明的财莫碰，宜守住底线。', yi:'守财、止损', ji:'贪婪、投机', cat:'财运' },
+  { n:53, lv:'上吉', t:'陶朱公经商', s:'三致千金三散去，聚散由心是富翁。', j:'会赚钱更要会散财，宜流通不囤积。', yi:'经营、流通', ji:'囤积、惜售', cat:'财运' },
+  { n:54, lv:'上吉', t:'管仲相齐', s:'一匡天下成霸业，知人善任是良才。', j:'用对人比自己干更重要，宜借力。', yi:'合作、用人', ji:'独揽、猜忌', cat:'事业' },
+  { n:55, lv:'中上', t:'晏子使楚', s:'舌辩群臣不辱命，机智从来解千愁。', j:'凭口才化险为夷，宜据理力争。', yi:'谈判、沟通', ji:'沉默、退让', cat:'事业' },
+  { n:56, lv:'上吉', t:'孙武练兵', s:'三令五申练精兵，纪律严明自成军。', j:'先立规矩再谈成果，宜从严从实。', yi:'立规、执行', ji:'松散、敷衍', cat:'事业' },
+  { n:57, lv:'中上', t:'孙膑减灶', s:'减灶诱敌计中计，以退为进是高招。', j:'示弱有时是诱敌，宜谋定后动。', yi:'谋略、布局', ji:'硬碰、逞强', cat:'事业' },
+  { n:58, lv:'中平', t:'伍子胥吹箫乞食', s:'吹箫乞食过昭关，忍辱方能成大业。', j:'低谷时先活下去，宜保存实力。', yi:'忍耐、蛰伏', ji:'自暴自弃', cat:'事业' },
+  { n:59, lv:'中平', t:'屈原问天', s:'天问声声诉衷肠，清白自守不随波。', j:'守住本心最要紧，宜独善其身。', yi:'守正、创作', ji:'随波逐流', cat:'事业' },
+  { n:60, lv:'中平', t:'嫦娥奔月', s:'奔月嫦娥空对影，团圆原是梦中求。', j:'距离产生美也生愁，宜主动拉近。', yi:'沟通、团聚', ji:'冷淡、疏离', cat:'姻缘' },
 ];
 function todayKey() {
   var now = new Date();
@@ -7005,11 +7121,11 @@ function renderQian(qian, isToday, dateStr) {
   __xjgShownQian = qian;
   window.__xjgShownQianIsToday = !!isToday;
   var title = isToday
-    ? '今日之签 · 第 ' + qian.n + ' 签「' + qian.t + '」· ' + qian.lv + '签'
-    : '第 ' + qian.n + ' 签「' + qian.t + '」· ' + qian.lv + '签';
+    ? '今日之签 · 第 ' + qian.n + ' 签「' + qian.t + '」· ' + qian.lv + '签 · 宜问' + (qian.cat || '事业')
+    : '第 ' + qian.n + ' 签「' + qian.t + '」· ' + qian.lv + '签 · 宜问' + (qian.cat || '事业');
   var note = isToday
-    ? '第 ' + qian.n + ' 签是签号（共 20 签），今天只抽了 1 次'
-    : '第 ' + qian.n + ' 签是签号（共 20 签）' + (dateStr ? ' · 抽于 ' + dateStr : '');
+    ? '第 ' + qian.n + ' 签是签号（共 60 签），今天只抽了 1 次'
+    : '第 ' + qian.n + ' 签是签号（共 60 签）' + (dateStr ? ' · 抽于 ' + dateStr : '');
   var html = '<div class="sign-card">' +
     '<div class="sign-label">— ' + title + ' —</div>' +
     '<div class="hint" style="text-align:center;margin:6px 0 2px">' + note + '</div>' +
@@ -7315,7 +7431,7 @@ window.hmReset = function() {
       addHistory({ type:'称骨', time:Date.now(), page:'chenggu', summary:'骨重 ' + cgFmt(minT) + '—' + cgFmt(maxT) + '（时辰未知）', data:{ birthdate:bd, time:'', timeUnknown:true } });
       document.getElementById('cgForm').style.display = 'none';
       document.getElementById('cgResult').innerHTML = htmlU;
-      segmentize('cgResult', 4);
+      segmentize('cgResult', 2);
       window.scrollTo(0, 0);
       return;
     }
@@ -7345,7 +7461,7 @@ window.hmReset = function() {
     addHistory({ type:'称骨', time:Date.now(), page:'chenggu', summary:'总骨重 ' + cgFmt(total) + ' · ' + tier, data:{ birthdate:bd, time:time, timeUnknown:false } });
     document.getElementById('cgForm').style.display = 'none';
     document.getElementById('cgResult').innerHTML = html;
-    segmentize('cgResult', 4);
+    segmentize('cgResult', 2);
     window.scrollTo(0, 0);
   };
   window.saveCgCard = function() { if (!lastCg) return; saveResultCard(lastCg); };
@@ -7508,7 +7624,7 @@ window.hmReset = function() {
     addHistory({ type:'日元', time:Date.now(), page:'riyuan', summary:dayStem + dayMaster + ' · ' + strength + ' · 调候首选' + tiaoFirst + tiaoFirstWx, data:{ birthdate:birthdate, time:(timeUnknown ? '' : time), timeUnknown:timeUnknown } });
     document.getElementById('ryForm').style.display = 'none';
     document.getElementById('ryResult').innerHTML = html;
-    segmentize('ryResult', 4);
+    segmentize('ryResult', 2);
     window.scrollTo(0, 0);
   };
   window.saveRyCard = function() { if (!lastRy) return; saveResultCard(lastRy); };
@@ -7635,7 +7751,7 @@ window.hmReset = function() {
     addHistory({ type:'三世书', time:Date.now(), page:'sanshi', summary:dayGanzhi + ' · ' + pos, data:{ birthdate:birthdate, gender:gender } });
     document.getElementById('ssForm').style.display = 'none';
     document.getElementById('ssResult').innerHTML = html;
-    segmentize('ssResult', 4);
+    segmentize('ssResult', 2);
     window.scrollTo(0, 0);
   };
   window.saveSsCard = function() { if (!lastSs) return; saveResultCard(lastSs); };
@@ -7904,7 +8020,7 @@ window.hmReset = function() {
     addHistory({ type:'奇门', time:Date.now(), page:'qimen', summary:(pan.yang ? '阳' : '阴') + pan.ju + '局 · ' + pan.ganzhi[2] + '日' + pan.ganzhi[3] + '时', data:{ birthdate:birthdate, time:time, matter:matter } });
     document.getElementById('qimenForm').style.display = 'none';
     document.getElementById('qimenResult').innerHTML = html;
-    segmentize('qimenResult', 4);
+    segmentize('qimenResult', 2);
     window.scrollTo(0, 0);
   };
   window.saveQmCard = function() { if (!lastQm) return; saveResultCard(lastQm); };
@@ -7959,6 +8075,7 @@ window.pdSxCalc = function() {
     '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
   document.getElementById('pdSxForm').style.display = 'none';
   document.getElementById('pdResult').innerHTML = html;
+    segmentize('pdResult', 2);
   lastPd = { tag: '生肖配对', big: a + ' ♥ ' + b, bigSub: level, rows: [ { k: '生肖关系', v: rel }, { k: '婚配等级', v: level } ] };
   addHistory({ type:'配对', time:Date.now(), page:'peidui', summary: a + ' ♥ ' + b + ' · ' + rel, data:{ mode:'shengxiao', a: a, b: b } });
   window.scrollTo(0, 0);
@@ -8083,6 +8200,7 @@ window.pdBzCalc = function() {
     '<button class="btn ghost" onclick="showPage(\'home\')">返回首页</button>';
   document.getElementById('pdBzForm').style.display = 'none';
   document.getElementById('pdResult').innerHTML = html;
+    segmentize('pdResult', 2);
   lastPd = { tag: '八字配对', big: aGan + aZhi + ' ♥ ' + bGan + bZhi, bigSub: level, rows: [ { k: '日柱五行', v: aWx + ' / ' + bWx }, { k: '配对关系', v: rel }, { k: '时柱', v: (taUnknown || tbUnknown) ? '未知' : aHourWx + ' / ' + bHourWx + ' · ' + pdWxRelStr(aHourWx, bHourWx) } ].concat(qmRel ? [ { k: '奇门合盘', v: qmRel } ] : []) };
   addHistory({ type:'配对', time:Date.now(), page:'peidui', summary: aGan + aZhi + ' ♥ ' + bGan + bZhi + ' · ' + rel, data:{ mode:'bazi', da: da, db: db, ta: (taUnknown ? '' : ta), tb: (tbUnknown ? '' : tb), taUnknown: taUnknown, tbUnknown: tbUnknown, qmDate: qmDate, qmTime: qmTime } });
   window.scrollTo(0, 0);
@@ -8117,6 +8235,27 @@ if (window.__xjgErrPending && typeof window.__xjgShowErrToast === 'function') {
   if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
     window.addEventListener('load', function(){ navigator.serviceWorker.register('sw.js').catch(function(){}); });
   }
+  /* v1.8.7：新版本提示——sw.js 的 CACHE 名仍随版本改，但万一漏改，线上 manifest.json 的 version 与本地 CONFIG.VERSION 对不上时弹提示（只在 http(s) 下跑，file:// 跳过） */
+  try {
+    if (location.protocol.indexOf('http') === 0) {
+      fetch('manifest.json', { cache:'no-store' }).then(function(r){ return r.json(); }).then(function(m){
+        if (m && m.version && m.version !== CONFIG.VERSION) {
+          var bar = document.createElement('div');
+          bar.id = 'updateBar';
+          bar.style.cssText = 'position:fixed;left:12px;right:12px;bottom:12px;z-index:999;background:#1e1710;border:1px solid var(--gold);border-radius:10px;padding:10px 14px;display:flex;gap:10px;align-items:center;justify-content:space-between;font-size:13px;color:var(--text)';
+          bar.innerHTML = '<span>发现新版本 ' + m.version + '，点刷新用最新版</span><button class="btn" style="margin:0;padding:6px 14px" onclick="__xjgForceUpdate()">刷新</button>';
+          document.body.appendChild(bar);
+        }
+      }).catch(function(){});
+    }
+  } catch (e) {}
+  window.__xjgForceUpdate = function(){
+    try {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); }).then(function(){ location.reload(); });
+      } else location.reload();
+    } catch (e) { location.reload(); }
+  };
   var deferredPrompt = null;
   window.addEventListener('beforeinstallprompt', function(e){
     e.preventDefault(); deferredPrompt = e;

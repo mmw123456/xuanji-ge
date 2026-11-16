@@ -1,6 +1,6 @@
 // 玄机阁 service worker：缓存应用壳（首页、清单、图标），离线也能打开。
 // 注意：service worker 只在 http(s) 下生效；直接打开本地 html 文件时浏览器不加载它，程序本身不受影响。
-var CACHE = 'xuanji-ge-v1.8.8';
+var CACHE = 'xuanji-ge-v1.8.9';
 var ASSETS = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); }).then(function () { return self.skipWaiting(); }));

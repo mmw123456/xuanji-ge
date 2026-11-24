@@ -676,8 +676,8 @@ window.CONFIG = {
   GOLD_LIGHT: '#e3c88d',             // 主题金色（高亮浅色）
   CONTACT: '微信：wxid_4cs9ei0iftpw22',  // 联系方式（留空则不显示；例如 '微信：xxxx'）
   SHOW_FOOTER: true,                 // 是否显示首页底部的版权与免责信息
-  VERSION: 'v1.8.9',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
-  UPDATED: '2026-11-16',              // 更新日期
+  VERSION: 'v1.9.0',                  // 版本号（改这里即可升级；页脚、反馈、报错都会自动用这个版本）
+  UPDATED: '2026-11-24',              // 更新日期
   FEEDBACK_URL: 'https://wj.qq.com/s2/28674644/054w/',  // 反馈表单链接（腾讯问卷，用户 2026-11-13 自己建的免费表单；改成 '' 则恢复显示微信联系方式）
   SITE_URL: 'https://mmw123456.github.io/xuanji-ge/',  // 官网链接（结果卡片分享区二维码与文字用）
   SITE_QR: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASgAAAEoAQAAAADDfFG0AAABr0lEQVR4nO2ZwW7DMAxDH4f+/y9zB0uOM/TQwxCpgHxoHYNACEJ2SFnmg/HzCWhQgxrUoB5FvQC05haWBfhcLeHVFfUCtj6WDEYgfKjWlX2VXig0M7Jsba1cxOsrUFpySc7N2INXa5QFWVfPvPGbULEfUx4hGwnhQ7Su7Kv0unafhRyfyWu1K/siva7NZxlk+bbaln2V/1oirZlgeQtY38sSXs1RYVLj3FoPGKRaXj1RjsLy0oz9Z4//eoNaReUdhiRjLMTU1xuUhYUE3vExj3wX8mqI0go+VuRG75Stw7l2ZV+FsrwjkFdhHd2J7uyfRMmwP4pkhIRUSlNfb1AWkpZ9WAYfwt/P+XUbirM9j65VbntDeurrPq48dDS9sK5oVMOrKyr7haHW4fMB2eO/3qAktH6ALdqRjlqzfxSlszGoDEKQIWny9n3c7oewLGeTIiJlDa+uqPv9EKtNqDz9o53Tln1dP0cirJew05DpjnqeVzvU63zIK7U9D1fRln2xXmRbIutq6uvvuN8P6ZDK8lauK/sqvdJ4ha8Ps3rdenRlX+y/HnnjoAY1qEH9D+oXBfCka8ulQk4AAAAASUVORK5CYII='  // 官网二维码（Python qrcode 生成，纠错等级 M，29×29 模块；链接不变则不用换；更换方法见改动说明）
@@ -790,6 +790,8 @@ document.addEventListener('touchstart', function(){}, {passive:true});
     <h3 style="text-align:center">更新日志</h3>
     <div class="tip-note" style="text-align:center" id="clVersion"></div>
     <div style="font-size:13px;color:var(--text-dim);line-height:2">
+      <div style="color:var(--gold-light);font-weight:600">v1.9.0 · 2026-11-24</div>
+      <div>· 真太阳时校正：出生时间可填分钟，档案页和八字页可开启“按出生地校正为真太阳时”并填经度；以东经 120° 为基准每度修正 4 分钟，再按出生日期加均时差（全年 −14 至 +16 分钟），校正后若跨过午夜、日期会顺延或提前一天，结果里写明；紫微、称骨、旺衰、配对同步用校正后的时间排盘。未开启时仍按北京时间排盘，并在结果里注明口径；日柱按 23:00 换日。</div>
       <div style="color:var(--gold-light);font-weight:600">v1.8.9 · 2026-11-16</div>
       <div>· 打赏收款码换成新的：微信旧码已过期、支付宝旧码也换了，两个码都换成最新保存的原图</div>
       <div style="color:var(--gold-light);font-weight:600">v1.8.8 · 2026-11-16</div>
@@ -1058,13 +1060,20 @@ document.addEventListener('touchstart', function(){}, {passive:true});
       </div>
       <div class="field">
         <label for="pfBirthtime">出生时间</label>
-        <select id="pfBirthtime">
+        <div class="field-row" style="gap:8px"><div class="field" style="margin-bottom:0;flex:1"><select id="pfBirthtime">
 <option value="">请选择出生时间（24 时制）</option><option value="00:00">00:00 子时</option><option value="01:00">01:00 丑时</option><option value="02:00">02:00 丑时</option><option value="03:00">03:00 寅时</option><option value="04:00">04:00 寅时</option><option value="05:00">05:00 卯时</option><option value="06:00">06:00 卯时</option><option value="07:00">07:00 辰时</option><option value="08:00">08:00 辰时</option><option value="09:00">09:00 巳时</option><option value="10:00">10:00 巳时</option><option value="11:00">11:00 午时</option><option value="12:00">12:00 午时</option><option value="13:00">13:00 未时</option><option value="14:00">14:00 未时</option><option value="15:00">15:00 申时</option><option value="16:00">16:00 申时</option><option value="17:00">17:00 酉时</option><option value="18:00">18:00 酉时</option><option value="19:00">19:00 戌时</option><option value="20:00">20:00 戌时</option><option value="21:00">21:00 亥时</option><option value="22:00">22:00 亥时</option><option value="23:00">23:00 子时</option>
-        </select>
+        </select></div><div class="field" style="margin-bottom:0;flex:0 0 88px"><select id="pfBirthMin" class="ts-min" aria-label="分钟" title="分钟"></select></div></div>
         <div class="hint">不知道出生时间？勾选下方“我不清楚出生时间”，按时辰未知保存</div>
         <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="pfTimeUnknown" onchange="pfTimeUnknownToggle()" style="width:20px;height:20px;accent-color:#c8a45f"> 我不清楚出生时间</label>
       </div>
-      <button class="btn" onclick="saveProfile()">保存档案</button>
+<div class="field ts-block">
+        <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="pfTsEnable" class="ts-enable" style="width:20px;height:20px;accent-color:#c8a45f"> 按出生地校正为真太阳时</label>
+        <div class="field-row" style="margin-top:8px">
+          <div class="field" style="margin-bottom:0"><label for="pfTsLon">出生地经度（°E，如昆明 102.71）</label><input type="number" id="pfTsLon" class="ts-lon" min="73" max="135" step="0.01" value="120"></div>
+        </div>
+        <div class="hint">以东经 120° 为基准，每差 1° 修正 4 分钟，再按出生日期加均时差（全年 −14 至 +16 分钟）；校正后若跨过午夜，日期会顺延或提前一天，结果里会写明。出生在西部或时辰交界附近建议开启；不开启则按北京时间排盘。日柱按 23:00 换日。</div>
+      </div>
+            <button class="btn" onclick="saveProfile()">保存档案</button>
       <button class="btn ghost" onclick="clearProfile()" style="margin-top:10px">清除档案</button>
       <div class="hint" id="pfSaved" style="text-align:center"></div>
     </div>
@@ -1188,7 +1197,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
         </div>
         <div class="field">
           <label for="baziBirthtime">出生时间</label>
-          <select id="baziBirthtime">
+          <div class="field-row" style="gap:8px"><div class="field" style="margin-bottom:0;flex:1"><select id="baziBirthtime">
             <option value="">请选择出生时间（24 时制）</option>
             <option value="00:00">00:00 子时</option>
             <option value="01:00">01:00 丑时</option>
@@ -1214,11 +1223,18 @@ document.addEventListener('touchstart', function(){}, {passive:true});
             <option value="21:00">21:00 亥时</option>
             <option value="22:00">22:00 亥时</option>
             <option value="23:00">23:00 子时</option>
-          </select>
+          </select></div><div class="field" style="margin-bottom:0;flex:0 0 88px"><select id="baziBirthMin" class="ts-min" aria-label="分钟" title="分钟"></select></div></div>
           <div class="hint">不知道出生时间？勾选下方“我不清楚出生时间”，时柱将显示为未知，不会用默认时辰代替；时辰影响时柱，建议尽量准确</div>
           <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="baziTimeUnknown" onchange="bzTimeUnknownToggle()" style="width:20px;height:20px;accent-color:#c8a45f"> 我不清楚出生时间</label>
         </div>
-        <button class="btn" onclick="calculate()">开始排盘</button>
+<div class="field ts-block">
+        <label style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="baziTsEnable" class="ts-enable" style="width:20px;height:20px;accent-color:#c8a45f"> 按出生地校正为真太阳时</label>
+        <div class="field-row" style="margin-top:8px">
+          <div class="field" style="margin-bottom:0"><label for="baziTsLon">出生地经度（°E，如昆明 102.71）</label><input type="number" id="baziTsLon" class="ts-lon" min="73" max="135" step="0.01" value="120"></div>
+        </div>
+        <div class="hint">以东经 120° 为基准，每差 1° 修正 4 分钟，再按出生日期加均时差（全年 −14 至 +16 分钟）；校正后若跨过午夜，日期会顺延或提前一天，结果里会写明。出生在西部或时辰交界附近建议开启；不开启则按北京时间排盘。日柱按 23:00 换日。</div>
+      </div>
+              <button class="btn" onclick="calculate()">开始排盘</button>
       </div>
     </div>
     <div id="baziResult"></div>
@@ -1255,7 +1271,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
         </div>
         <div class="field">
           <label for="zwBirthtime">出生时间</label>
-          <select id="zwBirthtime">
+          <div class="field-row" style="gap:8px"><div class="field" style="margin-bottom:0;flex:1"><select id="zwBirthtime">
             <option value="">请选择出生时间（24 时制）</option>
             <option value="00:00">00:00 子时</option>
             <option value="01:00">01:00 丑时</option>
@@ -1281,9 +1297,10 @@ document.addEventListener('touchstart', function(){}, {passive:true});
             <option value="21:00">21:00 亥时</option>
             <option value="22:00">22:00 亥时</option>
             <option value="23:00">23:00 子时</option>
-          </select>
+          </select></div><div class="field" style="margin-bottom:0;flex:0 0 88px"><select id="zwBirthMin" class="ts-min" aria-label="分钟" title="分钟"></select></div></div>
           <div class="hint">时辰影响命宫位置，请尽量准确；如不确定可留空，将按午时排盘</div>
         </div>
+        <div class="hint ts-status" style="margin-top:6px"></div>
         <button class="btn" onclick="zwCalculate()">开始排盘</button>
       </div>
     </div>
@@ -1718,7 +1735,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
         </div>
         <div class="field">
           <label for="cgBirthtime">出生时间</label>
-          <select id="cgBirthtime">
+          <div class="field-row" style="gap:8px"><div class="field" style="margin-bottom:0;flex:1"><select id="cgBirthtime">
             <option value="">请选择出生时间（24 时制）</option>
             <option value="00:00">00:00 子时</option>
             <option value="01:00">01:00 丑时</option>
@@ -1744,11 +1761,12 @@ document.addEventListener('touchstart', function(){}, {passive:true});
             <option value="21:00">21:00 亥时</option>
             <option value="22:00">22:00 亥时</option>
             <option value="23:00">23:00 子时</option>
-          </select>
+          </select></div><div class="field" style="margin-bottom:0;flex:0 0 88px"><select id="cgBirthMin" class="ts-min" aria-label="分钟" title="分钟"></select></div></div>
           <div class="hint">不知道出生时间？勾选下方“我不清楚出生时间”，将列出 12 个时辰各自的骨重；时辰影响总骨重，建议尽量准确</div>
           <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="cgTimeUnknown" onchange="cgTimeUnknownToggle()" style="width:20px;height:20px;accent-color:var(--gold)">我不清楚出生时间</label>
         </div>
         <div class="hint" style="text-align:center">按袁天罡称骨法：年、月、日、时各有定数，四数相加得总骨重，再对照称骨歌</div>
+        <div class="hint ts-status" style="margin-top:6px"></div>
         <button class="btn" onclick="cgCalc()">开始称骨</button>
       </div>
     </div>
@@ -1772,7 +1790,7 @@ document.addEventListener('touchstart', function(){}, {passive:true});
         </div>
         <div class="field">
           <label for="ryBirthtime">出生时间</label>
-          <select id="ryBirthtime">
+          <div class="field-row" style="gap:8px"><div class="field" style="margin-bottom:0;flex:1"><select id="ryBirthtime">
             <option value="">请选择出生时间（24 时制）</option>
             <option value="00:00">00:00 子时</option>
             <option value="01:00">01:00 丑时</option>
@@ -1798,11 +1816,12 @@ document.addEventListener('touchstart', function(){}, {passive:true});
             <option value="21:00">21:00 亥时</option>
             <option value="22:00">22:00 亥时</option>
             <option value="23:00">23:00 子时</option>
-          </select>
+          </select></div><div class="field" style="margin-bottom:0;flex:0 0 88px"><select id="ryBirthMin" class="ts-min" aria-label="分钟" title="分钟"></select></div></div>
           <div class="hint">不知道出生时间？勾选下方“我不清楚出生时间”，旺衰按三柱判断；时辰影响十神结构，建议尽量准确</div>
           <label style="display:flex;align-items:center;gap:8px;margin-top:10px;font-size:14px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="ryTimeUnknown" onchange="ryTimeUnknownToggle()" style="width:20px;height:20px;accent-color:var(--gold)">我不清楚出生时间</label>
         </div>
         <div class="hint" style="text-align:center">日元即日柱天干，是整张八字的起点；本页以日元为中心讲本性、旺衰与调候</div>
+        <div class="hint ts-status" style="margin-top:6px"></div>
         <button class="btn" onclick="ryCalc()">开始论命</button>
       </div>
     </div>
@@ -1928,16 +1947,17 @@ document.addEventListener('touchstart', function(){}, {passive:true});
         <div class="couple-head">你的信息</div>
         <div class="field-row">
           <div class="field"><label for="pdBzDateA">出生日期</label><input type="date" id="pdBzDateA" placeholder="请选择"></div>
-          <div class="field"><label for="pdBzTimeA">出生时间</label><select id="pdBzTimeA"></select></div>
+          <div class="field"><label for="pdBzTimeA">出生时间</label><div class="field-row" style="gap:8px"><div class="field" style="margin-bottom:0;flex:1"><select id="pdBzTimeA"></select></div><div class="field" style="margin-bottom:0;flex:0 0 88px"><select id="pdBzMinA" class="ts-min" aria-label="分钟" title="分钟"></select></div></div></div>
         </div>
         <label style="display:flex;align-items:center;gap:8px;margin:2px 0 14px;font-size:13px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="pdBzTimeUnknownA" onchange="pdTimeUnknownToggle('A')" style="width:20px;height:20px;accent-color:#c8a45f"> 我不清楚出生时间</label>
         <div class="couple-head">TA 的信息</div>
         <div class="field-row">
           <div class="field"><label for="pdBzDateB">出生日期</label><input type="date" id="pdBzDateB" placeholder="请选择"></div>
-          <div class="field"><label for="pdBzTimeB">出生时间</label><select id="pdBzTimeB"></select></div>
+          <div class="field"><label for="pdBzTimeB">出生时间</label><div class="field-row" style="gap:8px"><div class="field" style="margin-bottom:0;flex:1"><select id="pdBzTimeB"></select></div><div class="field" style="margin-bottom:0;flex:0 0 88px"><select id="pdBzMinB" class="ts-min" aria-label="分钟" title="分钟"></select></div></div></div>
         </div>
         <label style="display:flex;align-items:center;gap:8px;margin:2px 0 14px;font-size:13px;color:var(--text-dim);cursor:pointer"><input type="checkbox" id="pdBzTimeUnknownB" onchange="pdTimeUnknownToggle('B')" style="width:20px;height:20px;accent-color:#c8a45f"> 我不清楚出生时间</label>
         <div class="hint" style="text-align:center">按双方日柱五行生克，测合婚缘分；不填时间或勾选不清楚，时柱按未知处理</div>
+        <div class="hint ts-status" style="margin-top:6px"></div>
         <button class="btn" onclick="pdBzCalc()">开始配对</button>
       </div>
     </div>
@@ -3136,7 +3156,8 @@ function showPage(id) {
   }
   if (id === 'history' && typeof renderHistoryList === 'function') renderHistoryList();
   if (id === 'home') renderHomeExtras(); /* v1.8.5：首页刷新档案卡与最近使用 */
-  applyProfile(id); /* v1.8.5：我的档案——表单还空着时按档案自动带出 */ /* v1.4.3：别处进历史页也渲染——之前只在首页入口 showHistory() 里渲染 */
+  applyProfile(id); /* v1.8.5：我的档案——表单还空着时按档案自动带出 */
+  if (typeof syncTsUI === 'function') syncTsUI(); /* v1.9.0：真太阳时开关与状态行 */ /* v1.4.3：别处进历史页也渲染——之前只在首页入口 showHistory() 里渲染 */
   if (id === 'xingming') requestAnimationFrame(function(){ if (window.positionXmBlob) window.positionXmBlob(true); });
   /* v1.8.7：灵签/塔罗刷新或分享链接进来会白屏——首页入口调了 lqDraw()/taroHome()，路由没调。还原时跳过（还原函数自己渲染，避免 lqDraw 提前抽走今天的签） */
   if (!window.__xjgRestoring) {
@@ -4152,24 +4173,108 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
   window.bzTimeUnknownToggle = function() {
     var cb = document.getElementById('baziTimeUnknown');
     var sel = document.getElementById('baziBirthtime');
+    var min = document.getElementById('baziBirthMin');
     if (!cb || !sel) return;
     sel.disabled = cb.checked;
+    if (min) min.disabled = cb.checked;
     if (cb.checked) sel.value = '';
   };
+
+  // v1.9.0 真太阳时校正：经度修正（120°基准，每度 4 分钟）+ 均时差（按出生日期，标准近似公式，误差约 ±1 分钟）。
+  // 口径：只做经度修正算出来的是「地方平太阳时」，加了均时差才是真太阳时。日柱仍按库默认 23:00 换日（子初换日），本版不做子时换日选项。
+  function getTrueSolar() {
+    try { var s = JSON.parse(localStorage.getItem('xjg_true_solar') || 'null'); if (s && typeof s === 'object') return { enabled: !!s.enabled, lon: (typeof s.lon === 'number' && isFinite(s.lon) && s.lon >= 73 && s.lon <= 135) ? s.lon : 120 }; } catch (e) {}
+    return { enabled: false, lon: 120 };
+  }
+  function saveTrueSolar(enabled, lon) {
+    lon = parseFloat(lon); if (!isFinite(lon)) lon = 120; if (lon < 73) lon = 73; if (lon > 135) lon = 135;
+    try { localStorage.setItem('xjg_true_solar', JSON.stringify({ enabled: !!enabled, lon: Math.round(lon * 100) / 100 })); } catch (e) {}
+  }
+  function tsPad(n) { return (n < 10 ? '0' : '') + n; }
+  function trueSolarCorrect(birthdate, timeHHMM) {
+    var base = { enabled: false, date: birthdate, time: timeHHMM, lonMin: 0, eotMin: 0, shiftMin: 0, shifted: 0, lon: 120 };
+    var s = getTrueSolar();
+    if (!s.enabled) return base;
+    var lon = s.lon;
+    var p = (birthdate || '').split('-').map(Number);
+    var hm = (timeHHMM || '').split(':').map(Number);
+    if (p.length < 3 || hm.length < 2 || isNaN(p[0]) || isNaN(p[1]) || isNaN(p[2]) || isNaN(hm[0]) || isNaN(hm[1])) return base;
+    var lonMin = (120 - lon) * 4;
+    var d0 = new Date(p[0], 0, 1), d1 = new Date(p[0], p[1] - 1, p[2]);
+    var N = Math.round((d1 - d0) / 86400000) + 1;
+    var B = 2 * Math.PI * (N - 81) / 364;
+    var eot = 9.87 * Math.sin(2 * B) - 7.53 * Math.cos(B) - 1.5 * Math.sin(B);
+    var total = hm[0] * 60 + hm[1] - lonMin + eot;
+    var shift = 0;
+    while (total < 0) { total += 1440; shift -= 1; }
+    while (total >= 1440) { total -= 1440; shift += 1; }
+    total = Math.round(total);
+    if (total >= 1440) { total -= 1440; shift += 1; }
+    if (total < 0) { total += 1440; shift -= 1; }
+    var dt = new Date(p[0], p[1] - 1, p[2] + shift);
+    return { enabled: true, date: dt.getFullYear() + '-' + tsPad(dt.getMonth() + 1) + '-' + tsPad(dt.getDate()),
+      time: tsPad(Math.floor(total / 60)) + ':' + tsPad(total % 60),
+      lonMin: lonMin, eotMin: eot, shiftMin: Math.round(-lonMin + eot), shifted: shift, lon: lon };
+  }
+  function tsSigned(n, unit) { return (n >= 0 ? '+' : '−') + Math.abs(n).toFixed(unit || 0); }
+  function tsNoteHtml(corr, clockDate, clockTime, who) {
+    if (!corr) return '';
+    if (!corr.enabled) {
+      if (who) return '';
+      return '<div class="hint" style="margin-top:8px">时间口径：按北京时间（钟表时间）排盘，未做出生地校正；可在「我的档案」或八字页开启真太阳时校正。日柱按 23:00 换日。</div>';
+    }
+    var shiftTxt = corr.shifted > 0 ? '（日期顺延 1 天）' : corr.shifted < 0 ? '（日期提前 1 天）' : '';
+    return '<div class="hint" style="margin-top:8px">' + (who ? who + '：' : '') + '已按出生地经度 ' + corr.lon + '° 校正为真太阳时：北京时间 ' + clockDate + ' ' + clockTime + ' → 真太阳时 ' + corr.date + ' ' + corr.time + '（经度修正 ' + tsSigned(-corr.lonMin, 0) + ' 分，均时差 ' + tsSigned(corr.eotMin, 1) + ' 分，合计 ' + tsSigned(corr.shiftMin, 0) + ' 分）' + shiftTxt + '。日柱按 23:00 换日。</div>';
+  }
+  function tsNotePdHtml(corrA, da, ta, corrB, db, tb) {
+    var a = tsNoteHtml(corrA, da, ta, '你'), b = tsNoteHtml(corrB, db, tb, 'TA');
+    if (a || b) return a + b;
+    return tsNoteHtml({ enabled: false }, '', '', '');
+  }
+  function readBirthTime(hourId, minId) {
+    var h = document.getElementById(hourId), m = document.getElementById(minId);
+    if (!h || !h.value) return '';
+    var mm = (m && m.value) ? m.value : '00';
+    return h.value.slice(0, 2) + ':' + mm;
+  }
+  // 分钟下拉：00/05/…/55（排盘按 2 小时一时辰，5 分钟一档够用）
+  (function fillTsMin() {
+    var opts = '';
+    for (var m = 0; m < 60; m += 5) opts += '<option value="' + tsPad(m) + '">' + tsPad(m) + '</option>';
+    document.querySelectorAll('select.ts-min').forEach(function(sel) { sel.innerHTML = opts; });
+  })();
+  // 真太阳时开关同步：档案页与八字页各一份控件，共用同一份本地设置
+  function syncTsUI() {
+    var s = getTrueSolar();
+    document.querySelectorAll('.ts-enable').forEach(function(cb) { cb.checked = s.enabled; });
+    document.querySelectorAll('.ts-lon').forEach(function(inp) { inp.value = s.lon; });
+    var st = s.enabled ? '真太阳时校正：已开启（经度 ' + s.lon + '°），排盘用校正后的时间。' : '真太阳时校正：未开启，按北京时间排盘。可在「我的档案」修改。';
+    document.querySelectorAll('.ts-status').forEach(function(el) { el.textContent = st; });
+  }
+  function tsControlChanged(ev) {
+    var block = ev && ev.target && ev.target.closest ? ev.target.closest('.ts-block') : null;
+    var cb = block ? block.querySelector('.ts-enable') : document.querySelector('.ts-enable');
+    var lonEl = block ? block.querySelector('.ts-lon') : document.querySelector('.ts-lon');
+    saveTrueSolar(cb ? cb.checked : false, lonEl ? parseFloat(lonEl.value) : 120);
+    syncTsUI();
+  }
+  document.querySelectorAll('.ts-enable, .ts-lon').forEach(function(el) { el.addEventListener('change', tsControlChanged); });
+  syncTsUI();
 
   window.calculate = function() {
     clearFormErrs('page-bazi');
     var birthdate = document.getElementById('baziBirthdate').value;
     if (!birthdate) { showFormErr('baziBirthdate', '请选择出生日期'); return; }
     var timeUnknown = !!document.getElementById('baziTimeUnknown').checked;
-    var time = document.getElementById('baziBirthtime').value;
+    var time = readBirthTime('baziBirthtime', 'baziBirthMin');
     if (!timeUnknown && !time) { showFormErr('baziBirthtime', '请选择出生时间，或勾选“我不清楚出生时间”'); return; }
     if (timeUnknown) time = '12:00'; // 仅用于换算年月日三柱（取正午可避开子时换日），时柱不取用
     var name = document.getElementById('baziName').value || '';
     var gender = document.getElementById('baziGender').value;
     // v1.8.4：性别默认“请选择”，未选直接提示（之前默认“男”，女性忘改会把大运顺逆排反、起运岁数取错）
     if (!gender) { showFormErr('baziGender', '请选择性别'); return; }
-    var d = lunisolar(birthdate + ' ' + time);
+    var corr = timeUnknown ? null : trueSolarCorrect(birthdate, time);
+    var d = lunisolar((corr ? corr.date : birthdate) + ' ' + (corr ? corr.time : time));
 
     var year = d.char8.year, month = d.char8.month, day = d.char8.day, hour = d.char8.hour;
     var dayStem = day.stem.toString();
@@ -4350,7 +4455,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       (name ? '<div style="font-size:20px;font-weight:600;letter-spacing:2px">' + name + '</div>' : '') +
       '<div class="r-lunar">' + lunarStr + ' · ' + (gender==='male'?'乾造':'坤造') + '</div>' +
       '<div class="r-zodiac">' + zodiac + ' · ' + naYin + '</div>' +
-      (timeUnknown ? '<div class="hint" style="margin-top:10px">出生时间未知：时柱未排，五行、旺衰按三柱计；若出生在 23:00 之后，日柱可能顺延一天，请以出生时间确认。仅供参考。</div>' : '') + '</div>' +
+      (timeUnknown ? '<div class="hint" style="margin-top:10px">出生时间未知：时柱未排，五行、旺衰按三柱计；若出生在 23:00 之后，日柱可能顺延一天，请以出生时间确认。仅供参考。</div>' : tsNoteHtml(corr, birthdate, time)) + '</div>' +
       '<div class="pillars">' + pillarsHtml + '</div>' +
       '<div class="r-section"><h3>日主 · ' + rizhu.name + '</h3>' +
       '<div class="sd-item"><b>性格</b>' + rizhu.ch + '</div>' +
@@ -4520,17 +4625,20 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
     clearFormErrs('page-ziwei');
     var birthdate = document.getElementById('zwBirthdate').value;
     if (!birthdate) { showFormErr('zwBirthdate', '请选择出生日期'); return; }
-    var time = document.getElementById('zwBirthtime').value;
+    var time = readBirthTime('zwBirthtime', 'zwBirthMin');
     var timeUnknown = (time === '');
     if (timeUnknown) time = '12:00';
     var name = document.getElementById('zwName').value || '';
     // v1.4.4：性别走统一枚举（P2-17）——非白名单值直接中文提示，不再把原样传给排盘库
     var gender = normGender(document.getElementById('zwGender').value);
     if (!gender) { showFormErr('zwGender', '请选择性别'); hideZwResult(); return; }
-    var hour = hourOf(time);
+    var corr = timeUnknown ? null : trueSolarCorrect(birthdate, time);
+    var effDate = corr ? corr.date : birthdate;
+    var effTime = corr ? corr.time : time;
+    var hour = hourOf(effTime);
     if (hour === null) { showFormErr('zwBirthtime', '请选择出生时间'); hideZwResult(); return; }
 
-    var parts = birthdate.split('-').map(Number);
+    var parts = effDate.split('-').map(Number);
     var timeIndex = hourToTimeIndex(hour);
     var dateStr = parts[0] + '-' + parts[1] + '-' + parts[2];
 
@@ -4758,7 +4866,7 @@ function getNaYin(gan, zhi) { return NA_YIN_LIST[Math.floor(jiaziIndex(gan, zhi)
       '<div class="zw-basic">' +
       (name ? '<div class="zw-name">' + name + '</div>' : '') +
       '<div class="zw-meta">' + r.lunarDate + ' · 属' + r.zodiac + ' · ' + r.sign + '</div>' +
-      (timeUnknown ? '<div class="hint" style="margin-top:8px">出生时间未知，按午时排盘，仅供参考。</div>' : '') + '</div>' +
+      (timeUnknown ? '<div class="hint" style="margin-top:8px">出生时间未知，按午时排盘，仅供参考。</div>' : tsNoteHtml(corr, birthdate, time)) + '</div>' +
       '<div class="palace-grid">' + palaceHtml + centerHtml + '</div>' +
 
       '<div class="r-section"><h3>命盘总评</h3><p>' + zongpingZw + '</p></div>' +
@@ -5672,8 +5780,10 @@ function profileSummary(p) {
 window.pfTimeUnknownToggle = function() {
   var cb = document.getElementById('pfTimeUnknown');
   var sel = document.getElementById('pfBirthtime');
+  var min = document.getElementById('pfBirthMin');
   if (!cb || !sel) return;
   sel.disabled = cb.checked;
+  if (min) min.disabled = cb.checked;
   if (cb.checked) sel.value = '';
 };
 window.saveProfile = function() {
@@ -5683,11 +5793,13 @@ window.saveProfile = function() {
   if (!birthdate) { showFormErr('pfBirthdate', '请先选出生日期'); return; }
   var tu = document.getElementById('pfTimeUnknown');
   var tm = document.getElementById('pfBirthtime');
-  var time = tm ? tm.value : '';
+  var time = readBirthTime('pfBirthtime', 'pfBirthMin');
   var timeUnknown = !!(tu && tu.checked) || !time;
   var nm = document.getElementById('pfName');
   var gd = document.getElementById('pfGender');
   store.set('xjg_profile', { name: nm ? nm.value : '', gender: gd ? gd.value : '', birthdate: birthdate, time: timeUnknown ? '' : time, timeUnknown: timeUnknown, updatedAt: Date.now() });
+  var tsCb = document.getElementById('pfTsEnable'), tsLon = document.getElementById('pfTsLon');
+  if (tsCb) saveTrueSolar(tsCb.checked, tsLon ? parseFloat(tsLon.value) : 120);
   var el = document.getElementById('pfSaved');
   if (el) el.textContent = '已保存，下次进各功能会自动带出';
   renderHomeExtras();
@@ -5697,6 +5809,7 @@ window.clearProfile = function() {
   try { localStorage.removeItem('xjg_profile'); } catch (e) {}
   var ids = ['pfName', 'pfGender', 'pfBirthdate', 'pfBirthtime'];
   ids.forEach(function(id) { var el = document.getElementById(id); if (el) el.value = ''; });
+  var pm = document.getElementById('pfBirthMin'); if (pm) pm.value = '00';
   var cb = document.getElementById('pfTimeUnknown');
   if (cb) cb.checked = false;
   pfTimeUnknownToggle();
@@ -5759,7 +5872,14 @@ function applyProfile(page) {
     if (el.value) return; // 已有内容（用户填的或上次留的）不动
     var v = profileVal(p, pair[1]);
     if (!v) return;
-    el.value = v;
+    if (pair[1] === 'time' && v.indexOf(':') > 0) {
+      el.value = v.slice(0, 2) + ':00';
+      var mid = pair[0].replace('Birthtime', 'BirthMin').replace('BzTime', 'BzMin');
+      var mel = document.getElementById(mid);
+      if (mel) mel.value = v.slice(3);
+    } else {
+      el.value = v;
+    }
     filled = true;
   });
   if (m.unknown && p.timeUnknown && timeEmpty) {
@@ -7406,15 +7526,16 @@ window.hmReset = function() {
   }
   window.cgTimeUnknownToggle = function() {
     var cb = document.getElementById('cgTimeUnknown'), sel = document.getElementById('cgBirthtime');
+    var min = document.getElementById('cgBirthMin');
     if (!cb || !sel) return;
-    sel.disabled = cb.checked; if (cb.checked) sel.value = '';
+    sel.disabled = cb.checked; if (min) min.disabled = cb.checked; if (cb.checked) sel.value = '';
   };
   window.cgCalc = function() {
     clearFormErrs('page-chenggu');
     var bd = document.getElementById('cgBirthdate').value;
     if (!bd) { showFormErr('cgBirthdate', '请选择出生日期'); return; }
     var unknown = document.getElementById('cgTimeUnknown').checked;
-    var time = document.getElementById('cgBirthtime').value;
+    var time = readBirthTime('cgBirthtime', 'cgBirthMin');
     if (!unknown && !time) { showFormErr('cgBirthtime', '请选择出生时间，或勾选“我不清楚出生时间”'); return; }
     if (unknown) {
       // 时辰未知：用正午换算农历（正午无 23:00 换日之虞），列出 12 个时辰各自的骨重
@@ -7439,10 +7560,11 @@ window.hmReset = function() {
       window.scrollTo(0, 0);
       return;
     }
-    var p2 = cgParse(bd, time);
+    var corr2 = trueSolarCorrect(bd, time);
+    var p2 = cgParse(corr2.date, corr2.time);
     var gz2 = cgGanzhi(p2.lYn), yW2 = CG_YEAR[gz2];
     var mInfo2 = cgMonthInfo(p2), dW2 = CG_DAY[p2.lDn];
-    var hour = parseInt(time.split(':')[0], 10);
+    var hour = parseInt(corr2.time.split(':')[0], 10);
     var sc = CG_SC[cgHourToSc(hour)];
     var hW = CG_HOUR[sc];
     var total = yW2 + mInfo2.w + dW2 + hW;
@@ -7453,9 +7575,9 @@ window.hmReset = function() {
       { k:'年', v:'农历' + gz2 + '年 · ' + cgFmtW(yW2) },
       { k:'月', v:mInfo2.note + ' · ' + cgFmtW(mInfo2.w) },
       { k:'日', v:'农历' + CG_DAY_NAME[p2.lDn] + ' · ' + cgFmtW(dW2) },
-      { k:'时', v:sc + '时（' + time + '） · ' + cgFmtW(hW) }
+      { k:'时', v:sc + '时（' + corr2.time + '） · ' + cgFmtW(hW) }
     ] };
-    var html = '<div class="r-score"><div class="score-num" style="font-size:44px">' + cgFmt(total) + '</div><div class="score-label">总骨重 · ' + tier + '</div></div>' +
+    var html = tsNoteHtml(corr2, bd, time) + '<div class="r-score"><div class="score-num" style="font-size:44px">' + cgFmt(total) + '</div><div class="score-label">总骨重 · ' + tier + '</div></div>' +
       '<div class="r-section"><h3>称骨歌</h3><p class="cg-poem">' + song.p + '</p></div>' +
       '<div class="r-section"><h3>白话</h3><p>' + song.w + '</p></div>' +
       '<div class="r-section"><h3>详细解读</h3><div class="sd-item"><b>为人</b>' + CG_DETAIL[total].x + '</div><div class="sd-item"><b>一生走势</b>' + CG_DETAIL[total].z + '</div><div class="sd-item"><b>提醒</b>' + CG_DETAIL[total].t + '</div></div>' +
@@ -7530,18 +7652,20 @@ window.hmReset = function() {
   var lastRy = null;
   window.ryTimeUnknownToggle = function() {
     var cb = document.getElementById('ryTimeUnknown'), sel = document.getElementById('ryBirthtime');
+    var min = document.getElementById('ryBirthMin');
     if (!cb || !sel) return;
-    sel.disabled = cb.checked; if (cb.checked) sel.value = '';
+    sel.disabled = cb.checked; if (min) min.disabled = cb.checked; if (cb.checked) sel.value = '';
   };
   window.ryCalc = function() {
     clearFormErrs('page-riyuan');
     var birthdate = document.getElementById('ryBirthdate').value;
     if (!birthdate) { showFormErr('ryBirthdate', '请选择出生日期'); return; }
     var timeUnknown = !!document.getElementById('ryTimeUnknown').checked;
-    var time = document.getElementById('ryBirthtime').value;
+    var time = readBirthTime('ryBirthtime', 'ryBirthMin');
     if (!timeUnknown && !time) { showFormErr('ryBirthtime', '请选择出生时间，或勾选“我不清楚出生时间”'); return; }
     if (timeUnknown) time = '12:00'; // 仅用于换算年月日三柱（取正午可避开子时换日），时柱不取用
-    var d = lunisolar(birthdate + ' ' + time);
+    var corr = timeUnknown ? null : trueSolarCorrect(birthdate, time);
+    var d = lunisolar((corr ? corr.date : birthdate) + ' ' + (corr ? corr.time : time));
     var year = d.char8.year, month = d.char8.month, day = d.char8.day, hour = d.char8.hour;
     var dayStem = day.stem.toString();
     var dayMaster = STEM_WX[dayStem];
@@ -7606,7 +7730,7 @@ window.hmReset = function() {
       { k:'调候首选', v:tiaoFirst + tiaoFirstWx + '（' + monthBranch + '月）' },
       { k:'喜用', v:xiYong.join('、') }
     ]};
-    var html = '<div class="r-score"><div class="score-num" style="font-size:44px">' + dayStem + dayMaster + '</div><div class="score-label">日元 · ' + stem.xiang + ' · ' + strength + '</div></div>' +
+    var html = (timeUnknown ? '' : tsNoteHtml(corr, birthdate, time)) + '<div class="r-score"><div class="score-num" style="font-size:44px">' + dayStem + dayMaster + '</div><div class="score-label">日元 · ' + stem.xiang + ' · ' + strength + '</div></div>' +
       '<div class="r-section"><h3>日元本性</h3><p>' + stem.xing + '</p><p class="cg-poem">「' + stem.ditian + '」</p><p style="color:var(--text-dim);font-size:13px">——《滴天髓》十干体象</p></div>' +
       '<div class="r-section"><h3>旺衰与喜忌</h3><p>四柱：' + ganzhiStr + '（农历' + lunarStr + '）。日主' + dayMaster + '在四柱中共出现 ' + dayWxCount + ' 次，月令' + monthBranch + '月' + (monthSupports ? '生扶日主' : '不生扶日主') + '，判断为「' + strength + '」' + (timeUnknown ? '（时辰未知，基于三柱判断）' : '') + '。</p>' + xiyongHtml + '</div>' +
       '<div class="r-section"><h3>调候用神 · ' + monthName + '</h3><p>《穷通宝鉴》按“日主 × 月份”列出该月通常最需要的用神（月份以节气为准，即月柱地支）。</p>' + tiaoHtml +
@@ -8097,8 +8221,10 @@ var _pdHourWx = { 0:'子',1:'丑',2:'丑',3:'寅',4:'寅',5:'卯',6:'卯',7:'辰
 window.pdTimeUnknownToggle = function(side) {
   var cb = document.getElementById(side === 'A' ? 'pdBzTimeUnknownA' : 'pdBzTimeUnknownB');
   var sel = document.getElementById(side === 'A' ? 'pdBzTimeA' : 'pdBzTimeB');
+  var min = document.getElementById(side === 'A' ? 'pdBzMinA' : 'pdBzMinB');
   if (!cb || !sel) return;
   sel.disabled = cb.checked;
+  if (min) min.disabled = cb.checked;
   if (cb.checked) sel.value = '';
 };
 // 两人五行生克关系（用于四柱对照）
@@ -8117,10 +8243,12 @@ window.pdBzCalc = function() {
   if (!da || !db) { showFormErr(!da ? 'pdBzDateA' : 'pdBzDateB', '请选择两人的出生日期'); return; }
   var taUnknown = document.getElementById('pdBzTimeUnknownA').checked || !document.getElementById('pdBzTimeA').value;
   var tbUnknown = document.getElementById('pdBzTimeUnknownB').checked || !document.getElementById('pdBzTimeB').value;
-  var ta = taUnknown ? '12:00' : document.getElementById('pdBzTimeA').value; // 仅用于换算年月日三柱，时柱不取用
-  var tb = tbUnknown ? '12:00' : document.getElementById('pdBzTimeB').value;
-  var a = lunisolar(da + ' ' + ta);
-  var b = lunisolar(db + ' ' + tb);
+  var ta = taUnknown ? '12:00' : readBirthTime('pdBzTimeA', 'pdBzMinA'); // 仅用于换算年月日三柱，时柱不取用
+  var tb = tbUnknown ? '12:00' : readBirthTime('pdBzTimeB', 'pdBzMinB');
+  var corrA = taUnknown ? null : trueSolarCorrect(da, ta);
+  var corrB = tbUnknown ? null : trueSolarCorrect(db, tb);
+  var a = lunisolar((corrA ? corrA.date : da) + ' ' + (corrA ? corrA.time : ta));
+  var b = lunisolar((corrB ? corrB.date : db) + ' ' + (corrB ? corrB.time : tb));
   var aGan = a.char8.day.stem.toString(), aZhi = a.char8.day.branch.toString();
   var bGan = b.char8.day.stem.toString(), bZhi = b.char8.day.branch.toString();
   var aWx = STEM_WX[aGan], bWx = STEM_WX[bGan];
@@ -8187,7 +8315,7 @@ window.pdBzCalc = function() {
         '<p class="sub" style="margin-top:8px">口径：日干为你、时干为对方，按地盘落宫（与本站奇门页时干宫口径一致）；六合为婚姻用神。此局以问事时间起，与出生时间无关，仅供参考。</p></div>';
     }
   } catch (e) { qmHtml = ''; qmRel = ''; try { window.__xjgQmErr = String(e && e.message); } catch (e2) {} }
-  var html = '<div class="r-basic"><div class="r-lunar">' + aGan + aZhi + '日 · ' + aWx + '　♥　' + bGan + bZhi + '日 · ' + bWx + '</div></div>' +
+  var html = tsNotePdHtml(corrA, da, ta, corrB, db, tb) + '<div class="r-basic"><div class="r-lunar">' + aGan + aZhi + '日 · ' + aWx + '　♥　' + bGan + bZhi + '日 · ' + bWx + '</div></div>' +
     '<div class="r-score"><div class="score-label" style="font-size:16px;color:var(--gold-light)">' + level + '（日柱五行' + rel + '）</div></div>' +
     '<div class="r-section"><h3>八字日柱合婚</h3><p>' + desc + '</p></div>' +
     '<div class="r-section"><h3>四柱对照</h3>' +
